@@ -6,70 +6,59 @@
     <title>Zab Admin Dashboard</title>
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: row; min-height: 100vh; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: row; min-height: 100vh; }
         
-        /* Persistent Sidebar */
-        .sidebar { width: 400px; background: white; padding: 30px; border-right: 1px solid #eee; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-sizing: border-box; }
-        .main-content { flex-grow: 1; padding: 50px; }
+        .sidebar { width: 380px; background: white; padding: 30px; border-right: 1px solid #eee; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-sizing: border-box; }
+        .main-content { flex-grow: 1; padding: 40px; }
         
-        h2 { color: var(--dark-pink); font-family: 'Segoe UI', sans-serif; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #eee; border-radius: 12px; background: var(--bg); outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--pink); background: white; }
-        
-        button { width: 100%; padding: 14px; background: var(--dark-pink); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
-        button:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; background: var(--bg); }
+        button { width: 100%; padding: 12px; background: var(--dark-pink); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 
-        /* Inventory Cards */
-        .inventory-card { background: white; padding: 20px; border-radius: 20px; display: flex; align-items: center; margin-bottom: 20px; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #fff; }
-        .inventory-card img { width: 90px; height: 90px; border-radius: 15px; object-fit: cover; border: 2px solid var(--pink); }
-        .card-details { flex-grow: 1; }
-        .card-details b { font-size: 1.1rem; display: block; margin-bottom: 5px; }
+        .inventory-card { background: white; padding: 15px; border-radius: 15px; display: flex; align-items: center; margin-bottom: 15px; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .inventory-card img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 2px solid var(--pink); }
         
-        .edit-btn { background: #8ecae6; width: auto; padding: 8px 15px; }
-        .del-btn { background: #e07a5f; width: auto; padding: 8px 15px; margin-left: 5px; }
-
-        @media (max-width: 1000px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; position: static; } }
-        #login-gate { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        @media (max-width: 900px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; position: static; } }
+        #login-gate { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
 <div id="login-gate">
-    <div style="background:white; padding:50px; border-radius:30px; width:350px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-        <h2 style="margin-top:0;">Zab Admin</h2>
-        <input type="password" id="entryPass" placeholder="Enter Access Code">
+    <div style="background:white; padding:40px; border-radius:30px; width:320px; text-align:center;">
+        <h2 style="color:var(--dark-pink)">Zab Admin</h2>
+        <input type="password" id="entryPass" placeholder="Access Password">
         <button onclick="login()">Enter Dashboard</button>
     </div>
 </div>
 
 <div class="sidebar">
-    <h2 id="formHeader">Create Product</h2>
+    <h2 id="formHeader" style="color:var(--dark-pink)">Manage Product</h2>
     <input type="text" id="pName" placeholder="Product Name">
     <input type="number" id="pPrice" placeholder="Price (PHP)">
     
-    <label style="font-size: 0.8rem; margin-left: 10px;">Category</label>
+    <label style="font-size:0.8rem; margin-top:10px; display:block;">Category</label>
     <select id="pCat">
         <option value="Mugs">Mugs</option>
         <option value="Keychains">Keychains</option>
         <option value="Others">Others</option>
     </select>
 
-    <label style="font-size: 0.8rem; margin-left: 10px;">Stock Status</label>
+    <label style="font-size:0.8rem; margin-top:10px; display:block;">Availability</label>
     <select id="pStatus">
         <option value="Available">Available</option>
         <option value="Sold Out">Sold Out</option>
     </select>
 
-    <input type="text" id="pImg" placeholder="Image URL (Direct Link)" oninput="document.getElementById('prev').src=this.value; document.getElementById('prev').style.display='block'">
-    <img id="prev" style="width:100%; height:200px; object-fit:cover; display:none; border-radius:15px; margin-top:15px; border: 2px solid var(--pink);">
+    <input type="text" id="pImg" placeholder="Image URL (Direct Link)" oninput="prev.src=this.value; prev.style.display='block'">
+    <img id="prev" style="width:100%; height:180px; object-fit:cover; display:none; border-radius:15px; margin-top:15px; border: 2px solid var(--pink);">
     
-    <button id="saveBtn">Publish Item</button>
-    <button onclick="location.reload()" style="background:#aaa;">Logout</button>
+    <button id="saveBtn">Publish to Shop</button>
+    <button onclick="location.reload()" style="background:#888;">Logout</button>
 </div>
 
 <div class="main-content">
-    <h2>Active Inventory</h2>
-    <div id="admin-list">Loading catalog...</div>
+    <h2 style="color:var(--dark-pink)">Current Inventory</h2>
+    <div id="admin-list">Loading items...</div>
 </div>
 
 <script type="module">
@@ -89,14 +78,11 @@
     const db = getFirestore(app);
     let editID = null;
 
-    // Persist session
-    window.onload = () => { if(sessionStorage.getItem("zab_auth") === "true") document.getElementById('login-gate').style.display = "none"; loadList(); };
-
     window.login = () => {
         if(document.getElementById('entryPass').value === "zab123") {
-            sessionStorage.setItem("zab_auth", "true");
             document.getElementById('login-gate').style.display = "none";
-        } else { alert("Access Denied"); }
+            loadList();
+        } else { alert("Wrong password"); }
     };
 
     document.getElementById('saveBtn').onclick = async () => {
@@ -107,11 +93,10 @@
             status: document.getElementById('pStatus').value,
             imgUrl: document.getElementById('pImg').value
         };
-        if(!data.name || !data.imgUrl) return alert("Missing Info");
 
         if(editID) {
             await updateDoc(doc(db, "products", editID), data);
-            alert("Success!");
+            alert("Updated!");
         } else {
             await addDoc(collection(db, "products"), { ...data, createdAt: Date.now() });
             alert("Published!");
@@ -129,12 +114,11 @@
                 div.className = "inventory-card";
                 div.innerHTML = `
                     <img src="${item.imgUrl}">
-                    <div class="card-details">
-                        <b>${item.name}</b>
-                        ₱${item.price} • ${item.category} • <span style="color:${item.status === 'Sold Out' ? '#e07a5f' : '#8ecae6'}">${item.status}</span>
+                    <div style="flex-grow:1">
+                        <b>${item.name}</b><br>₱${item.price} | ${item.status || 'Available'}
                     </div>
-                    <button class="edit-btn" onclick="editProduct('${d.id}', '${item.name}', '${item.price}', '${item.category}', '${item.status}', '${item.imgUrl}')">Edit</button>
-                    <button class="del-btn" onclick="deleteProduct('${d.id}')">Del</button>
+                    <button onclick="editProduct('${d.id}', '${item.name}', '${item.price}', '${item.category}', '${item.status}', '${item.imgUrl}')" style="width:auto; background:#5cb85c;">Edit</button>
+                    <button onclick="deleteProduct('${d.id}')" style="width:auto; background:#ff4d4d; margin-left:5px;">Del</button>
                 `;
                 list.appendChild(div);
             });
@@ -146,14 +130,14 @@
         document.getElementById('pName').value = n;
         document.getElementById('pPrice').value = p;
         document.getElementById('pCat').value = c;
-        document.getElementById('pStatus').value = s;
+        document.getElementById('pStatus').value = s || "Available";
         document.getElementById('pImg').value = i;
         document.getElementById('saveBtn').innerText = "Update Now";
         document.getElementById('formHeader').innerText = "Edit Mode";
         window.scrollTo(0,0);
     };
 
-    window.deleteProduct = async (id) => { if(confirm("Permanently delete?")) await deleteDoc(doc(db, "products", id)); };
+    window.deleteProduct = async (id) => { if(confirm("Delete item?")) await deleteDoc(doc(db, "products", id)); };
 </script>
 </body>
 </html>
