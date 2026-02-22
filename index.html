@@ -81,12 +81,13 @@
         .step-num { font-family: 'Playfair Display'; font-size: 3rem; color: var(--pink); opacity: 0.5; margin-bottom: -20px; display: block; }
         .step h3 { color: var(--dark-pink); margin-top: 10px; }
 
-        /* Controls & Filter */
+        /* Controls & Dynamic Filter */
         .controls { background: var(--white); padding: 60px 5% 40px 5%; display: flex; flex-direction: column; align-items: center; }
         .search-box { padding: 18px 35px; width: 100%; max-width: 700px; border: 2px solid var(--pink); border-radius: 50px; outline: none; transition: 0.3s; font-size: 1rem; box-shadow: 0 5px 20px rgba(255, 183, 197, 0.1); }
         .search-box:focus { border-color: var(--dark-pink); box-shadow: 0 5px 25px rgba(212, 129, 146, 0.2); }
-        .filter-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
-        .filter-btn { background: var(--white); border: 2px solid var(--pink); color: var(--dark-pink); padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        
+        #dynamic-filter-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+        .filter-btn { background: var(--white); border: 2px solid var(--pink); color: var(--dark-pink); padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; text-transform: capitalize; }
         .filter-btn.active, .filter-btn:hover { background: var(--pink); color: var(--white); transform: translateY(-3px); }
 
         /* Grid */
@@ -103,17 +104,16 @@
         .card-body { padding: 25px; text-align: center; }
         .price { color: var(--dark-pink); font-size: 1.6rem; font-weight: 600; margin: 15px 0; }
         .btn { background: var(--pink); color: var(--white); padding: 14px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; }
-        .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
+
+        /* Back to Top Button */
+        #backToTop { position: fixed; bottom: 110px; right: 30px; background: var(--white); color: var(--dark-pink); width: 50px; height: 50px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid var(--pink); cursor: pointer; z-index: 1999; font-weight: bold; }
 
         .messenger-fab { position: fixed; bottom: 30px; right: 30px; background: #0084ff; color: var(--white); width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,132,255,0.3); z-index: 2000; transition: 0.3s; }
-        .messenger-fab:hover { transform: scale(1.1); }
 
         footer { background: var(--dark-pink); color: var(--white); padding: 60px 5%; text-align: center; }
 
         @media (max-width: 900px) {
             .hero { flex-direction: column-reverse; padding: 60px 5%; text-align: center; }
-            .hero-content { text-align: center; }
-            .hero-content p { margin: 20px auto; }
             .hero-img-card { height: 400px; border-radius: 150px 150px 30px 30px; }
             .trust-bar { flex-direction: column; }
         }
@@ -158,17 +158,14 @@
 
 <div class="controls" id="catalog">
     <input type="text" id="searchInput" class="search-box" placeholder="Search for your next favorite souvenir..." oninput="applyFilters()">
-    <div class="filter-bar">
-        <button class="filter-btn active" onclick="setCategory('All', this)">All Items</button>
-        <button class="filter-btn" onclick="setCategory('Mugs', this)">Custom Mugs</button>
-        <button class="filter-btn" onclick="setCategory('Keychains', this)">Keychains</button>
-        <button class="filter-btn" onclick="setCategory('Others', this)">Others</button>
-    </div>
+    <div id="dynamic-filter-bar"></div>
 </div>
 
 <main class="catalog-section">
     <div id="catalog-grid" class="grid">Loading our collection...</div>
 </main>
+
+<button id="backToTop" onclick="scrollToTop()">↑</button>
 
 <footer>
     <h2 style="font-family:'Playfair Display';">Zab Digital Prints</h2>
@@ -198,6 +195,23 @@
     let allProducts = [];
     let currentCategory = "All";
 
+    // Dynamic Category Loading
+    onSnapshot(collection(db, "categories"), (snap) => {
+        const filterBar = document.getElementById('dynamic-filter-bar');
+        filterBar.innerHTML = `<button class="filter-btn active" id="btn-all">All Items</button>`;
+        
+        document.getElementById('btn-all').onclick = function() { setCategory('All', this); };
+
+        snap.forEach(d => {
+            const catName = d.id;
+            const btn = document.createElement('button');
+            btn.className = `filter-btn`;
+            btn.innerText = catName;
+            btn.onclick = function() { setCategory(catName, this); };
+            filterBar.appendChild(btn);
+        });
+    });
+
     onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
         allProducts = [];
         snap.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
@@ -216,17 +230,16 @@
         const grid = document.getElementById('catalog-grid');
         const filtered = allProducts.filter(p => (currentCategory === "All" || p.category === currentCategory) && p.name.toLowerCase().includes(term));
 
-        grid.innerHTML = "";
+        grid.innerHTML = filtered.length ? "" : "<p style='text-align:center; width:100%; grid-column: 1/-1;'>No treasures found here yet.</p>";
         filtered.forEach(item => {
             const isSoldOut = item.status === "Sold Out";
-            
             const orderMsg = encodeURIComponent(`Hi Zab Digital Prints! I would like to order: ${item.name} (₱${item.price})`);
             const messengerUrl = `https://www.facebook.com/messages/t/zabprintsdigital?text=${orderMsg}`;
 
             grid.innerHTML += `
                 <div class="card">
                     <div class="badge ${isSoldOut ? 'badge-soldout' : 'badge-available'}">${item.status || 'Available'}</div>
-                    <img src="${item.imgUrl}">
+                    <img src="${item.imgUrl}" alt="${item.name}">
                     <div class="card-body">
                         <h3 style="margin:0; font-family:'Playfair Display'">${item.name}</h3>
                         <div class="price">₱${item.price}</div>
@@ -240,6 +253,18 @@
                 </div>`;
         });
     };
+
+    // Back to Top Logic
+    window.onscroll = function() {
+        const btn = document.getElementById("backToTop");
+        if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+            btn.style.display = "flex";
+        } else {
+            btn.style.display = "none";
+        }
+    };
+    window.scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
 </script>
 </body>
 </html>
