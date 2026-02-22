@@ -3,83 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zab Digital Prints | Custom Souvenirs</title>
+    <title>Zab Digital Prints | Shop</title>
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; }
         
-        /* Nav */
         nav { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo { font-weight: bold; font-size: 1.4rem; color: var(--dark-pink); text-decoration: none; }
-        .nav-links a { text-decoration: none; color: var(--text); margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
 
-        /* Hero */
-        .hero { text-align: center; padding: 80px 20px; background: white; }
-        .hero h1 { font-size: 2.5rem; color: var(--dark-pink); margin: 0; }
-        .hero p { font-size: 1.1rem; opacity: 0.8; }
+        /* Category Filter Bar */
+        .filter-bar { text-align: center; padding: 20px; background: white; margin-bottom: 20px; }
+        .filter-btn { background: none; border: 2px solid var(--pink); color: var(--dark-pink); padding: 8px 20px; margin: 5px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .filter-btn.active, .filter-btn:hover { background: var(--pink); color: white; }
 
-        /* Catalog */
-        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
         .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.03); transition: 0.3s; border: 1px solid #eee; text-align: center; }
-        .card:hover { transform: translateY(-5px); }
         .card img { width: 100%; height: 250px; object-fit: cover; }
         .card-body { padding: 20px; }
         .price { color: var(--dark-pink); font-size: 1.3rem; font-weight: bold; margin: 10px 0; }
-
-        /* Buttons */
-        .btn { background: var(--pink); color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; }
-        .btn:hover { background: var(--dark-pink); }
-
-        /* Contact */
-        .contact-area { background: white; padding: 60px 20px; text-align: center; border-top: 5px solid var(--pink); }
-        .contact-info { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin: 30px 0; }
-        footer { padding: 20px; text-align: center; font-size: 0.8rem; opacity: 0.6; }
+        .btn { background: var(--pink); color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; }
     </style>
 </head>
 <body>
 
 <nav>
     <a href="#" class="logo">Zab Digital Prints</a>
-    <div class="nav-links">
-        <a href="#catalog">Shop</a>
-        <a href="#contact">Contact</a>
-    </div>
 </nav>
 
-<header class="hero">
-    <h1>Customized Just For You</h1>
-    <p>Premium souvenirs and digital prints for every occasion.</p>
-    <br>
-    <a href="#catalog" class="btn">Browse Shop</a>
-</header>
-
-<div class="container" id="catalog">
-    <div id="catalog-grid" class="grid">
-        <p style="text-align:center; grid-column: 1/-1;">Loading our beautiful collection...</p>
-    </div>
+<div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" onclick="filterCat('All', this)">All</button>
+    <button class="filter-btn" onclick="filterCat('Mugs', this)">Mugs</button>
+    <button class="filter-btn" onclick="filterCat('Keychains', this)">Keychains</button>
+    <button class="filter-btn" onclick="filterCat('Others', this)">Others</button>
 </div>
 
-<section class="contact-area" id="contact">
-    <h2>Let's Connect</h2>
-    <div class="contact-info">
-        <div>
-            <h4 style="color:var(--dark-pink)">Location</h4>
-            <p>Calamba, Philippines</p>
-        </div>
-        <div>
-            <h4 style="color:var(--dark-pink)">Inquiries</h4>
-            <p>Messenger: Zab Digital Prints</p>
-        </div>
-    </div>
-    <a href="https://m.me/YourPageID" class="btn">Message us on Messenger</a>
-</section>
-
-<footer>&copy; 2026 Zab Digital Prints</footer>
+<div class="container" id="catalog">
+    <div id="catalog-grid" class="grid">Loading items...</div>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
@@ -92,24 +57,41 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    let currentUnsubscribe = null;
 
-    const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (snap) => {
-        const grid = document.getElementById('catalog-grid');
-        grid.innerHTML = "";
-        snap.forEach(doc => {
-            const item = doc.data();
-            grid.innerHTML += `
-                <div class="card">
-                    <img src="${item.imgUrl}" alt="${item.name}">
-                    <div class="card-body">
-                        <h3>${item.name}</h3>
-                        <div class="price">₱${item.price}</div>
-                        <a href="https://m.me/YourPageID" class="btn">Order Now</a>
-                    </div>
-                </div>`;
+    window.filterCat = (cat, btn) => {
+        // Update button UI
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Fetch Data
+        if (currentUnsubscribe) currentUnsubscribe();
+        
+        let q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        if (cat !== 'All') {
+            q = query(collection(db, "products"), where("category", "==", cat), orderBy("createdAt", "desc"));
+        }
+
+        currentUnsubscribe = onSnapshot(q, (snap) => {
+            const grid = document.getElementById('catalog-grid');
+            grid.innerHTML = "";
+            snap.forEach(doc => {
+                const item = doc.data();
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="${item.imgUrl}">
+                        <div class="card-body">
+                            <h3>${item.name}</h3>
+                            <div class="price">₱${item.price}</div>
+                            <a href="https://m.me/YourPage" class="btn">Order Now</a>
+                        </div>
+                    </div>`;
+            });
         });
-    });
+    };
+
+    // Initial Load
+    filterCat('All', document.querySelector('.filter-btn'));
 </script>
 </body>
 </html>
