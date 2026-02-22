@@ -8,21 +8,31 @@
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; }
         
+        /* Navigation */
         nav { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo { font-weight: bold; font-size: 1.4rem; color: var(--dark-pink); text-decoration: none; }
 
-        /* Category Filter Bar */
-        .filter-bar { text-align: center; padding: 20px; background: white; margin-bottom: 20px; }
-        .filter-btn { background: none; border: 2px solid var(--pink); color: var(--dark-pink); padding: 8px 20px; margin: 5px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        /* Search & Filters */
+        .controls { background: white; padding: 30px 20px; text-align: center; border-bottom: 1px solid #eee; }
+        .search-box { padding: 12px 25px; width: 90%; max-width: 500px; border: 2px solid var(--pink); border-radius: 30px; outline: none; margin-bottom: 20px; font-size: 1rem; }
+        .filter-bar { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .filter-btn { background: none; border: 2px solid var(--pink); color: var(--dark-pink); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .filter-btn.active, .filter-btn:hover { background: var(--pink); color: white; }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.03); transition: 0.3s; border: 1px solid #eee; text-align: center; }
-        .card img { width: 100%; height: 250px; object-fit: cover; }
+        /* Catalog Grid */
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.03); transition: 0.3s; border: 1px solid #eee; text-align: center; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px rgba(212, 129, 146, 0.15); }
+        .card img { width: 100%; height: 280px; object-fit: cover; background: #fafafa; }
         .card-body { padding: 20px; }
-        .price { color: var(--dark-pink); font-size: 1.3rem; font-weight: bold; margin: 10px 0; }
-        .btn { background: var(--pink); color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; }
+        .price { color: var(--dark-pink); font-size: 1.4rem; font-weight: bold; margin: 10px 0; }
+        .btn { background: var(--pink); color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; }
+        .btn:hover { background: var(--dark-pink); }
+
+        /* Contact Section */
+        .contact { background: white; padding: 60px 20px; text-align: center; border-top: 5px solid var(--pink); }
+        footer { padding: 20px; text-align: center; opacity: 0.6; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -31,20 +41,31 @@
     <a href="#" class="logo">Zab Digital Prints</a>
 </nav>
 
-<div class="filter-bar" id="filter-bar">
-    <button class="filter-btn active" onclick="filterCat('All', this)">All</button>
-    <button class="filter-btn" onclick="filterCat('Mugs', this)">Mugs</button>
-    <button class="filter-btn" onclick="filterCat('Keychains', this)">Keychains</button>
-    <button class="filter-btn" onclick="filterCat('Others', this)">Others</button>
+<div class="controls">
+    <input type="text" id="searchInput" class="search-box" placeholder="Search for souvenirs (e.g. 'mug')..." oninput="applyFilters()">
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="setCategory('All', this)">All</button>
+        <button class="filter-btn" onclick="setCategory('Mugs', this)">Mugs</button>
+        <button class="filter-btn" onclick="setCategory('Keychains', this)">Keychains</button>
+        <button class="filter-btn" onclick="setCategory('Others', this)">Others</button>
+    </div>
 </div>
 
-<div class="container" id="catalog">
-    <div id="catalog-grid" class="grid">Loading items...</div>
+<div class="container">
+    <div id="catalog-grid" class="grid">Loading catalog...</div>
 </div>
+
+<section class="contact" id="contact">
+    <h2>Order via Messenger</h2>
+    <p>Message us to start your custom order today!</p>
+    <a href="https://m.me/YourPageID" class="btn">Chat with Us</a>
+</section>
+
+<footer>&copy; 2026 Zab Digital Prints</footer>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
@@ -57,41 +78,48 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    let currentUnsubscribe = null;
 
-    window.filterCat = (cat, btn) => {
-        // Update button UI
+    let allProducts = [];
+    let currentCategory = "All";
+
+    // Live Sync
+    const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snap) => {
+        allProducts = [];
+        snap.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
+        applyFilters();
+    });
+
+    window.setCategory = (cat, btn) => {
+        currentCategory = cat;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
-        // Fetch Data
-        if (currentUnsubscribe) currentUnsubscribe();
-        
-        let q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        if (cat !== 'All') {
-            q = query(collection(db, "products"), where("category", "==", cat), orderBy("createdAt", "desc"));
-        }
-
-        currentUnsubscribe = onSnapshot(q, (snap) => {
-            const grid = document.getElementById('catalog-grid');
-            grid.innerHTML = "";
-            snap.forEach(doc => {
-                const item = doc.data();
-                grid.innerHTML += `
-                    <div class="card">
-                        <img src="${item.imgUrl}">
-                        <div class="card-body">
-                            <h3>${item.name}</h3>
-                            <div class="price">₱${item.price}</div>
-                            <a href="https://m.me/YourPage" class="btn">Order Now</a>
-                        </div>
-                    </div>`;
-            });
-        });
+        applyFilters();
     };
 
-    // Initial Load
-    filterCat('All', document.querySelector('.filter-btn'));
+    window.applyFilters = () => {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const grid = document.getElementById('catalog-grid');
+        
+        const filtered = allProducts.filter(p => {
+            const matchesCat = (currentCategory === "All" || p.category === currentCategory);
+            const matchesSearch = p.name.toLowerCase().includes(term);
+            return matchesCat && matchesSearch;
+        });
+
+        grid.innerHTML = filtered.length ? "" : "<p style='grid-column:1/-1; text-align:center;'>No items found.</p>";
+        filtered.forEach(item => {
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${item.imgUrl}" alt="${item.name}">
+                    <div class="card-body">
+                        <h3>${item.name}</h3>
+                        <div class="price">₱${item.price}</div>
+                        <a href="https://m.me/YourPageID" class="btn">Inquire Now</a>
+                    </div>
+                </div>`;
+        });
+    };
 </script>
 </body>
 </html>
