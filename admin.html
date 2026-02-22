@@ -24,7 +24,8 @@
 
         /* Panels */
         .panel { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f1f1; margin-bottom: 30px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; background: #fcfcfc; font-family: inherit; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; background: #fcfcfc; font-family: inherit; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 80px; }
         button { width: 100%; padding: 14px; background: var(--dark-pink); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
         
         /* Owner Protection Styling */
@@ -77,6 +78,7 @@
                     <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
                     <input type="number" id="pPrice" placeholder="Price (Leave empty for 'Contact Us')" oninput="updateLiveView()">
                     <input type="text" id="pMoq" placeholder="Minimum Quantity (e.g. 12pcs)" oninput="updateLiveView()">
+                    <textarea id="pDesc" placeholder="Product Description (Optional)" oninput="updateLiveView()"></textarea>
                     <select id="pCat"></select>
                     <select id="pStatus" onchange="updateLiveView()"><option value="Available">Available</option><option value="Sold Out">Sold Out</option></select>
                     <input type="text" id="pImg" placeholder="Image URL (Leave empty for Logo)" oninput="updateLiveView()">
@@ -92,7 +94,8 @@
                 <div style="padding: 25px; text-align: center;">
                     <h3 id="pre-name" style="font-family:'Playfair Display'; margin:0;">Product Name</h3>
                     <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">Contact us for price</div>
-                    <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
+                    <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:5px;"></div>
+                    <div id="pre-desc" style="font-size:0.85rem; color:#666; margin-bottom:15px; line-height: 1.4;"></div>
                     <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Inquire Now</div>
                 </div>
             </div>
@@ -188,7 +191,6 @@
         }
 
         if(valid) {
-            // Log Admin Login
             await addDoc(collection(db, "security_logs"), {
                 timestamp: new Date().toLocaleString(),
                 action: `Authorized Login: ${role}`
@@ -204,7 +206,6 @@
         const passDoc = await getDoc(doc(db, "config", "security"));
         const ownerPass = passDoc.exists() ? passDoc.data().owner : "master789";
         if(document.getElementById('ownerPassInput').value === ownerPass) {
-            // Log Master Unlock
             await addDoc(collection(db, "security_logs"), {
                 timestamp: new Date().toLocaleString(),
                 action: "Master Settings Unlocked"
@@ -297,11 +298,13 @@
         const name = document.getElementById('pName').value || "Product Name";
         const price = document.getElementById('pPrice').value;
         const moq = document.getElementById('pMoq').value;
+        const desc = document.getElementById('pDesc').value;
         const img = document.getElementById('pImg').value || "IMG_1218.jpeg";
 
         document.getElementById('pre-name').innerText = name;
         document.getElementById('pre-price').innerText = (price && price > 0) ? "₱" + price : "Contact us for price";
         document.getElementById('pre-moq').innerText = moq ? "Minimum Order: " + moq : "";
+        document.getElementById('pre-desc').innerText = desc || "";
         document.getElementById('pre-img').src = img;
         document.getElementById('pre-btn').innerText = (price && price > 0) ? "Order Now" : "Inquire Now";
     };
@@ -311,6 +314,7 @@
             name: document.getElementById('pName').value,
             price: document.getElementById('pPrice').value || 0,
             moq: document.getElementById('pMoq').value || "",
+            description: document.getElementById('pDesc').value || "",
             category: document.getElementById('pCat').value,
             status: document.getElementById('pStatus').value,
             imgUrl: document.getElementById('pImg').value || ""
@@ -327,6 +331,7 @@
         document.getElementById('pName').value = item.name;
         document.getElementById('pPrice').value = item.price || "";
         document.getElementById('pMoq').value = item.moq || "";
+        document.getElementById('pDesc').value = item.description || "";
         document.getElementById('pCat').value = item.category;
         document.getElementById('pStatus').value = item.status;
         document.getElementById('pImg').value = item.imgUrl || "";
