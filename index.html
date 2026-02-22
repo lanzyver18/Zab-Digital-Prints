@@ -6,7 +6,7 @@
     <title>Zab Digital Prints | Custom Souvenirs</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; }
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; overflow-x: hidden; }
         
@@ -27,8 +27,8 @@
 
         /* Split Hero Section */
         .hero { 
-            background-color: white;
-            min-height: 80vh; 
+            background-color: var(--white);
+            min-height: 85vh; 
             display: flex; 
             align-items: center; 
             padding: 0 8%;
@@ -58,41 +58,64 @@
         }
         .hero-img-card img { width: 100%; height: 100%; object-fit: cover; }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+
+        /* Trust Bar */
+        .trust-bar {
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 40px 5%;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
+        .trust-item b { display: block; color: var(--dark-pink); font-size: 1.1rem; }
+        .trust-item span { font-size: 0.9rem; color: #888; }
+
+        /* How it Works */
+        .how-section { padding: 80px 5%; text-align: center; background: var(--bg); }
+        .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-top: 50px; }
+        .step { padding: 20px; }
+        .step-num { font-family: 'Playfair Display'; font-size: 3rem; color: var(--pink); opacity: 0.5; margin-bottom: -20px; display: block; }
+        .step h3 { color: var(--dark-pink); margin-top: 10px; }
 
         /* Controls & Filter */
-        .controls { background: white; padding: 40px 5%; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid #f0f0f0; }
-        .search-box { padding: 15px 30px; width: 100%; max-width: 700px; border: 2px solid var(--pink); border-radius: 50px; outline: none; transition: 0.3s; font-size: 1rem; }
-        .filter-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 25px; }
-        .filter-btn { background: white; border: 2px solid var(--pink); color: var(--dark-pink); padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .filter-btn.active, .filter-btn:hover { background: var(--pink); color: white; }
+        .controls { background: var(--white); padding: 60px 5% 40px 5%; display: flex; flex-direction: column; align-items: center; }
+        .search-box { padding: 18px 35px; width: 100%; max-width: 700px; border: 2px solid var(--pink); border-radius: 50px; outline: none; transition: 0.3s; font-size: 1rem; box-shadow: 0 5px 20px rgba(255, 183, 197, 0.1); }
+        .search-box:focus { border-color: var(--dark-pink); box-shadow: 0 5px 25px rgba(212, 129, 146, 0.2); }
+        .filter-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+        .filter-btn { background: var(--white); border: 2px solid var(--pink); color: var(--dark-pink); padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .filter-btn.active, .filter-btn:hover { background: var(--pink); color: var(--white); transform: translateY(-3px); }
 
         /* Grid */
-        .catalog-section { padding: 60px 5%; }
+        .catalog-section { padding: 40px 5% 100px 5%; background: var(--white); }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 35px; }
-        .card { background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; }
+        .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(212, 129, 146, 0.1); }
         .card img { width: 100%; height: 350px; object-fit: cover; }
         
-        .badge { position: absolute; top: 20px; left: 20px; padding: 6px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; color: white; text-transform: uppercase; }
+        .badge { position: absolute; top: 20px; left: 20px; padding: 6px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; color: var(--white); text-transform: uppercase; z-index: 10; }
         .badge-available { background: #8ecae6; }
         .badge-soldout { background: #e07a5f; }
 
         .card-body { padding: 25px; text-align: center; }
         .price { color: var(--dark-pink); font-size: 1.6rem; font-weight: 600; margin: 15px 0; }
-        .btn { background: var(--pink); color: white; padding: 14px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; }
+        .btn { background: var(--pink); color: var(--white); padding: 14px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; }
         .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
 
-        .messenger-fab { position: fixed; bottom: 30px; right: 30px; background: #0084ff; color: white; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,132,255,0.3); z-index: 2000; }
+        .messenger-fab { position: fixed; bottom: 30px; right: 30px; background: #0084ff; color: var(--white); width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,132,255,0.3); z-index: 2000; transition: 0.3s; }
+        .messenger-fab:hover { transform: scale(1.1); }
+
+        footer { background: var(--dark-pink); color: var(--white); padding: 60px 5%; text-align: center; }
 
         @media (max-width: 900px) {
             .hero { flex-direction: column-reverse; padding: 60px 5%; text-align: center; }
             .hero-content { text-align: center; }
             .hero-content p { margin: 20px auto; }
             .hero-img-card { height: 400px; border-radius: 150px 150px 30px 30px; }
+            .trust-bar { flex-direction: column; }
         }
     </style>
 </head>
@@ -118,7 +141,22 @@
     </div>
 </header>
 
-<div class="controls">
+<div class="trust-bar">
+    <div class="trust-item"><b>Nationwide Shipping</b><span>Delivering across the Philippines</span></div>
+    <div class="trust-item"><b>Premium Quality</b><span>Vibrant & long-lasting prints</span></div>
+    <div class="trust-item"><b>Custom Layouts</b><span>Personalized for your events</span></div>
+</div>
+
+<section class="how-section">
+    <h2 style="font-family:'Playfair Display'; font-size: 2.5rem; color: var(--dark-pink);">How to Order</h2>
+    <div class="how-grid">
+        <div class="step"><span class="step-num">01</span><h3>Browse</h3><p>Choose your favorite item from our catalog.</p></div>
+        <div class="step"><span class="step-num">02</span><h3>Customize</h3><p>Send us your photos or details via Messenger.</p></div>
+        <div class="step"><span class="step-num">03</span><h3>Receive</h3><p>We print, pack, and ship it to your doorstep!</p></div>
+    </div>
+</section>
+
+<div class="controls" id="catalog">
     <input type="text" id="searchInput" class="search-box" placeholder="Search for your next favorite souvenir..." oninput="applyFilters()">
     <div class="filter-bar">
         <button class="filter-btn active" onclick="setCategory('All', this)">All Items</button>
@@ -128,11 +166,17 @@
     </div>
 </div>
 
-<main class="catalog-section" id="catalog">
+<main class="catalog-section">
     <div id="catalog-grid" class="grid">Loading our collection...</div>
 </main>
 
-<a href="https://m.me/YourPageID" class="messenger-fab">
+<footer>
+    <h2 style="font-family:'Playfair Display';">Zab Digital Prints</h2>
+    <p>Calamba, Laguna • Customized with Love</p>
+    <div style="margin-top: 20px; font-size: 0.8rem; opacity: 0.8;">&copy; 2026 All Rights Reserved</div>
+</footer>
+
+<a href="https://m.me/YourPageID" class="messenger-fab" title="Chat with us">
     <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
 </a>
 
