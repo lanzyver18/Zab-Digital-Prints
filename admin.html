@@ -121,7 +121,8 @@
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
 
                 <div style="margin-top: 20px;">
-                    <h4>Security History Log</h4>
+                    <h4>Security & Login History</h4>
+                    <p style="font-size: 0.8rem; color: #666;">View all recent authorized entries (Admin & Master).</p>
                     <table class="log-table">
                         <thead><tr><th>Time</th><th>Action</th></tr></thead>
                         <tbody id="security-logs"></tbody>
@@ -170,15 +171,29 @@
     let editID = null;
     let localItems = [];
 
+    // --- SECURITY & LOGGING ---
     window.login = async () => {
         const pass = document.getElementById('entryPass').value;
         const staffSnap = await getDocs(collection(db, "admin_passwords"));
         let valid = false;
+        let role = "Staff Admin";
+
         staffSnap.forEach(d => { if(d.id === pass) valid = true; });
+        
         const ownerSnap = await getDoc(doc(db, "config", "security"));
-        if(pass === (ownerSnap.data()?.owner || "master789")) valid = true;
+        const ownerPass = ownerSnap.data()?.owner || "master789";
+        if(pass === ownerPass) {
+            valid = true;
+            role = "Owner Admin";
+        }
 
         if(valid) {
+            // Log Admin Login
+            await addDoc(collection(db, "security_logs"), {
+                timestamp: new Date().toLocaleString(),
+                action: `Authorized Login: ${role}`
+            });
+            
             sessionStorage.setItem("zabAuth", "true");
             document.getElementById('login-gate').style.display = "none";
             initApp();
@@ -189,10 +204,10 @@
         const passDoc = await getDoc(doc(db, "config", "security"));
         const ownerPass = passDoc.exists() ? passDoc.data().owner : "master789";
         if(document.getElementById('ownerPassInput').value === ownerPass) {
-            // Log Access
+            // Log Master Unlock
             await addDoc(collection(db, "security_logs"), {
                 timestamp: new Date().toLocaleString(),
-                action: "Master Unlock Authorized"
+                action: "Master Settings Unlocked"
             });
             document.getElementById('ownerGate').style.display = "none";
             document.getElementById('protectedSettings').style.display = "block";
@@ -202,12 +217,13 @@
     };
 
     function loadLogs() {
-        onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(5)), (snap) => {
+        onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(10)), (snap) => {
             const l = document.getElementById('security-logs'); l.innerHTML = "";
             snap.forEach(d => { l.innerHTML += `<tr><td>${d.data().timestamp}</td><td>${d.data().action}</td></tr>`; });
         });
     }
 
+    // --- STAFF MANAGEMENT ---
     window.addAdminPass = async () => {
         const pass = document.getElementById('newAdminPassInput').value.trim();
         if(pass) await setDoc(doc(db, "admin_passwords", pass), {});
@@ -235,6 +251,7 @@
         logout();
     };
 
+    // --- INVENTORY LOGIC ---
     function initApp() {
         onSnapshot(collection(db, "categories"), (snap) => {
             const catList = document.getElementById('category-list');
