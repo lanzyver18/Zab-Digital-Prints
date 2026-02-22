@@ -81,34 +81,56 @@
         .step-num { font-family: 'Playfair Display'; font-size: 3rem; color: var(--pink); opacity: 0.5; margin-bottom: -20px; display: block; }
         .step h3 { color: var(--dark-pink); margin-top: 10px; }
 
-        /* Controls & Filter */
-        .controls { background: var(--white); padding: 60px 5% 40px 5%; display: flex; flex-direction: column; align-items: center; }
+        /* Controls & Filter Slider */
+        .controls { background: var(--white); padding: 60px 5% 40px 5%; display: flex; flex-direction: column; align-items: center; width: 100%; box-sizing: border-box;}
         .search-box { padding: 18px 35px; width: 100%; max-width: 700px; border: 2px solid var(--pink); border-radius: 50px; outline: none; transition: 0.3s; font-size: 1rem; box-shadow: 0 5px 20px rgba(255, 183, 197, 0.1); }
         .search-box:focus { border-color: var(--dark-pink); box-shadow: 0 5px 25px rgba(212, 129, 146, 0.2); }
-        #dynamic-filter-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
-        .filter-btn { background: var(--white); border: 2px solid var(--pink); color: var(--dark-pink); padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; text-transform: capitalize; }
+        
+        /* Updated Dynamic Filter Bar for Swiping */
+        #dynamic-filter-bar { 
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-top: 30px; 
+            max-width: 100%;
+            padding: 5px;
+        }
+
+        .filter-btn { 
+            background: var(--white); 
+            border: 2px solid var(--pink); 
+            color: var(--dark-pink); 
+            padding: 10px 25px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: 0.3s; 
+            text-transform: capitalize; 
+            white-space: nowrap; /* Keeps text on one line */
+        }
         .filter-btn.active, .filter-btn:hover { background: var(--pink); color: var(--white); transform: translateY(-3px); }
 
-        /* Grid */
+        /* Grid - DESKTOP */
         .catalog-section { padding: 40px 5% 40px 5%; background: var(--white); display: flex; flex-direction: column; align-items: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 35px; width: 100%; }
-        .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; width: 100%; }
+        .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; cursor: pointer; animation: fadeIn 0.6s ease forwards; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(212, 129, 146, 0.1); }
-        .card img { width: 100%; height: 350px; object-fit: cover; background: #fafafa; }
+        .card img { width: 100%; height: 320px; object-fit: cover; background: #fafafa; }
         
-        .badge { position: absolute; top: 20px; left: 20px; padding: 6px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; color: var(--white); text-transform: uppercase; z-index: 10; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .badge { position: absolute; top: 15px; left: 15px; padding: 4px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; color: var(--white); text-transform: uppercase; z-index: 10; }
         .badge-available { background: #8ecae6; }
         .badge-soldout { background: #e07a5f; }
 
-        .card-body { padding: 25px; text-align: center; }
-        .price { color: var(--dark-pink); font-size: 1.4rem; font-weight: 600; margin: 15px 0; }
-        .btn { background: var(--pink); color: var(--white); padding: 14px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; }
+        .card-body { padding: 20px; text-align: center; }
+        .price { color: var(--dark-pink); font-size: 1.3rem; font-weight: 600; margin: 10px 0; }
+        .btn { background: var(--pink); color: var(--white); padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; font-size: 0.9rem; }
         .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
 
         /* Load More Button */
         .load-more-container { margin-top: 50px; text-align: center; }
         .btn-outline { background: transparent; border: 2px solid var(--pink); color: var(--dark-pink); }
-        .btn-outline:hover { background: var(--pink); color: white; }
 
         /* Description Modal */
         #productModal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2001; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -119,32 +141,60 @@
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* Professional Footer Styles */
-        footer { background: white; color: var(--text); padding: 80px 5% 30px 5%; border-top: 1px solid #f0f0f0; }
+        footer { background: white; color: var(--text); padding: 60px 5% 30px 5%; border-top: 1px solid #f0f0f0; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 50px; }
-        .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 1.3rem; margin-bottom: 25px; }
-        .footer-col p { font-size: 0.9rem; line-height: 1.8; color: #777; margin: 0; }
+        .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 1.2rem; margin-bottom: 20px; }
+        .footer-col p { font-size: 0.85rem; line-height: 1.8; color: #777; margin: 0; }
         .footer-links { list-style: none; padding: 0; margin: 0; }
-        .footer-links li { margin-bottom: 12px; }
-        .footer-links a { text-decoration: none; color: #777; font-size: 0.9rem; transition: 0.3s; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { text-decoration: none; color: #777; font-size: 0.85rem; transition: 0.3s; }
         .footer-links a:hover { color: var(--dark-pink); padding-left: 5px; }
         .social-links { display: flex; gap: 15px; margin-top: 20px; }
-        .social-icon { width: 35px; height: 35px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; color: var(--dark-pink); text-decoration: none; }
-        .social-icon:hover { background: var(--pink); color: white; transform: translateY(-3px); }
+        .social-icon { width: 35px; height: 35px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; color: var(--dark-pink); text-decoration: none; font-size: 0.8rem; }
         .footer-bottom { border-top: 1px solid #f9f9f9; padding-top: 30px; text-align: center; }
-        .footer-bottom p { font-size: 0.8rem; color: #bbb; letter-spacing: 1px; }
+        .footer-bottom p { font-size: 0.75rem; color: #bbb; letter-spacing: 1px; }
 
-        #backToTop { position: fixed; bottom: 110px; right: 30px; background: var(--white); color: var(--dark-pink); width: 50px; height: 50px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid var(--pink); cursor: pointer; z-index: 1999; font-weight: bold; }
-        .messenger-fab { position: fixed; bottom: 30px; right: 30px; background: #0084ff; color: var(--white); width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,132,255,0.3); z-index: 2000; transition: 0.3s; }
+        #backToTop { position: fixed; bottom: 110px; right: 20px; background: var(--white); color: var(--dark-pink); width: 45px; height: 45px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid var(--pink); cursor: pointer; z-index: 1999; font-weight: bold; }
+        .messenger-fab { position: fixed; bottom: 30px; right: 20px; background: #0084ff; color: var(--white); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,132,255,0.3); z-index: 2000; transition: 0.3s; }
 
-        @media (max-width: 900px) {
-            .hero { flex-direction: column-reverse; padding: 60px 5%; text-align: center; }
-            .hero-img-card { height: 400px; border-radius: 150px 150px 30px 30px; }
-            .trust-bar { flex-direction: column; }
-            .modal-content { flex-direction: column; max-height: 90vh; }
-            .modal-img { width: 100%; height: 250px; }
-            .modal-info { width: 100%; padding: 25px; }
+        /* MOBILE ADJUSTMENTS */
+        @media (max-width: 600px) {
+            .hero { flex-direction: column-reverse; padding: 40px 5%; text-align: center; gap: 30px; }
+            .hero-content h1 { font-size: 2rem; }
+            .hero-img-card { height: 320px; border-radius: 120px 120px 20px 20px; }
+            
+            /* CATEGORY SLIDER LOGIC */
+            #dynamic-filter-bar { 
+                justify-content: flex-start; /* Aligns to left for swiping */
+                overflow-x: auto; /* Enables horizontal scroll */
+                padding: 10px 5%;
+                width: 100vw;
+                -webkit-overflow-scrolling: touch; /* Smooth swiping on iOS */
+            }
+            #dynamic-filter-bar::-webkit-scrollbar { display: none; } /* Hides scrollbar for clean look */
+            .filter-btn { padding: 8px 20px; font-size: 0.85rem; }
+
+            /* SHOW 2 ITEMS PER LINE */
+            .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .card { border-radius: 15px; }
+            .card img { height: 180px; }
+            .card-body { padding: 12px; }
+            .card-body h3 { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .price { font-size: 1rem; margin: 5px 0; }
+            .btn { padding: 8px 15px; font-size: 0.75rem; width: 100%; border-radius: 10px; }
+            .badge { top: 10px; left: 10px; font-size: 0.55rem; padding: 3px 8px; }
+
             .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
             .social-links { justify-content: center; }
+            .modal-content { flex-direction: column; border-radius: 20px; }
+            .modal-img { width: 100%; height: 200px; min-height: auto; }
+            .modal-info { width: 100%; padding: 20px; }
+        }
+
+        @media (max-width: 900px) and (min-width: 601px) {
+            .hero { flex-direction: column-reverse; padding: 60px 5%; text-align: center; }
+            .trust-bar { flex-direction: column; }
+            .grid { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -167,13 +217,13 @@
 </header>
 
 <div class="trust-bar">
-    <div class="trust-item"><b>Nationwide Shipping</b><span>Delivering across the Philippines</span></div>
-    <div class="trust-item"><b>Premium Quality</b><span>Vibrant & long-lasting prints</span></div>
-    <div class="trust-item"><b>Custom Layouts</b><span>Personalized for your events</span></div>
+    <div class="trust-item"><b>Nationwide Shipping</b><span>Across the Philippines</span></div>
+    <div class="trust-item"><b>Premium Quality</b><span>Vibrant & long-lasting</span></div>
+    <div class="trust-item"><b>Custom Layouts</b><span>Personalized for you</span></div>
 </div>
 
 <section class="how-section">
-    <h2 style="font-family:'Playfair Display'; font-size: 2.5rem; color: var(--dark-pink);">How to Order</h2>
+    <h2 style="font-family:'Playfair Display'; font-size: 2.2rem; color: var(--dark-pink);">How to Order</h2>
     <div class="how-grid">
         <div class="step"><span class="step-num">01</span><h3>Browse</h3><p>Choose your favorite item from our catalog.</p></div>
         <div class="step"><span class="step-num">02</span><h3>Customize</h3><p>Send us your photos or details via Messenger.</p></div>
@@ -182,13 +232,12 @@
 </section>
 
 <div class="controls" id="catalog">
-    <input type="text" id="searchInput" class="search-box" placeholder="Search for your next favorite souvenir..." oninput="applyFilters()">
+    <input type="text" id="searchInput" class="search-box" placeholder="Search for souvenirs..." oninput="applyFilters()">
     <div id="dynamic-filter-bar"></div>
 </div>
 
 <main class="catalog-section">
-    <div id="catalog-grid" class="grid">Loading our collection...</div>
-    
+    <div id="catalog-grid" class="grid">Loading collection...</div>
     <div id="loadMoreContainer" class="load-more-container" style="display: none;">
         <button class="btn btn-outline" onclick="expandShop()">View All Products</button>
     </div>
@@ -213,20 +262,18 @@
 <footer>
     <div class="footer-grid">
         <div class="footer-col">
-            <img src="IMG_1218.jpeg" alt="Zab Logo" style="height: 50px; margin-bottom: 20px;">
-            <p>Zab Digital Prints specialize in creating high-quality, customized souvenirs that keep your most precious memories within view.</p>
+            <img src="IMG_1218.jpeg" alt="Zab Logo" style="height: 40px; margin-bottom: 20px;">
+            <p>Zab Digital Prints creates high-quality customized souvenirs that keep your precious memories within view.</p>
             <div class="social-links">
                 <a href="https://www.facebook.com/zabprintsdigital" class="social-icon" target="_blank">FB</a>
                 <a href="#" class="social-icon">IG</a>
-                <a href="#" class="social-icon">TT</a>
             </div>
         </div>
         <div class="footer-col">
             <h4>Shop</h4>
             <ul class="footer-links">
-                <li><a href="#catalog">Our Collection</a></li>
+                <li><a href="#catalog" onclick="setCategory('All', document.getElementById('btn-all'))">All Items</a></li>
                 <li><a href="#catalog">Custom Mugs</a></li>
-                <li><a href="#catalog">Keychains</a></li>
                 <li><a href="#catalog">Special Offers</a></li>
             </ul>
         </div>
@@ -234,24 +281,19 @@
             <h4>Support</h4>
             <ul class="footer-links">
                 <li><a href="https://www.facebook.com/messages/t/zabprintsdigital" target="_blank">Contact Us</a></li>
-                <li><a href="#">Shipping Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
                 <li><a href="#">FAQ</a></li>
             </ul>
         </div>
         <div class="footer-col">
             <h4>Location</h4>
             <p>Calamba, Laguna<br>Philippines</p>
-            <p style="margin-top: 15px;">Mon - Sat: 9am - 6pm<br>Sun: Closed</p>
         </div>
     </div>
-    <div class="footer-bottom">
-        <p>&copy; 2026 ZAB DIGITAL PRINTS. ALL RIGHTS RESERVED.</p>
-    </div>
+    <div class="footer-bottom"><p>&copy; 2026 ZAB DIGITAL PRINTS. ALL RIGHTS RESERVED.</p></div>
 </footer>
 
-<a href="https://www.facebook.com/messages/t/zabprintsdigital" class="messenger-fab" target="_blank" title="Chat with us">
-    <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
+<a href="https://www.facebook.com/messages/t/zabprintsdigital" class="messenger-fab" target="_blank">
+    <svg width="25" height="25" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
 </a>
 
 <script type="module">
@@ -278,11 +320,10 @@
         filterBar.innerHTML = `<button class="filter-btn active" id="btn-all">All Items</button>`;
         document.getElementById('btn-all').onclick = function() { setCategory('All', this); };
         snap.forEach(d => {
-            const catName = d.id;
             const btn = document.createElement('button');
             btn.className = `filter-btn`;
-            btn.innerText = catName;
-            btn.onclick = function() { setCategory(catName, this); };
+            btn.innerText = d.id;
+            btn.onclick = function() { setCategory(d.id, this); };
             filterBar.appendChild(btn);
         });
     });
@@ -296,39 +337,25 @@
     window.setCategory = (cat, btn) => {
         currentCategory = cat;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        if (btn) btn.classList.add('active');
         applyFilters();
     };
 
-    window.expandShop = () => {
-        isExpanded = true;
-        applyFilters();
-    };
+    window.expandShop = () => { isExpanded = true; applyFilters(); };
 
     window.applyFilters = () => {
         const term = document.getElementById('searchInput').value.toLowerCase();
         const grid = document.getElementById('catalog-grid');
         const loadMoreBtn = document.getElementById('loadMoreContainer');
-        
         let filtered = allProducts.filter(p => (currentCategory === "All" || p.category === currentCategory) && p.name.toLowerCase().includes(term));
-
-        // Logic: If not expanded and no search/category filter active, limit to 9
         const shouldLimit = !isExpanded && currentCategory === "All" && term === "";
-        
-        if (shouldLimit && filtered.length > 9) {
-            loadMoreBtn.style.display = "block";
-            filtered = filtered.slice(0, 9);
-        } else {
-            loadMoreBtn.style.display = "none";
-        }
+        if (shouldLimit && filtered.length > 9) { loadMoreBtn.style.display = "block"; filtered = filtered.slice(0, 9); } else { loadMoreBtn.style.display = "none"; }
 
-        grid.innerHTML = filtered.length ? "" : "<p style='text-align:center; width:100%; grid-column: 1/-1;'>No treasures found here yet.</p>";
-        
+        grid.innerHTML = filtered.length ? "" : "<p style='text-align:center; width:100%; grid-column: 1/-1;'>No items found.</p>";
         filtered.forEach(item => {
             const isSoldOut = item.status === "Sold Out";
-            const displayPrice = (item.price && item.price > 0) ? `₱${item.price}` : "Contact us for price";
+            const displayPrice = (item.price && item.price > 0) ? `₱${item.price}` : "Inquire";
             const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : "IMG_1218.jpeg";
-
             const card = document.createElement('div');
             card.className = "card";
             card.onclick = () => showModal(item);
@@ -336,11 +363,9 @@
                 <div class="badge ${isSoldOut ? 'badge-soldout' : 'badge-available'}">${item.status || 'Available'}</div>
                 <img src="${displayImg}" alt="${item.name}">
                 <div class="card-body">
-                    <h3 style="margin:0; font-family:'Playfair Display'">${item.name}</h3>
+                    <h3>${item.name}</h3>
                     <div class="price">${displayPrice}</div>
-                    <button class="btn" ${isSoldOut ? 'disabled style="background:#ccc; cursor:not-allowed"' : ''}>
-                        ${isSoldOut ? 'Sold Out' : (item.price > 0 ? 'Order Now' : 'Inquire Now')}
-                    </button>
+                    <button class="btn" ${isSoldOut ? 'disabled style="background:#ccc"' : ''}>${isSoldOut ? 'Sold Out' : 'Order Now'}</button>
                 </div>`;
             grid.appendChild(card);
         });
@@ -348,41 +373,21 @@
 
     window.showModal = (item) => {
         const modal = document.getElementById('productModal');
-        const orderMsg = (item.price && item.price > 0) 
-            ? `Hi Zab Digital Prints! I would like to order: ${item.name} (₱${item.price})` 
-            : `Hi Zab! I'm interested in the ${item.name}. Could I get a price quote?`;
-        
+        const orderMsg = (item.price && item.price > 0) ? `Hi Zab Digital Prints! I would like to order: ${item.name}` : `Hi Zab! Price quote for ${item.name}?`;
         document.getElementById('m-img').src = (item.imgUrl && item.imgUrl.trim() !== "") ? item.imgUrl : "IMG_1218.jpeg";
         document.getElementById('m-name').innerText = item.name;
-        document.getElementById('m-moq').innerText = item.moq ? "Minimum Order Quantity: " + item.moq : "";
-        document.getElementById('m-price').innerText = (item.price && item.price > 0) ? `₱${item.price}` : "Contact us for price";
-        document.getElementById('m-desc').innerText = item.description || "No description provided.";
-        
+        document.getElementById('m-moq').innerText = item.moq ? "MOQ: " + item.moq : "";
+        document.getElementById('m-price').innerText = (item.price && item.price > 0) ? `₱${item.price}` : "Contact for price";
+        document.getElementById('m-desc').innerText = item.description || "";
         const link = document.getElementById('m-link');
-        if (item.status === "Sold Out") {
-            link.innerText = "Sold Out";
-            link.style.background = "#ccc";
-            link.href = "#";
-        } else {
-            link.innerText = item.price > 0 ? "Order via Messenger" : "Inquire via Messenger";
-            link.style.background = "";
-            link.href = `https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(orderMsg)}`;
-        }
-
+        link.href = `https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(orderMsg)}`;
         modal.style.display = "flex";
-        document.body.style.overflow = "hidden"; // Disable scroll
+        document.body.style.overflow = "hidden";
     };
 
-    window.closeModal = (e) => {
-        document.getElementById('productModal').style.display = "none";
-        document.body.style.overflow = "auto"; // Re-enable scroll
-    };
-
-    window.onscroll = function() {
-        const btn = document.getElementById("backToTop");
-        if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) { btn.style.display = "flex"; } else { btn.style.display = "none"; }
-    };
+    window.closeModal = () => { document.getElementById('productModal').style.display = "none"; document.body.style.overflow = "auto"; };
     window.scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    window.onscroll = function() { const b = document.getElementById("backToTop"); b.style.display = (window.scrollY > 500) ? "flex" : "none"; };
 </script>
 </body>
 </html>
