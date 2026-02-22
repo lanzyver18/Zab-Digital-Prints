@@ -90,8 +90,8 @@
         .filter-btn.active, .filter-btn:hover { background: var(--pink); color: var(--white); transform: translateY(-3px); }
 
         /* Grid */
-        .catalog-section { padding: 40px 5% 100px 5%; background: var(--white); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 35px; }
+        .catalog-section { padding: 40px 5% 40px 5%; background: var(--white); display: flex; flex-direction: column; align-items: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 35px; width: 100%; }
         .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; cursor: pointer; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(212, 129, 146, 0.1); }
         .card img { width: 100%; height: 350px; object-fit: cover; background: #fafafa; }
@@ -104,6 +104,11 @@
         .price { color: var(--dark-pink); font-size: 1.4rem; font-weight: 600; margin: 15px 0; }
         .btn { background: var(--pink); color: var(--white); padding: 14px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; }
         .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
+
+        /* Load More Button */
+        .load-more-container { margin-top: 50px; text-align: center; }
+        .btn-outline { background: transparent; border: 2px solid var(--pink); color: var(--dark-pink); }
+        .btn-outline:hover { background: var(--pink); color: white; }
 
         /* Description Modal */
         #productModal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2001; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -183,6 +188,10 @@
 
 <main class="catalog-section">
     <div id="catalog-grid" class="grid">Loading our collection...</div>
+    
+    <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+        <button class="btn btn-outline" onclick="expandShop()">View All Products</button>
+    </div>
 </main>
 
 <div id="productModal" onclick="closeModal(event)">
@@ -262,6 +271,7 @@
     const db = getFirestore(app);
     let allProducts = [];
     let currentCategory = "All";
+    let isExpanded = false;
 
     onSnapshot(collection(db, "categories"), (snap) => {
         const filterBar = document.getElementById('dynamic-filter-bar');
@@ -290,12 +300,30 @@
         applyFilters();
     };
 
+    window.expandShop = () => {
+        isExpanded = true;
+        applyFilters();
+    };
+
     window.applyFilters = () => {
         const term = document.getElementById('searchInput').value.toLowerCase();
         const grid = document.getElementById('catalog-grid');
-        const filtered = allProducts.filter(p => (currentCategory === "All" || p.category === currentCategory) && p.name.toLowerCase().includes(term));
+        const loadMoreBtn = document.getElementById('loadMoreContainer');
+        
+        let filtered = allProducts.filter(p => (currentCategory === "All" || p.category === currentCategory) && p.name.toLowerCase().includes(term));
+
+        // Logic: If not expanded and no search/category filter active, limit to 9
+        const shouldLimit = !isExpanded && currentCategory === "All" && term === "";
+        
+        if (shouldLimit && filtered.length > 9) {
+            loadMoreBtn.style.display = "block";
+            filtered = filtered.slice(0, 9);
+        } else {
+            loadMoreBtn.style.display = "none";
+        }
 
         grid.innerHTML = filtered.length ? "" : "<p style='text-align:center; width:100%; grid-column: 1/-1;'>No treasures found here yet.</p>";
+        
         filtered.forEach(item => {
             const isSoldOut = item.status === "Sold Out";
             const displayPrice = (item.price && item.price > 0) ? `₱${item.price}` : "Contact us for price";
