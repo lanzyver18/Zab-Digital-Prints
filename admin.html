@@ -85,10 +85,11 @@
                     <button id="saveBtn">Save Product</button>
                 </div>
                 <div class="panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="margin: 0;">Inventory List</h3>
-                        <div style="width: 180px;">
-                            <select id="inventoryFilter" onchange="filterInventoryList()" style="margin: 0; padding: 8px;">
+                    <h3 style="margin: 0 0 15px 0;">Inventory Management</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="inventorySearch" placeholder="Search by name..." oninput="filterInventoryList()" style="margin:0;">
+                        <div style="width: 250px;">
+                            <select id="inventoryFilter" onchange="filterInventoryList()" style="margin: 0; padding: 11px;">
                                 <option value="All">All Categories</option>
                             </select>
                         </div>
@@ -284,12 +285,16 @@
     }
 
     window.filterInventoryList = () => {
-        const filterVal = document.getElementById('inventoryFilter').value;
+        const categoryVal = document.getElementById('inventoryFilter').value;
+        const searchVal = document.getElementById('inventorySearch').value.toLowerCase();
         const list = document.getElementById('admin-list');
         list.innerHTML = "";
         
         localItems.forEach(item => {
-            if (filterVal === "All" || item.category === filterVal) {
+            const matchesCategory = (categoryVal === "All" || item.category === categoryVal);
+            const matchesSearch = item.name.toLowerCase().includes(searchVal);
+
+            if (matchesCategory && matchesSearch) {
                 const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : 'IMG_1218.jpeg';
                 const displayPrice = item.price > 0 ? '₱'+item.price : 'Inquire';
                 
@@ -304,6 +309,10 @@
                     </div>`;
             }
         });
+
+        if(list.innerHTML === "") {
+            list.innerHTML = `<p style="text-align:center; color:#999; font-size:0.9rem; padding:20px;">No matching items found.</p>`;
+        }
     };
 
     window.deleteItem = async (id) => { if(confirm("Permanently delete item?")) await deleteDoc(doc(db, "products", id)); };
