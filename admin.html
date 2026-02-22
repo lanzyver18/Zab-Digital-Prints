@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | Zab Digital</title>
+    <style>
+        body { font-family: sans-serif; background: #fff5f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .box { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #d48192; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .product-item { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; font-size: 14px; }
+        .del-btn { background: #ff4d4d; width: auto; padding: 5px 10px; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+    <div class="box" id="loginBox">
+        <h3 style="text-align:center;">Admin Access</h3>
+        <input type="password" id="passInput" placeholder="Enter Admin Password">
+        <button id="loginBtn">Login</button>
+    </div>
+
+    <div class="box" id="adminBox" style="display:none;">
+        <h3>Add New Item</h3>
+        <input type="text" id="name" placeholder="Item Name">
+        <input type="number" id="price" placeholder="Price (PHP)">
+        <input type="text" id="imgUrl" placeholder="Image URL (from PostImages.org)">
+        <button id="saveBtn">Add to Shop</button>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+        <h3>Current Catalog</h3>
+        <div id="admin-list">Loading list...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
+            authDomain: "zab-digital-prints.firebaseapp.com",
+            projectId: "zab-digital-prints",
+            storageBucket: "zab-digital-prints.firebasestorage.app",
+            messagingSenderId: "1050157785592",
+            appId: "1:1050157785592:web:e6a3c8f10a9d28aa87b60d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Simple Login
+        window.checkPass = () => {
+            if(document.getElementById('passInput').value === "zab123") {
+                document.getElementById('loginBox').style.display = "none";
+                document.getElementById('adminBox').style.display = "block";
+                loadList();
+            } else { alert("Wrong password!"); }
+        };
+        document.getElementById('loginBtn').addEventListener('click', checkPass);
+
+        // Save Data
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            const name = document.getElementById('name').value;
+            const price = document.getElementById('price').value;
+            const imgUrl = document.getElementById('imgUrl').value;
+            
+            if(!name || !price || !imgUrl) return alert("Fill everything!");
+
+            await addDoc(collection(db, "products"), {
+                name, price, imgUrl, createdAt: Date.now()
+            });
+            
+            document.getElementById('name').value = "";
+            document.getElementById('price').value = "";
+            document.getElementById('imgUrl').value = "";
+            alert("Added!");
+        });
+
+        // Load and Delete
+        function loadList() {
+            const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('admin-list');
+                list.innerHTML = "";
+                snap.forEach(documentSnap => {
+                    const item = documentSnap.data();
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = "product-item";
+                    itemDiv.innerHTML = `<span>${item.name} - ₱${item.price}</span>`;
+                    
+                    const delBtn = document.createElement('button');
+                    delBtn.className = "del-btn";
+                    delBtn.innerText = "Delete";
+                    delBtn.onclick = async () => {
+                        if(confirm("Delete this item?")) {
+                            await deleteDoc(doc(db, "products", documentSnap.id));
+                        }
+                    };
+                    
+                    itemDiv.appendChild(delBtn);
+                    list.appendChild(itemDiv);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
