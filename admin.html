@@ -85,7 +85,14 @@
                     <button id="saveBtn">Save Product</button>
                 </div>
                 <div class="panel">
-                    <h3>Inventory List</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;">Inventory List</h3>
+                        <div style="width: 180px;">
+                            <select id="inventoryFilter" onchange="filterInventoryList()" style="margin: 0; padding: 8px;">
+                                <option value="All">All Categories</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="admin-list"></div>
                 </div>
             </div>
@@ -94,7 +101,7 @@
                 <div style="padding: 25px; text-align: center;">
                     <h3 id="pre-name" style="font-family:'Playfair Display'; margin:0;">Product Name</h3>
                     <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">Contact us for price</div>
-                    <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:5px;"></div>
+                    <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
                     <div id="pre-desc" style="font-size:0.85rem; color:#666; margin-bottom:15px; line-height: 1.4;"></div>
                     <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Inquire Now</div>
                 </div>
@@ -257,34 +264,47 @@
         onSnapshot(collection(db, "categories"), (snap) => {
             const catList = document.getElementById('category-list');
             const catSelect = document.getElementById('pCat');
-            catList.innerHTML = ""; catSelect.innerHTML = "";
+            const catFilter = document.getElementById('inventoryFilter');
+            catList.innerHTML = ""; catSelect.innerHTML = ""; 
+            catFilter.innerHTML = '<option value="All">All Categories</option>';
             snap.forEach(d => {
                 catList.innerHTML += `<div class="cat-tag">${d.id} <span style="margin-left:8px; cursor:pointer;" onclick="deleteCat('${d.id}')">×</span></div>`;
                 catSelect.innerHTML += `<option value="${d.id}">${d.id}</option>`;
+                catFilter.innerHTML += `<option value="${d.id}">${d.id}</option>`;
             });
         });
 
         onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
-            const list = document.getElementById('admin-list');
-            list.innerHTML = ""; localItems = [];
+            localItems = [];
             snap.forEach(d => {
-                const item = { id: d.id, ...d.data() };
-                localItems.push(item);
+                localItems.push({ id: d.id, ...d.data() });
+            });
+            filterInventoryList();
+        });
+    }
+
+    window.filterInventoryList = () => {
+        const filterVal = document.getElementById('inventoryFilter').value;
+        const list = document.getElementById('admin-list');
+        list.innerHTML = "";
+        
+        localItems.forEach(item => {
+            if (filterVal === "All" || item.category === filterVal) {
                 const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : 'IMG_1218.jpeg';
                 const displayPrice = item.price > 0 ? '₱'+item.price : 'Inquire';
                 
                 list.innerHTML += `
                     <div class="product-row">
                         <img src="${displayImg}" onerror="this.src='https://via.placeholder.com/50'">
-                        <div style="flex-grow:1"><b>${item.name}</b><br><small>${displayPrice}</small></div>
+                        <div style="flex-grow:1"><b>${item.name}</b><br><small>${displayPrice} | ${item.category}</small></div>
                         <div class="action-btns">
                             <button class="btn-small" onclick="startEdit('${item.id}')">Edit</button>
                             <button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button>
                         </div>
                     </div>`;
-            });
+            }
         });
-    }
+    };
 
     window.deleteItem = async (id) => { if(confirm("Permanently delete item?")) await deleteDoc(doc(db, "products", id)); };
     window.addCategory = async () => {
