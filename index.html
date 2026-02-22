@@ -176,7 +176,7 @@
     <div style="margin-top: 20px; font-size: 0.8rem; opacity: 0.8;">&copy; 2026 All Rights Reserved</div>
 </footer>
 
-<a href="https://m.me/YourPageID" class="messenger-fab" title="Chat with us">
+<a href="https://m.me/zabprintsdigital" class="messenger-fab" target="_blank" title="Chat with us">
     <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
 </a>
 
@@ -219,8 +219,10 @@
         grid.innerHTML = "";
         filtered.forEach(item => {
             const isSoldOut = item.status === "Sold Out";
-            const msg = encodeURIComponent(`Hi Zab! I'm interested in ordering: ${item.name}`);
-            const messengerUrl = `https://m.me/YourPageID?text=${msg}`;
+            
+            // Logic for pre-filled Messenger message
+            const orderMsg = encodeURIComponent(`Hi Zab Digital Prints! I would like to order: ${item.name} (₱${item.price})`);
+            const messengerUrl = `https://www.facebook.com/messages/t/zabprintsdigital?text=${orderMsg}`;
 
             grid.innerHTML += `
                 <div class="card">
@@ -229,8 +231,11 @@
                     <div class="card-body">
                         <h3 style="margin:0; font-family:'Playfair Display'">${item.name}</h3>
                         <div class="price">₱${item.price}</div>
-                        <a href="${isSoldOut ? '#' : messengerUrl}" class="btn" ${isSoldOut ? 'style="background:#ccc; cursor:not-allowed"' : ''}>
-                            ${isSoldOut ? 'Sold Out' : 'Order Now'}
+                        <a href="${isSoldOut ? '#' : messengerUrl}" 
+                           target="${isSoldOut ? '' : '_blank'}"
+                           class="btn" 
+                           ${isSoldOut ? 'style="background:#ccc; cursor:not-allowed"' : ''}>
+                            ${isSoldOut ? 'Sold Out' : 'Order via Messenger'}
                         </a>
                     </div>
                 </div>`;
