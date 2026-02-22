@@ -6,69 +6,91 @@
     <title>Admin Dashboard | Zab Digital</title>
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        .box { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; box-sizing: border-box; }
+        .admin-layout { 
+            display: flex; 
+            flex-direction: row; 
+            min-height: 100vh; 
+        }
+
+        /* Form Sidebar on Desktop, Top on Mobile */
+        .form-side { 
+            width: 400px; 
+            background: white; 
+            padding: 30px; 
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05); 
+            position: sticky; 
+            top: 0; 
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* Inventory Side stretches to fill browser */
+        .list-side { 
+            flex-grow: 1; 
+            padding: 40px; 
+        }
+
         input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--dark-pink); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { opacity: 0.9; }
+        button { width: 100%; padding: 12px; background: var(--dark-pink); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        .item-card { 
+            background: white; 
+            display: flex; 
+            align-items: center; 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .item-card img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; margin-right: 20px; }
         
-        /* Preview Area */
-        #preview-box { width: 100%; height: 180px; border: 2px dashed var(--pink); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fffafb; margin: 10px 0; }
-        #preview-img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        
-        /* Catalog List Styling */
-        .catalog-list { width: 100%; max-width: 600px; }
-        .item-row { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .thumb { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; background: #eee; flex-shrink: 0; }
-        .item-details { flex-grow: 1; }
-        .item-details h4 { margin: 0; font-size: 1rem; color: #333; }
-        .item-details p { margin: 2px 0; font-size: 0.85rem; color: #777; }
-        
-        .action-btns { display: flex; flex-direction: column; gap: 5px; }
-        .edit-btn { background: #5cb85c; padding: 5px 12px; font-size: 11px; margin: 0; }
-        .del-btn { background: #ff4d4d; padding: 5px 12px; font-size: 11px; margin: 0; }
-        .editing-mode { border: 3px solid #5cb85c !important; }
-        .logout-btn { background: #888; width: auto; padding: 5px 15px; font-size: 0.8rem; margin-top: 0; }
+        /* Mobile View Switch */
+        @media (max-width: 900px) {
+            .admin-layout { flex-direction: column; }
+            .form-side { width: 100%; height: auto; position: static; padding: 20px; box-sizing: border-box; }
+            .list-side { padding: 20px; }
+        }
+
+        #login-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 2000; 
+        }
     </style>
 </head>
 <body>
 
-    <div class="box" id="loginBox">
-        <h3 style="text-align:center; color:var(--dark-pink);">Admin Access</h3>
-        <input type="password" id="passCode" placeholder="Enter Password">
-        <button id="loginBtn">Unlock Dashboard</button>
+<div id="login-overlay">
+    <div style="background:white; padding:40px; border-radius:20px; width:300px; text-align:center;">
+        <h3>Zab Admin</h3>
+        <input type="password" id="passCode" placeholder="Password">
+        <button onclick="login()">Login</button>
     </div>
+</div>
 
-    <div id="dashboard" style="display:none; width: 100%; max-width: 600px;">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h2 style="color:var(--dark-pink); margin:0;">Zab Manager</h2>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
+<div class="admin-layout" id="mainDashboard" style="display:none;">
+    <aside class="form-side">
+        <h2 id="formTitle">Add Product</h2>
+        <input type="text" id="pName" placeholder="Name">
+        <input type="number" id="pPrice" placeholder="Price">
+        <select id="pCat">
+            <option value="Mugs">Mugs</option>
+            <option value="Keychains">Keychains</option>
+            <option value="Others">Others</option>
+        </select>
+        <input type="text" id="pImg" placeholder="Image URL" oninput="document.getElementById('prev').src=this.value; document.getElementById('prev').style.display='block'">
+        <img id="prev" style="width:100%; height:150px; object-fit:cover; display:none; border-radius:8px; margin: 10px 0;">
+        <button id="saveBtn" onclick="saveData()">Save Product</button>
+        <button onclick="location.reload()" style="background:#888; margin-top:10px;">Logout</button>
+    </aside>
 
-        <div class="box" id="formBox">
-            <h3 id="formTitle" style="margin-top:0;">Add New Product</h3>
-            <input type="text" id="pName" placeholder="Product Name">
-            <input type="number" id="pPrice" placeholder="Price (PHP)">
-            <select id="pCat">
-                <option value="Mugs">Mugs</option>
-                <option value="Keychains">Keychains</option>
-                <option value="Others">Others</option>
-            </select>
-            <input type="text" id="pImg" placeholder="Direct Image URL" oninput="showPreview()">
-            
-            <div id="preview-box">
-                <span id="preview-msg" style="color:var(--dark-pink); font-size:0.8rem;">Preview Window</span>
-                <img src="" id="preview-img">
-            </div>
-            
-            <button id="saveBtn">Save to Shop</button>
-            <button id="cancelBtn" style="background:#888; display:none;">Cancel Edit</button>
-        </div>
-
-        <h3 style="color:var(--dark-pink);">Live Inventory</h3>
-        <div id="admin-list" class="catalog-list">Loading products...</div>
-    </div>
+    <main class="list-side">
+        <h2>Live Inventory</h2>
+        <div id="admin-list">Loading...</div>
+    </main>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -87,121 +109,63 @@
     const db = getFirestore(app);
     let editID = null;
 
-    // Persist Login on Refresh
-    window.onload = () => {
-        if(sessionStorage.getItem("isLoggedIn") === "true") {
-            showDashboard();
-        }
-    };
-
-    // Login Logic
-    document.getElementById('loginBtn').onclick = () => {
+    window.login = () => {
         if(document.getElementById('passCode').value === "zab123") {
-            sessionStorage.setItem("isLoggedIn", "true");
-            showDashboard();
-        } else { alert("Incorrect password"); }
+            document.getElementById('login-overlay').style.display = "none";
+            document.getElementById('mainDashboard').style.display = "flex";
+            loadList();
+        } else { alert("Wrong password"); }
     };
 
-    window.logout = () => {
-        sessionStorage.removeItem("isLoggedIn");
-        location.reload();
-    };
-
-    function showDashboard() {
-        document.getElementById('loginBox').style.display = "none";
-        document.getElementById('dashboard').style.display = "block";
-        loadItems();
-    }
-
-    // Preview Logic
-    window.showPreview = () => {
-        const url = document.getElementById('pImg').value;
-        const img = document.getElementById('preview-img');
-        const msg = document.getElementById('preview-msg');
-        if(url.trim()) {
-            img.src = url; img.style.display = "block"; msg.style.display = "none";
-            img.onerror = () => { img.style.display="none"; msg.style.display="block"; msg.innerText="Broken Link!"; };
-        } else { img.style.display="none"; msg.style.display="block"; }
-    };
-
-    // Save/Update
-    document.getElementById('saveBtn').onclick = async () => {
+    window.saveData = async () => {
         const name = document.getElementById('pName').value;
         const price = document.getElementById('pPrice').value;
         const category = document.getElementById('pCat').value;
         const imgUrl = document.getElementById('pImg').value;
 
-        if(!name || !price || !imgUrl) return alert("Fill all fields!");
-
-        try {
-            if(editID) {
-                await updateDoc(doc(db, "products", editID), { name, price, category, imgUrl });
-                alert("Updated!");
-            } else {
-                await addDoc(collection(db, "products"), { name, price, category, imgUrl, createdAt: Date.now() });
-                alert("Added!");
-            }
-            clearForm();
-        } catch(e) { alert("Error: " + e.message); }
+        if(editID) {
+            await updateDoc(doc(db, "products", editID), { name, price, category, imgUrl });
+            alert("Updated!");
+        } else {
+            await addDoc(collection(db, "products"), { name, price, category, imgUrl, createdAt: Date.now() });
+            alert("Added!");
+        }
+        location.reload();
     };
 
-    function clearForm() {
-        editID = null;
-        document.getElementById('pName').value = "";
-        document.getElementById('pPrice').value = "";
-        document.getElementById('pImg').value = "";
-        document.getElementById('saveBtn').innerText = "Save to Shop";
-        document.getElementById('cancelBtn').style.display = "none";
-        document.getElementById('formTitle').innerText = "Add New Product";
-        document.getElementById('formBox').classList.remove('editing-mode');
-        showPreview();
-    }
-
-    document.getElementById('cancelBtn').onclick = clearForm;
-
-    function loadItems() {
+    function loadList() {
         onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
             const list = document.getElementById('admin-list');
             list.innerHTML = "";
-            snap.forEach(dSnap => {
-                const item = dSnap.data();
+            snap.forEach(d => {
+                const item = d.data();
                 const div = document.createElement('div');
-                div.className = "item-row";
+                div.className = "item-card";
                 div.innerHTML = `
-                    <img src="${item.imgUrl}" class="thumb" onerror="this.src='https://via.placeholder.com/60?text=Error'">
-                    <div class="item-details">
-                        <h4>${item.name}</h4>
-                        <p>₱${item.price} • ${item.category}</p>
+                    <img src="${item.imgUrl}">
+                    <div style="flex-grow:1">
+                        <b>${item.name}</b><br>₱${item.price} - ${item.category}
                     </div>
+                    <button onclick="editItem('${d.id}', '${item.name}', '${item.price}', '${item.category}', '${item.imgUrl}')" style="width:auto; background:#5cb85c; margin-right:5px;">Edit</button>
+                    <button onclick="deleteItem('${d.id}')" style="width:auto; background:#ff4d4d;">Del</button>
                 `;
-                
-                const btnBox = document.createElement('div');
-                btnBox.className = "action-btns";
-                
-                const eBtn = document.createElement('button');
-                eBtn.innerText = "Edit"; eBtn.className = "edit-btn";
-                eBtn.onclick = () => {
-                    editID = dSnap.id;
-                    document.getElementById('pName').value = item.name;
-                    document.getElementById('pPrice').value = item.price;
-                    document.getElementById('pCat').value = item.category || "Others";
-                    document.getElementById('pImg').value = item.imgUrl;
-                    document.getElementById('saveBtn').innerText = "Update Product";
-                    document.getElementById('formTitle').innerText = "Editing Item";
-                    document.getElementById('cancelBtn').style.display = "block";
-                    document.getElementById('formBox').classList.add('editing-mode');
-                    showPreview();
-                    window.scrollTo(0,0);
-                };
-
-                const dBtn = document.createElement('button');
-                dBtn.innerText = "Delete"; dBtn.className = "del-btn";
-                dBtn.onclick = async () => { if(confirm("Permanently delete this item?")) await deleteDoc(doc(db, "products", dSnap.id)); };
-
-                btnBox.append(eBtn, dBtn); div.appendChild(btnBox); list.appendChild(div);
+                list.appendChild(div);
             });
         });
     }
+
+    window.editItem = (id, n, p, c, i) => {
+        editID = id;
+        document.getElementById('pName').value = n;
+        document.getElementById('pPrice').value = p;
+        document.getElementById('pCat').value = c;
+        document.getElementById('pImg').value = i;
+        document.getElementById('formTitle').innerText = "Edit Product";
+        document.getElementById('saveBtn').innerText = "Update Product";
+        window.scrollTo(0,0);
+    };
+
+    window.deleteItem = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "products", id)); };
 </script>
 </body>
 </html>
