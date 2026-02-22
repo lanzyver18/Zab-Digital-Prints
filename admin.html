@@ -7,26 +7,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; --owner-gold: #d4af37; }
+        
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f8f9fa; color: var(--text); display: flex; min-height: 100vh; }
+        
+        /* Sidebar Nav */
         .sidebar { width: 240px; background: white; border-right: 1px solid #edf2f7; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 100; }
         .sidebar-header { padding: 30px; border-bottom: 1px solid #f1f1f1; text-align: center; }
         .sidebar-menu { padding: 20px; flex-grow: 1; }
         .menu-item { padding: 12px 15px; border-radius: 10px; color: #636e72; cursor: pointer; margin-bottom: 5px; transition: 0.3s; font-weight: 500; display: flex; align-items: center; gap: 10px; }
         .menu-item:hover, .menu-item.active { background: var(--bg); color: var(--dark-pink); }
+
+        /* Workspace */
         .workspace { flex-grow: 1; padding: 40px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+
+        /* Panels */
         .panel { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f1f1; margin-bottom: 30px; }
         input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; background: #fcfcfc; font-family: inherit; }
         button { width: 100%; padding: 14px; background: var(--dark-pink); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        
+        /* Owner Protection Styling */
         .owner-gate { border: 2px solid var(--owner-gold); background: #fffcf5; padding: 20px; border-radius: 15px; margin-top: 20px; }
         .owner-label { color: var(--owner-gold); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+
+        /* Grid Layouts */
         .inventory-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; align-items: start; }
         .product-row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f9f9f9; }
         .product-row img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 15px; }
+        
         .action-btns { display: flex; gap: 5px; }
         .btn-small { padding: 5px 10px; font-size: 11px; width: auto; margin: 0; }
         .btn-del { background: #ff7675; }
+
         #login-gate { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .cat-tag, .staff-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.85rem; border: 1px solid var(--pink); }
     </style>
@@ -57,11 +70,11 @@
                 <div class="panel">
                     <h3 id="formHeader" style="margin-top:0;">Product Editor</h3>
                     <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
-                    <input type="number" id="pPrice" placeholder="Price (Leave blank for Inquire Only)" oninput="updateLiveView()">
-                    <input type="text" id="pMoq" placeholder="Min. Order (e.g. 12pcs) - Optional" oninput="updateLiveView()">
+                    <input type="number" id="pPrice" placeholder="Price (Leave empty for 'Contact Us')" oninput="updateLiveView()">
+                    <input type="text" id="pMoq" placeholder="Minimum Quantity (e.g. 12pcs)" oninput="updateLiveView()">
                     <select id="pCat"></select>
                     <select id="pStatus" onchange="updateLiveView()"><option value="Available">Available</option><option value="Sold Out">Sold Out</option></select>
-                    <input type="text" id="pImg" placeholder="Image URL (Leave blank for placeholder)" oninput="updateLiveView()">
+                    <input type="text" id="pImg" placeholder="Image URL (Optional)" oninput="updateLiveView()">
                     <button id="saveBtn">Save Product</button>
                 </div>
                 <div class="panel">
@@ -73,8 +86,8 @@
                 <img id="pre-img" src="https://via.placeholder.com/350x320?text=Preview" style="width:100%; height:320px; object-fit:cover;">
                 <div style="padding: 25px; text-align: center;">
                     <h3 id="pre-name" style="font-family:'Playfair Display'; margin:0;">Product Name</h3>
-                    <div id="pre-moq" style="font-size: 0.8rem; color: #888; margin-top: 5px;"></div>
                     <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">₱0.00</div>
+                    <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
                     <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Order Now</div>
                 </div>
             </div>
@@ -89,24 +102,36 @@
                 <input type="password" id="ownerPassInput" placeholder="Enter Owner Password">
                 <button onclick="unlockSettings()" style="background: var(--owner-gold);">Unlock Master Settings</button>
             </div>
+
             <div id="protectedSettings" style="display:none; margin-top: 20px;">
-                <h4>Category Management</h4>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="newCatInput" placeholder="New category name">
-                    <button onclick="addCategory()" style="width:100px; margin:0;">Add</button>
+                <div style="margin-top: 20px;">
+                    <h4>Category Management</h4>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="newCatInput" placeholder="New category name">
+                        <button onclick="addCategory()" style="width:100px; margin:0;">Add</button>
+                    </div>
+                    <div id="category-list" style="margin-top:10px;"></div>
                 </div>
-                <div id="category-list" style="margin-top:10px;"></div>
+
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
-                <h4>Staff Access</h4>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="newAdminPassInput" placeholder="New Admin Password">
-                    <button onclick="addAdminPass()" style="width:100px; margin:0; background:#2d3436;">Add</button>
+
+                <div style="margin-top: 20px;">
+                    <h4>Staff Access (Multiple Admins)</h4>
+                    <p style="font-size:0.8rem; color:#666;">Add passwords that staff can use to login. They cannot access these settings.</p>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="newAdminPassInput" placeholder="Create Admin Password">
+                        <button onclick="addAdminPass()" style="width:100px; margin:0; background:#2d3436;">Add</button>
+                    </div>
+                    <div id="admin-pass-list" style="margin-top:10px;"></div>
                 </div>
-                <div id="admin-pass-list" style="margin-top:10px;"></div>
+
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
-                <h4>Change Owner Password</h4>
-                <input type="text" id="newOwnerPass" placeholder="New Master Key">
-                <button onclick="updateOwnerPass()" style="background: var(--owner-gold);">Update Master Key</button>
+
+                <div>
+                    <h4>Change Owner Master Password</h4>
+                    <input type="text" id="newOwnerPass" placeholder="New Master Key">
+                    <button onclick="updateOwnerPass()" style="background: var(--owner-gold);">Update Master Key</button>
+                </div>
             </div>
         </div>
     </div>
@@ -137,8 +162,12 @@
         staffSnap.forEach(d => { if(d.id === pass) valid = true; });
         const ownerSnap = await getDoc(doc(db, "config", "security"));
         if(pass === (ownerSnap.data()?.owner || "master789")) valid = true;
-        if(valid) { sessionStorage.setItem("zabAuth", "true"); document.getElementById('login-gate').style.display = "none"; initApp(); }
-        else alert("Invalid Password");
+
+        if(valid) {
+            sessionStorage.setItem("zabAuth", "true");
+            document.getElementById('login-gate').style.display = "none";
+            initApp();
+        } else { alert("Invalid Password"); }
     };
 
     window.unlockSettings = async () => {
@@ -148,29 +177,34 @@
             document.getElementById('ownerGate').style.display = "none";
             document.getElementById('protectedSettings').style.display = "block";
             loadAdminPasses();
-        } else alert("Unauthorized");
+        } else { alert("Unauthorized"); }
     };
 
     window.addAdminPass = async () => {
-        const p = document.getElementById('newAdminPassInput').value.trim();
-        if(p) await setDoc(doc(db, "admin_passwords", p), {});
+        const pass = document.getElementById('newAdminPassInput').value.trim();
+        if(pass) await setDoc(doc(db, "admin_passwords", pass), {});
         document.getElementById('newAdminPassInput').value = "";
     };
 
-    window.deleteAdminPass = async (id) => { if(confirm("Remove?")) await deleteDoc(doc(db, "admin_passwords", id)); };
+    window.deleteAdminPass = async (id) => {
+        if(confirm("Remove this admin access?")) await deleteDoc(doc(db, "admin_passwords", id));
+    };
 
     function loadAdminPasses() {
         onSnapshot(collection(db, "admin_passwords"), (snap) => {
             const list = document.getElementById('admin-pass-list');
             list.innerHTML = "";
-            snap.forEach(d => { list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="deleteAdminPass('${d.id}')">×</span></div>`; });
+            snap.forEach(d => {
+                list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="deleteAdminPass('${d.id}')">×</span></div>`;
+            });
         });
     }
 
     window.updateOwnerPass = async () => {
         const owner = document.getElementById('newOwnerPass').value || "master789";
         await setDoc(doc(db, "config", "security"), { owner });
-        alert("Updated. Logging out."); logout();
+        alert("Owner Password Updated. Logging out.");
+        logout();
     };
 
     function initApp() {
@@ -183,56 +217,57 @@
                 catSelect.innerHTML += `<option value="${d.id}">${d.id}</option>`;
             });
         });
+
         onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
             const list = document.getElementById('admin-list');
             list.innerHTML = ""; localItems = [];
             snap.forEach(d => {
                 const item = { id: d.id, ...d.data() };
                 localItems.push(item);
-                const pDisplay = item.price > 0 ? `₱${item.price}` : "Inquiry Only";
-                list.innerHTML += `<div class="product-row">
-                    <img src="${item.imgUrl || 'https://via.placeholder.com/50'}">
-                    <div style="flex-grow:1"><b>${item.name}</b><br><small>${pDisplay}</small></div>
-                    <div class="action-btns">
-                        <button class="btn-small" onclick="startEdit('${item.id}')">Edit</button>
-                        <button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button>
-                    </div>
-                </div>`;
+                list.innerHTML += `
+                    <div class="product-row">
+                        <img src="${item.imgUrl || 'https://via.placeholder.com/50'}">
+                        <div style="flex-grow:1"><b>${item.name}</b><br><small>${item.price > 0 ? '₱'+item.price : 'Contact for Price'}</small></div>
+                        <div class="action-btns">
+                            <button class="btn-small" onclick="startEdit('${item.id}')">Edit</button>
+                            <button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button>
+                        </div>
+                    </div>`;
             });
         });
     }
 
-    window.deleteItem = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "products", id)); };
+    window.deleteItem = async (id) => { if(confirm("Permanently delete item?")) await deleteDoc(doc(db, "products", id)); };
     window.addCategory = async () => {
-        const n = document.getElementById('newCatInput').value;
-        if(n) await setDoc(doc(db, "categories", n), {});
+        const name = document.getElementById('newCatInput').value;
+        if(name) await setDoc(doc(db, "categories", name), {});
         document.getElementById('newCatInput').value = "";
     };
-    window.deleteCat = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "categories", id)); };
-
+    window.deleteCat = async (id) => { if(confirm("Delete category?")) await deleteDoc(doc(db, "categories", id)); };
+    
     window.updateLiveView = () => {
         const name = document.getElementById('pName').value || "Product Name";
         const price = document.getElementById('pPrice').value;
         const moq = document.getElementById('pMoq').value;
-        const img = document.getElementById('pImg').value || "https://via.placeholder.com/350x320?text=Placeholder";
-        
+        const img = document.getElementById('pImg').value || "https://via.placeholder.com/350x320?text=Design+Preview+Soon";
+
         document.getElementById('pre-name').innerText = name;
-        document.getElementById('pre-price').innerText = price > 0 ? "₱" + price : "Contact for Price";
-        document.getElementById('pre-moq').innerText = moq ? "MOQ: " + moq : "";
+        document.getElementById('pre-price').innerText = (price && price > 0) ? "₱" + price : "Contact us for price";
+        document.getElementById('pre-moq').innerText = moq ? "Minimum Order: " + moq : "";
         document.getElementById('pre-img').src = img;
-        document.getElementById('pre-btn').innerText = price > 0 ? "Order Now" : "Inquire Now";
+        document.getElementById('pre-btn').innerText = (price && price > 0) ? "Order Now" : "Inquire Now";
     };
 
     document.getElementById('saveBtn').onclick = async () => {
         const data = {
             name: document.getElementById('pName').value,
-            price: Number(document.getElementById('pPrice').value) || 0,
+            price: document.getElementById('pPrice').value || 0,
             moq: document.getElementById('pMoq').value || "",
             category: document.getElementById('pCat').value,
             status: document.getElementById('pStatus').value,
             imgUrl: document.getElementById('pImg').value || ""
         };
-        if(!data.name) return alert("Name is required");
+        if(!data.name) return alert("Product Name is required!");
         if(editID) await updateDoc(doc(db, "products", editID), data);
         else await addDoc(collection(db, "products"), { ...data, createdAt: Date.now() });
         location.reload();
@@ -245,7 +280,8 @@
         document.getElementById('pPrice').value = item.price || "";
         document.getElementById('pMoq').value = item.moq || "";
         document.getElementById('pCat').value = item.category;
-        document.getElementById('pImg').value = item.imgUrl;
+        document.getElementById('pStatus').value = item.status;
+        document.getElementById('pImg').value = item.imgUrl || "";
         updateLiveView();
         window.scrollTo({top:0, behavior:'smooth'});
     };
