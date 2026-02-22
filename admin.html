@@ -5,37 +5,54 @@
     <title>Admin Panel | Zab Digital</title>
     <style>
         body { font-family: sans-serif; background: #fff5f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .box { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #d48192; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; font-size: 14px; }
-        .del-btn { background: #ff4d4d; width: auto; padding: 5px 10px; font-size: 11px; }
+        .box { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #d48192; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
+        #preview-box { width: 100%; height: 180px; border: 2px dashed #ffb7c5; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fffafb; }
+        #preview-img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        
+        .item-row { border-bottom: 1px solid #eee; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        .action-btns { display: flex; gap: 5px; }
+        .edit-btn { background: #5cb85c; padding: 5px 10px; width: auto; font-size: 11px; margin: 0; }
+        .del-btn { background: #ff4d4d; padding: 5px 10px; width: auto; font-size: 11px; margin: 0; }
+        .editing { border: 3px solid #5cb85c; }
     </style>
 </head>
 <body>
 
 <div class="box" id="loginBox">
-    <h3 style="text-align:center; color:#d48192;">Admin Login</h3>
+    <h3 style="text-align:center;">Admin Access</h3>
     <input type="password" id="passCode" placeholder="Enter Password">
-    <button id="loginBtn">Unlock Dashboard</button>
+    <button id="loginBtn">Login</button>
 </div>
 
 <div class="box" id="adminBox" style="display:none;">
-    <h3 style="color:#d48192;">Add New Product</h3>
+    <h3 id="formTitle">Add New Product</h3>
     <input type="text" id="pName" placeholder="Product Name">
     <input type="number" id="pPrice" placeholder="Price (PHP)">
-    <input type="text" id="pImg" placeholder="Direct Image URL (e.g. from PostImages)">
-    <button id="saveBtn">Post to Catalog</button>
+    <select id="pCat">
+        <option value="Mugs">Mugs</option>
+        <option value="Keychains">Keychains</option>
+        <option value="Others">Others</option>
+    </select>
+    <input type="text" id="pImg" placeholder="Direct Image URL" oninput="showPreview()">
     
-    <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
+    <div id="preview-box">
+        <span id="preview-msg" style="color:#d48192; font-size:0.8rem;">Image Preview</span>
+        <img src="" id="preview-img">
+    </div>
     
-    <h3 style="color:#d48192;">Manage Items</h3>
-    <div id="admin-list">Loading list...</div>
+    <button id="saveBtn">Save Product</button>
+    <button id="cancelBtn" style="background:#888; display:none;">Cancel Edit</button>
+    
+    <hr style="margin:25px 0; border:0; border-top:1px solid #eee;">
+    <div id="admin-list">Loading items...</div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
@@ -48,56 +65,94 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    let editID = null;
 
-    // Login Logic
-    document.getElementById('loginBtn').onclick = () => {
-        if(document.getElementById('passCode').value === "zab123") { // Change this to your preferred password
-            document.getElementById('loginBox').style.display = "none";
-            document.getElementById('adminBox').style.display = "block";
-            loadAdminList();
-        } else { alert("Incorrect Password"); }
+    // Preview
+    window.showPreview = () => {
+        const url = document.getElementById('pImg').value;
+        const img = document.getElementById('preview-img');
+        const msg = document.getElementById('preview-msg');
+        if(url.trim()) {
+            img.src = url; img.style.display = "block"; msg.style.display = "none";
+            img.onerror = () => { img.style.display="none"; msg.style.display="block"; msg.innerText="Broken Link!"; };
+        } else { img.style.display="none"; msg.style.display="block"; }
     };
 
-    // Save Product
+    // Login
+    document.getElementById('loginBtn').onclick = () => {
+        if(document.getElementById('passCode').value === "zab123") {
+            document.getElementById('loginBox').style.display = "none";
+            document.getElementById('adminBox').style.display = "block";
+            loadItems();
+        } else { alert("Wrong password!"); }
+    };
+
+    // Save/Update
     document.getElementById('saveBtn').onclick = async () => {
         const name = document.getElementById('pName').value;
         const price = document.getElementById('pPrice').value;
+        const category = document.getElementById('pCat').value;
         const imgUrl = document.getElementById('pImg').value;
-        
-        if(!name || !price || !imgUrl) return alert("Please fill all fields!");
 
-        await addDoc(collection(db, "products"), {
-            name, price, imgUrl, createdAt: Date.now()
-        });
-        
-        alert("Product added successfully!");
+        if(!name || !price || !imgUrl) return alert("Fill all fields!");
+
+        if(editID) {
+            await updateDoc(doc(db, "products", editID), { name, price, category, imgUrl });
+            alert("Updated!");
+        } else {
+            await addDoc(collection(db, "products"), { name, price, category, imgUrl, createdAt: Date.now() });
+            alert("Added!");
+        }
+        clearForm();
+    };
+
+    function clearForm() {
+        editID = null;
         document.getElementById('pName').value = "";
         document.getElementById('pPrice').value = "";
         document.getElementById('pImg').value = "";
-    };
+        document.getElementById('saveBtn').innerText = "Save Product";
+        document.getElementById('cancelBtn').style.display = "none";
+        document.getElementById('formTitle').innerText = "Add New Product";
+        document.getElementById('adminBox').classList.remove('editing');
+        showPreview();
+    }
 
-    // Load & Delete Logic
-    function loadAdminList() {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snap) => {
-            const listDiv = document.getElementById('admin-list');
-            listDiv.innerHTML = "";
-            snap.forEach(documentSnap => {
-                const item = documentSnap.data();
-                const row = document.createElement('div');
-                row.className = "item-row";
-                row.innerHTML = `<span>${item.name} (₱${item.price})</span>`;
+    document.getElementById('cancelBtn').onclick = clearForm;
+
+    function loadItems() {
+        onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
+            const list = document.getElementById('admin-list');
+            list.innerHTML = "";
+            snap.forEach(dSnap => {
+                const item = dSnap.data();
+                const div = document.createElement('div');
+                div.className = "item-row";
+                div.innerHTML = `<span>${item.name} (₱${item.price})</span>`;
                 
-                const dBtn = document.createElement('button');
-                dBtn.className = "del-btn";
-                dBtn.innerText = "Delete";
-                dBtn.onclick = async () => {
-                    if(confirm("Delete this item?")) {
-                        await deleteDoc(doc(db, "products", documentSnap.id));
-                    }
+                const box = document.createElement('div');
+                box.className = "action-btns";
+                
+                const eBtn = document.createElement('button');
+                eBtn.innerText = "Edit"; eBtn.className = "edit-btn";
+                eBtn.onclick = () => {
+                    editID = dSnap.id;
+                    document.getElementById('pName').value = item.name;
+                    document.getElementById('pPrice').value = item.price;
+                    document.getElementById('pCat').value = item.category || "Others";
+                    document.getElementById('pImg').value = item.imgUrl;
+                    document.getElementById('saveBtn').innerText = "Update Now";
+                    document.getElementById('formTitle').innerText = "Edit Mode";
+                    document.getElementById('cancelBtn').style.display = "block";
+                    document.getElementById('adminBox').classList.add('editing');
+                    showPreview();
                 };
-                row.appendChild(dBtn);
-                listDiv.appendChild(row);
+
+                const dBtn = document.createElement('button');
+                dBtn.innerText = "Del"; dBtn.className = "del-btn";
+                dBtn.onclick = async () => { if(confirm("Delete?")) await deleteDoc(doc(db, "products", dSnap.id)); };
+
+                box.append(eBtn, dBtn); div.appendChild(box); list.appendChild(div);
             });
         });
     }
