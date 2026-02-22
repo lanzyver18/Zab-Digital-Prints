@@ -3,58 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zab Digital Prints | Shop</title>
+    <title>Zab Digital Prints | Custom Souvenirs</title>
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg); color: #4a4a4a; }
-        .hero { text-align: center; padding: 50px 20px; background: white; border-bottom: 3px solid var(--pink); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 40px 20px; max-width: 1100px; margin: 0 auto; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; }
-        .card img { width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
-        .btn { background: var(--pink); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; display: inline-block; font-weight: bold; transition: 0.3s; }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; }
+        
+        /* Nav */
+        nav { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-weight: bold; font-size: 1.4rem; color: var(--dark-pink); text-decoration: none; }
+        .nav-links a { text-decoration: none; color: var(--text); margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
+
+        /* Hero */
+        .hero { text-align: center; padding: 80px 20px; background: white; }
+        .hero h1 { font-size: 2.5rem; color: var(--dark-pink); margin: 0; }
+        .hero p { font-size: 1.1rem; opacity: 0.8; }
+
+        /* Catalog */
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.03); transition: 0.3s; border: 1px solid #eee; text-align: center; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 250px; object-fit: cover; }
+        .card-body { padding: 20px; }
+        .price { color: var(--dark-pink); font-size: 1.3rem; font-weight: bold; margin: 10px 0; }
+
+        /* Buttons */
+        .btn { background: var(--pink); color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; }
         .btn:hover { background: var(--dark-pink); }
+
+        /* Contact */
+        .contact-area { background: white; padding: 60px 20px; text-align: center; border-top: 5px solid var(--pink); }
+        .contact-info { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin: 30px 0; }
+        footer { padding: 20px; text-align: center; font-size: 0.8rem; opacity: 0.6; }
     </style>
 </head>
 <body>
 
-    <header class="hero">
-        <h1 style="color: var(--dark-pink); margin: 0;">Zab Digital Prints</h1>
-        <p>Customized Souvenirs for Your Special Moments</p>
-    </header>
+<nav>
+    <a href="#" class="logo">Zab Digital Prints</a>
+    <div class="nav-links">
+        <a href="#catalog">Shop</a>
+        <a href="#contact">Contact</a>
+    </div>
+</nav>
 
-    <div id="catalog-grid" class="grid">Loading products...</div>
+<header class="hero">
+    <h1>Customized Just For You</h1>
+    <p>Premium souvenirs and digital prints for every occasion.</p>
+    <br>
+    <a href="#catalog" class="btn">Browse Shop</a>
+</header>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<div class="container" id="catalog">
+    <div id="catalog-grid" class="grid">
+        <p style="text-align:center; grid-column: 1/-1;">Loading our beautiful collection...</p>
+    </div>
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
-            authDomain: "zab-digital-prints.firebaseapp.com",
-            projectId: "zab-digital-prints",
-            storageBucket: "zab-digital-prints.firebasestorage.app",
-            messagingSenderId: "1050157785592",
-            appId: "1:1050157785592:web:e6a3c8f10a9d28aa87b60d"
-        };
+<section class="contact-area" id="contact">
+    <h2>Let's Connect</h2>
+    <div class="contact-info">
+        <div>
+            <h4 style="color:var(--dark-pink)">Location</h4>
+            <p>Calamba, Philippines</p>
+        </div>
+        <div>
+            <h4 style="color:var(--dark-pink)">Inquiries</h4>
+            <p>Messenger: Zab Digital Prints</p>
+        </div>
+    </div>
+    <a href="https://m.me/YourPageID" class="btn">Message us on Messenger</a>
+</section>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+<footer>&copy; 2026 Zab Digital Prints</footer>
 
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snap) => {
-            const grid = document.getElementById('catalog-grid');
-            grid.innerHTML = "";
-            snap.forEach(doc => {
-                const item = doc.data();
-                grid.innerHTML += `
-                    <div class="card">
-                        <img src="${item.imgUrl}">
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
+        authDomain: "zab-digital-prints.firebaseapp.com",
+        projectId: "zab-digital-prints",
+        storageBucket: "zab-digital-prints.firebasestorage.app",
+        messagingSenderId: "1050157785592",
+        appId: "1:1050157785592:web:e6a3c8f10a9d28aa87b60d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snap) => {
+        const grid = document.getElementById('catalog-grid');
+        grid.innerHTML = "";
+        snap.forEach(doc => {
+            const item = doc.data();
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${item.imgUrl}" alt="${item.name}">
+                    <div class="card-body">
                         <h3>${item.name}</h3>
-                        <p style="color: var(--dark-pink); font-weight: bold;">₱${item.price}</p>
-                        <a href="https://m.me/YourPageName" class="btn">Order Now</a>
-                    </div>`;
-            });
+                        <div class="price">₱${item.price}</div>
+                        <a href="https://m.me/YourPageID" class="btn">Order Now</a>
+                    </div>
+                </div>`;
         });
-    </script>
+    });
+</script>
 </body>
 </html>
