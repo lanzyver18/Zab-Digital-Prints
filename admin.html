@@ -42,6 +42,11 @@
 
         #login-gate { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .cat-tag, .staff-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.85rem; border: 1px solid var(--pink); }
+
+        /* Security Log Table */
+        .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+        .log-table th { text-align: left; padding: 10px; border-bottom: 2px solid var(--owner-gold); color: var(--owner-gold); }
+        .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -74,7 +79,7 @@
                     <input type="text" id="pMoq" placeholder="Minimum Quantity (e.g. 12pcs)" oninput="updateLiveView()">
                     <select id="pCat"></select>
                     <select id="pStatus" onchange="updateLiveView()"><option value="Available">Available</option><option value="Sold Out">Sold Out</option></select>
-                    <input type="text" id="pImg" placeholder="Image URL (Optional)" oninput="updateLiveView()">
+                    <input type="text" id="pImg" placeholder="Image URL (Leave empty for Logo)" oninput="updateLiveView()">
                     <button id="saveBtn">Save Product</button>
                 </div>
                 <div class="panel">
@@ -83,12 +88,12 @@
                 </div>
             </div>
             <div class="live-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: sticky; top: 40px;">
-                <img id="pre-img" src="https://via.placeholder.com/350x320?text=Preview" style="width:100%; height:320px; object-fit:cover;">
+                <img id="pre-img" src="IMG_1218.jpeg" style="width:100%; height:320px; object-fit:cover;">
                 <div style="padding: 25px; text-align: center;">
                     <h3 id="pre-name" style="font-family:'Playfair Display'; margin:0;">Product Name</h3>
-                    <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">₱0.00</div>
+                    <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">Contact us for price</div>
                     <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
-                    <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Order Now</div>
+                    <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Inquire Now</div>
                 </div>
             </div>
         </div>
@@ -111,6 +116,16 @@
                         <button onclick="addCategory()" style="width:100px; margin:0;">Add</button>
                     </div>
                     <div id="category-list" style="margin-top:10px;"></div>
+                </div>
+
+                <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
+
+                <div style="margin-top: 20px;">
+                    <h4>Security History Log</h4>
+                    <table class="log-table">
+                        <thead><tr><th>Time</th><th>Action</th></tr></thead>
+                        <tbody id="security-logs"></tbody>
+                    </table>
                 </div>
 
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
@@ -139,7 +154,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
@@ -174,11 +189,24 @@
         const passDoc = await getDoc(doc(db, "config", "security"));
         const ownerPass = passDoc.exists() ? passDoc.data().owner : "master789";
         if(document.getElementById('ownerPassInput').value === ownerPass) {
+            // Log Access
+            await addDoc(collection(db, "security_logs"), {
+                timestamp: new Date().toLocaleString(),
+                action: "Master Unlock Authorized"
+            });
             document.getElementById('ownerGate').style.display = "none";
             document.getElementById('protectedSettings').style.display = "block";
             loadAdminPasses();
+            loadLogs();
         } else { alert("Unauthorized"); }
     };
+
+    function loadLogs() {
+        onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(5)), (snap) => {
+            const l = document.getElementById('security-logs'); l.innerHTML = "";
+            snap.forEach(d => { l.innerHTML += `<tr><td>${d.data().timestamp}</td><td>${d.data().action}</td></tr>`; });
+        });
+    }
 
     window.addAdminPass = async () => {
         const pass = document.getElementById('newAdminPassInput').value.trim();
@@ -224,10 +252,13 @@
             snap.forEach(d => {
                 const item = { id: d.id, ...d.data() };
                 localItems.push(item);
+                const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : 'IMG_1218.jpeg';
+                const displayPrice = item.price > 0 ? '₱'+item.price : 'Inquire';
+                
                 list.innerHTML += `
                     <div class="product-row">
-                        <img src="${item.imgUrl || 'https://via.placeholder.com/50'}">
-                        <div style="flex-grow:1"><b>${item.name}</b><br><small>${item.price > 0 ? '₱'+item.price : 'Contact for Price'}</small></div>
+                        <img src="${displayImg}" onerror="this.src='https://via.placeholder.com/50'">
+                        <div style="flex-grow:1"><b>${item.name}</b><br><small>${displayPrice}</small></div>
                         <div class="action-btns">
                             <button class="btn-small" onclick="startEdit('${item.id}')">Edit</button>
                             <button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button>
@@ -249,7 +280,7 @@
         const name = document.getElementById('pName').value || "Product Name";
         const price = document.getElementById('pPrice').value;
         const moq = document.getElementById('pMoq').value;
-        const img = document.getElementById('pImg').value || "https://via.placeholder.com/350x320?text=Design+Preview+Soon";
+        const img = document.getElementById('pImg').value || "IMG_1218.jpeg";
 
         document.getElementById('pre-name').innerText = name;
         document.getElementById('pre-price').innerText = (price && price > 0) ? "₱" + price : "Contact us for price";
