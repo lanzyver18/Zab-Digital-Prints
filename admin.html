@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zab Admin | Professional Dashboard</title>
+    <title>Zab Admin | Control Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; --owner-gold: #d4af37; }
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f8f9fa; color: var(--text); display: flex; min-height: 100vh; }
         
@@ -14,60 +14,41 @@
         .sidebar { width: 240px; background: white; border-right: 1px solid #edf2f7; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 100; }
         .sidebar-header { padding: 30px; border-bottom: 1px solid #f1f1f1; text-align: center; }
         .sidebar-menu { padding: 20px; flex-grow: 1; }
-        .menu-item { padding: 12px 15px; border-radius: 10px; color: #636e72; cursor: pointer; margin-bottom: 5px; transition: 0.3s; font-weight: 500; }
+        .menu-item { padding: 12px 15px; border-radius: 10px; color: #636e72; cursor: pointer; margin-bottom: 5px; transition: 0.3s; font-weight: 500; display: flex; align-items: center; gap: 10px; }
         .menu-item:hover, .menu-item.active { background: var(--bg); color: var(--dark-pink); }
 
-        /* Main Workspace */
+        /* Workspace */
         .workspace { flex-grow: 1; padding: 40px; }
-        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #f1f1f1; }
-        .stat-card h5 { margin: 0; color: #b2bec3; font-size: 0.75rem; text-transform: uppercase; }
-        .stat-card div { font-size: 1.8rem; font-weight: bold; color: var(--dark-pink); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        /* Layout */
-        .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 40px; align-items: start; }
-        .work-column { display: flex; flex-direction: column; gap: 30px; }
-        
         /* Panels */
-        .panel { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f1f1; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; background: #fcfcfc; font-family: inherit; transition: 0.3s; }
-        input:focus { border-color: var(--pink); outline: none; background: white; }
+        .panel { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f1f1; margin-bottom: 30px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; background: #fcfcfc; font-family: inherit; }
+        button { width: 100%; padding: 14px; background: var(--dark-pink); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
         
-        button { width: 100%; padding: 14px; background: var(--dark-pink); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 129, 146, 0.3); }
+        /* Owner Protection Styling */
+        .owner-gate { border: 2px solid var(--owner-gold); background: #fffcf5; padding: 20px; border-radius: 15px; margin-top: 20px; }
+        .owner-label { color: var(--owner-gold); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
 
-        /* Small action buttons */
-        .btn-sm { width: auto; padding: 5px 10px; margin: 0; font-size: 0.7rem; }
-        .btn-del-sm { background: #ffebee; color: #d32f2f; }
+        /* Security Log Table */
+        .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+        .log-table th { text-align: left; padding: 10px; border-bottom: 2px solid var(--owner-gold); color: var(--owner-gold); }
+        .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        .log-status { color: #5cb85c; font-weight: bold; }
 
-        /* List Items */
+        /* Grid Layouts */
+        .inventory-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; align-items: start; }
         .product-row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f9f9f9; }
-        .product-row img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 20px; }
-        .info { flex-grow: 1; }
-        .info b { display: block; font-size: 0.95rem; }
-        .info span { font-size: 0.8rem; color: #999; }
-        .action-btns { display: flex; gap: 8px; }
-        .btn-edit { background: #e3f2fd; color: #1976d2; padding: 8px 12px; border-radius: 8px; font-size: 0.7rem; border: none; cursor: pointer; }
-        .btn-del { background: #ffebee; color: #d32f2f; padding: 8px 12px; border-radius: 8px; font-size: 0.7rem; border: none; cursor: pointer; }
-
-        /* Preview Column */
-        .preview-side { position: sticky; top: 40px; }
-        .preview-label { font-size: 0.8rem; font-weight: bold; color: var(--dark-pink); margin-bottom: 15px; display: block; text-transform: uppercase; letter-spacing: 1px; }
+        .product-row img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 15px; }
         
-        .live-card { background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(212, 129, 146, 0.15); position: relative; width: 100%; pointer-events: none; border: 1px solid #fff; }
-        .live-card img { width: 100%; height: 320px; object-fit: cover; background: #f0f0f0; }
-        .live-badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; color: white; text-transform: uppercase; z-index: 2; }
-        .b-avail { background: #8ecae6; } .b-sold { background: #e07a5f; }
+        /* Preview Card */
+        .live-card { background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(212, 129, 146, 0.15); position: sticky; top: 40px; }
+        .live-card img { width: 100%; height: 320px; object-fit: cover; }
         .live-body { padding: 25px; text-align: center; }
-        .live-body h3 { margin: 0; font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--text); }
-        .live-price { color: var(--dark-pink); font-size: 1.5rem; font-weight: 600; margin: 12px 0; }
-        .live-btn { background: var(--pink); color: white; padding: 12px 30px; border-radius: 50px; font-weight: bold; display: inline-block; font-size: 0.9rem; }
 
-        /* Category Tag Style */
-        .cat-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 10px; border-radius: 8px; margin: 5px; font-size: 0.8rem; border: 1px solid var(--pink); }
-
-        @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } .preview-side { position: static; margin-bottom: 30px; } .sidebar { display: none; } }
         #login-gate { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .cat-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.85rem; border: 1px solid var(--pink); }
     </style>
 </head>
 <body>
@@ -75,64 +56,89 @@
 <div id="login-gate">
     <div style="width: 320px; text-align: center;">
         <h2 style="color: var(--dark-pink); font-family: 'Playfair Display';">Zab Admin</h2>
-        <input type="password" id="entryPass" placeholder="Enter Admin Password">
-        <button onclick="login()">Enter Workspace</button>
+        <input type="password" id="entryPass" placeholder="Admin Password">
+        <button onclick="login()">Open Workspace</button>
     </div>
 </div>
 
 <aside class="sidebar">
-    <div class="sidebar-header"><b style="color: var(--dark-pink); font-size: 1.2rem; font-family: 'Playfair Display';">ZAB PRINTS</b></div>
+    <div class="sidebar-header"><b style="color: var(--dark-pink); font-family: 'Playfair Display';">ZAB CONTROL</b></div>
     <div class="sidebar-menu">
-        <div class="menu-item active">Dashboard</div>
-        <div class="menu-item" onclick="logout()">Logout</div>
+        <div class="menu-item active" onclick="switchTab('inventory', this)">Inventory</div>
+        <div class="menu-item" onclick="switchTab('settings', this)">Settings</div>
+        <div class="menu-item" onclick="logout()" style="margin-top: 20px; color: #999;">Logout</div>
     </div>
 </aside>
 
 <main class="workspace">
-    <div class="stats-bar">
-        <div class="stat-card"><h5>Total Items</h5><div id="count-all">0</div></div>
-        <div class="stat-card"><h5>In Stock</h5><div id="count-avail">0</div></div>
-        <div class="stat-card"><h5>Categories</h5><div id="count-cats">0</div></div>
-    </div>
-
-    <div class="main-layout">
-        <div class="work-column">
-            
-            <div class="panel">
-                <h3 style="margin:0 0 10px 0; font-size: 1.1rem;">Category Manager</h3>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="newCatInput" placeholder="New Category Name (e.g. Stickers)">
-                    <button class="btn-sm" onclick="addCategory()">Add</button>
+    <div id="inventory" class="tab-content active">
+        <div class="inventory-grid">
+            <div>
+                <div class="panel">
+                    <h3 id="formHeader" style="margin-top:0;">Product Editor</h3>
+                    <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
+                    <input type="number" id="pPrice" placeholder="Price" oninput="updateLiveView()">
+                    <select id="pCat"></select>
+                    <select id="pStatus" onchange="updateLiveView()"><option value="Available">Available</option><option value="Sold Out">Sold Out</option></select>
+                    <input type="text" id="pImg" placeholder="Image URL" oninput="updateLiveView()">
+                    <button id="saveBtn">Save Product</button>
                 </div>
-                <div id="category-list" style="margin-top:10px;"></div>
+                <div class="panel">
+                    <h3>Inventory List</h3>
+                    <div id="admin-list"></div>
+                </div>
             </div>
-
-            <div class="panel">
-                <h3 id="formHeader" style="margin:0; font-size: 1.2rem;">Product Editor</h3>
-                <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
-                <input type="number" id="pPrice" placeholder="Price (PHP)" oninput="updateLiveView()">
-                <select id="pCat"></select>
-                <select id="pStatus" onchange="updateLiveView()"><option value="Available">Available</option><option value="Sold Out">Sold Out</option></select>
-                <input type="text" id="pImg" placeholder="Direct Image URL" oninput="updateLiveView()">
-                <button id="saveBtn">Publish to Catalog</button>
-            </div>
-
-            <div class="panel">
-                <h3 style="margin:0 0 15px 0; font-size: 1.1rem;">Inventory</h3>
-                <input type="text" id="invSearch" placeholder="Search items..." oninput="filterInventory()">
-                <div id="admin-list"></div>
+            <div class="live-card">
+                <img id="pre-img" src="https://via.placeholder.com/350x320?text=Preview" alt="Preview">
+                <div class="live-body">
+                    <h3 id="pre-name" style="font-family:'Playfair Display';">Product Name</h3>
+                    <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">₱0.00</div>
+                    <div style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Order Now</div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="preview-side">
-            <span class="preview-label">Live Store Preview</span>
-            <div class="live-card">
-                <div id="pre-badge" class="live-badge b-avail">Available</div>
-                <img id="pre-img" src="https://via.placeholder.com/350x320?text=Paste+Image+Link" alt="Preview">
-                <div class="live-body">
-                    <h3 id="pre-name">Your Product Name</h3>
-                    <div class="live-price" id="pre-price">₱0.00</div>
-                    <div class="live-btn">Order Now</div>
+    <div id="settings" class="tab-content">
+        <div class="panel">
+            <h2>Business Settings</h2>
+            <p style="font-size: 0.9rem; color: #666;">Configure categories and security credentials.</p>
+            <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
+
+            <div class="owner-gate" id="ownerGate">
+                <span class="owner-label">⚠️ Master Authorization Required</span>
+                <p style="font-size: 0.8rem; margin: 5px 0 15px 0;">Unlock to access categories, passwords, and security history.</p>
+                <input type="password" id="ownerPassInput" placeholder="Enter Owner Password">
+                <button onclick="unlockSettings()" style="background: var(--owner-gold);">Unlock Master Settings</button>
+            </div>
+
+            <div id="protectedSettings" style="display:none; margin-top: 20px;">
+                <h3 style="color: var(--owner-gold);">Authorized Master Panel</h3>
+                
+                <div style="margin-top: 30px;">
+                    <h4>Category Management</h4>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="newCatInput" placeholder="Add new category">
+                        <button onclick="addCategory()" style="width:100px; margin:0;">Add</button>
+                    </div>
+                    <div id="category-list" style="margin-top:15px;"></div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4>Security History Log</h4>
+                    <table class="log-table">
+                        <thead><tr><th>Date & Time</th><th>Action</th><th>Status</th></tr></thead>
+                        <tbody id="security-logs"></tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 40px; padding: 20px; background: #fdfdfd; border-radius: 15px; border: 1px solid #eee;">
+                    <h4>Update Security Credentials</h4>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div><label style="font-size: 0.8rem;">Admin Password</label><input type="text" id="newAdminPass" placeholder="Standard Login"></div>
+                        <div><label style="font-size: 0.8rem;">Owner Password</label><input type="text" id="newOwnerPass" placeholder="Master Key"></div>
+                    </div>
+                    <button onclick="updateSecurity()" style="background: #2d3436;">Save New Credentials</button>
                 </div>
             </div>
         </div>
@@ -141,7 +147,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
@@ -156,98 +162,103 @@
     const db = getFirestore(app);
     let editID = null;
     let localItems = [];
-    let localCats = [];
 
-    window.addEventListener('load', () => {
-        if (sessionStorage.getItem("zabLoggedIn") === "true") {
+    // --- SECURITY & LOGGING ---
+    window.login = async () => {
+        const passDoc = await getDoc(doc(db, "config", "security"));
+        const adminPass = passDoc.exists() ? passDoc.data().admin : "zab123";
+        if(document.getElementById('entryPass').value === adminPass) {
+            sessionStorage.setItem("zabAuth", "true");
             document.getElementById('login-gate').style.display = "none";
-            initData();
-        }
-    });
-
-    window.login = () => {
-        if(document.getElementById('entryPass').value === "zab123") {
-            sessionStorage.setItem("zabLoggedIn", "true");
-            document.getElementById('login-gate').style.display = "none";
-            initData();
-        } else { alert("Incorrect password"); }
+            initApp();
+        } else { alert("Wrong Password"); }
     };
 
-    window.logout = () => { sessionStorage.removeItem("zabLoggedIn"); location.reload(); };
+    window.unlockSettings = async () => {
+        const passDoc = await getDoc(doc(db, "config", "security"));
+        const ownerPass = passDoc.exists() ? passDoc.data().owner : "master789";
+        
+        if(document.getElementById('ownerPassInput').value === ownerPass) {
+            // Log the access
+            await addDoc(collection(db, "security_logs"), {
+                timestamp: new Date().toLocaleString(),
+                action: "Owner Settings Unlocked",
+                status: "Authorized"
+            });
+            document.getElementById('ownerGate').style.display = "none";
+            document.getElementById('protectedSettings').style.display = "block";
+            loadLogs();
+        } else { alert("Unauthorized Owner Password"); }
+    };
 
-    function initData() {
-        // Sync Categories
+    function loadLogs() {
+        const q = query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(10));
+        onSnapshot(q, (snap) => {
+            const logBody = document.getElementById('security-logs');
+            logBody.innerHTML = "";
+            snap.forEach(d => {
+                logBody.innerHTML += `<tr><td>${d.data().timestamp}</td><td>${d.data().action}</td><td class="log-status">${d.data().status}</td></tr>`;
+            });
+        });
+    }
+
+    window.updateSecurity = async () => {
+        const admin = document.getElementById('newAdminPass').value || "zab123";
+        const owner = document.getElementById('newOwnerPass').value || "master789";
+        await setDoc(doc(db, "config", "security"), { admin, owner });
+        alert("Credentials updated! System will restart.");
+        logout();
+    };
+
+    // --- DASHBOARD LOGIC ---
+    window.switchTab = (tabId, el) => {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        el.classList.add('active');
+    };
+
+    window.logout = () => { sessionStorage.clear(); location.reload(); };
+
+    function initApp() {
         onSnapshot(collection(db, "categories"), (snap) => {
-            localCats = [];
             const catList = document.getElementById('category-list');
             const catSelect = document.getElementById('pCat');
-            catList.innerHTML = "";
-            catSelect.innerHTML = "";
-            
+            catList.innerHTML = ""; catSelect.innerHTML = "";
             snap.forEach(d => {
-                const cat = d.id;
-                localCats.push(cat);
-                catList.innerHTML += `<div class="cat-tag">${cat} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="deleteCategory('${cat}')">×</span></div>`;
-                catSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+                catList.innerHTML += `<div class="cat-tag">${d.id} <span style="margin-left:8px; cursor:pointer;" onclick="deleteCat('${d.id}')">×</span></div>`;
+                catSelect.innerHTML += `<option value="${d.id}">${d.id}</option>`;
             });
-            document.getElementById('count-cats').innerText = localCats.length;
         });
 
-        // Sync Products
         onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
-            localItems = [];
-            let all = 0, avail = 0;
+            const list = document.getElementById('admin-list');
+            list.innerHTML = ""; localItems = [];
             snap.forEach(d => {
                 const item = { id: d.id, ...d.data() };
                 localItems.push(item);
-                all++;
-                if(item.status === 'Available') avail++;
+                list.innerHTML += `
+                    <div class="product-row">
+                        <img src="${item.imgUrl}">
+                        <div style="flex-grow:1"><b>${item.name}</b><br><small>₱${item.price}</small></div>
+                        <button onclick="startEdit('${item.id}')" style="width:60px; font-size:10px; padding:5px; margin:0;">Edit</button>
+                    </div>`;
             });
-            document.getElementById('count-all').innerText = all;
-            document.getElementById('count-avail').innerText = avail;
-            filterInventory();
         });
     }
 
     window.addCategory = async () => {
-        const name = document.getElementById('newCatInput').value.trim();
-        if(!name) return;
-        await setDoc(doc(db, "categories", name), {});
+        const name = document.getElementById('newCatInput').value;
+        if(name) await setDoc(doc(db, "categories", name), {});
         document.getElementById('newCatInput').value = "";
     };
 
-    window.deleteCategory = async (name) => {
-        if(confirm(`Delete category "${name}"? Items already in this category won't be deleted.`)) {
-            await deleteDoc(doc(db, "categories", name));
-        }
-    };
+    window.deleteCat = async (id) => { if(confirm("Delete category?")) await deleteDoc(doc(db, "categories", id)); };
 
     window.updateLiveView = () => {
-        document.getElementById('pre-name').innerText = document.getElementById('pName').value || "Your Product Name";
+        document.getElementById('pre-name').innerText = document.getElementById('pName').value || "Product Name";
         document.getElementById('pre-price').innerText = "₱" + (document.getElementById('pPrice').value || "0.00");
-        document.getElementById('pre-img').src = document.getElementById('pImg').value || "https://via.placeholder.com/350x320?text=Paste+Image+Link";
-        const badge = document.getElementById('pre-badge');
-        badge.innerText = document.getElementById('pStatus').value;
-        badge.className = document.getElementById('pStatus').value === "Available" ? "live-badge b-avail" : "live-badge b-sold";
-    };
-
-    window.filterInventory = () => {
-        const term = document.getElementById('invSearch').value.toLowerCase();
-        const list = document.getElementById('admin-list');
-        list.innerHTML = "";
-        const filtered = localItems.filter(i => i.name.toLowerCase().includes(term) || i.category.toLowerCase().includes(term));
-        filtered.forEach(item => {
-            const row = document.createElement('div');
-            row.className = "product-row";
-            row.innerHTML = `
-                <img src="${item.imgUrl}" onerror="this.src='https://via.placeholder.com/50?text=Error'">
-                <div class="info"><b>${item.name}</b><span>₱${item.price} • ${item.category}</span></div>
-                <div class="action-btns">
-                    <button class="btn-edit" onclick="startEdit('${item.id}')">Edit</button>
-                    <button class="btn-del" onclick="deleteItem('${item.id}')">Del</button>
-                </div>`;
-            list.appendChild(row);
-        });
+        document.getElementById('pre-img').src = document.getElementById('pImg').value || "https://via.placeholder.com/350x320?text=Preview";
     };
 
     document.getElementById('saveBtn').onclick = async () => {
@@ -258,7 +269,6 @@
             status: document.getElementById('pStatus').value,
             imgUrl: document.getElementById('pImg').value
         };
-        if(!data.name || !data.price || !data.imgUrl) return alert("Fill all fields!");
         if(editID) await updateDoc(doc(db, "products", editID), data);
         else await addDoc(collection(db, "products"), { ...data, createdAt: Date.now() });
         location.reload();
@@ -270,15 +280,15 @@
         document.getElementById('pName').value = item.name;
         document.getElementById('pPrice').value = item.price;
         document.getElementById('pCat').value = item.category;
-        document.getElementById('pStatus').value = item.status;
         document.getElementById('pImg').value = item.imgUrl;
-        document.getElementById('saveBtn').innerText = "Update Product";
-        document.getElementById('formHeader').innerText = "Edit Mode";
         updateLiveView();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top:0, behavior:'smooth'});
     };
 
-    window.deleteItem = async (id) => { if(confirm("Delete this?")) await deleteDoc(doc(db, "products", id)); };
+    if(sessionStorage.getItem("zabAuth")) {
+        document.getElementById('login-gate').style.display = "none";
+        initApp();
+    }
 </script>
 </body>
 </html>
