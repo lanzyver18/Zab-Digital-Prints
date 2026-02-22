@@ -31,24 +31,17 @@
         .owner-gate { border: 2px solid var(--owner-gold); background: #fffcf5; padding: 20px; border-radius: 15px; margin-top: 20px; }
         .owner-label { color: var(--owner-gold); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
 
-        /* Security Log Table */
-        .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
-        .log-table th { text-align: left; padding: 10px; border-bottom: 2px solid var(--owner-gold); color: var(--owner-gold); }
-        .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
-        .log-status { color: #5cb85c; font-weight: bold; }
-
         /* Grid Layouts */
         .inventory-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; align-items: start; }
         .product-row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f9f9f9; }
         .product-row img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 15px; }
         
-        /* Preview Card */
-        .live-card { background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(212, 129, 146, 0.15); position: sticky; top: 40px; }
-        .live-card img { width: 100%; height: 320px; object-fit: cover; }
-        .live-body { padding: 25px; text-align: center; }
+        .action-btns { display: flex; gap: 5px; }
+        .btn-small { padding: 5px 10px; font-size: 11px; width: auto; margin: 0; }
+        .btn-del { background: #ff7675; }
 
         #login-gate { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .cat-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.85rem; border: 1px solid var(--pink); }
+        .cat-tag, .staff-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.85rem; border: 1px solid var(--pink); }
     </style>
 </head>
 <body>
@@ -88,10 +81,10 @@
                     <div id="admin-list"></div>
                 </div>
             </div>
-            <div class="live-card">
-                <img id="pre-img" src="https://via.placeholder.com/350x320?text=Preview" alt="Preview">
-                <div class="live-body">
-                    <h3 id="pre-name" style="font-family:'Playfair Display';">Product Name</h3>
+            <div class="live-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: sticky; top: 40px;">
+                <img id="pre-img" src="https://via.placeholder.com/350x320?text=Preview" style="width:100%; height:320px; object-fit:cover;">
+                <div style="padding: 25px; text-align: center;">
+                    <h3 id="pre-name" style="font-family:'Playfair Display'; margin:0;">Product Name</h3>
                     <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">₱0.00</div>
                     <div style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Order Now</div>
                 </div>
@@ -102,43 +95,40 @@
     <div id="settings" class="tab-content">
         <div class="panel">
             <h2>Business Settings</h2>
-            <p style="font-size: 0.9rem; color: #666;">Configure categories and security credentials.</p>
-            <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
-
             <div class="owner-gate" id="ownerGate">
-                <span class="owner-label">⚠️ Master Authorization Required</span>
-                <p style="font-size: 0.8rem; margin: 5px 0 15px 0;">Unlock to access categories, passwords, and security history.</p>
+                <span class="owner-label">⚠️ Master Authorization</span>
                 <input type="password" id="ownerPassInput" placeholder="Enter Owner Password">
                 <button onclick="unlockSettings()" style="background: var(--owner-gold);">Unlock Master Settings</button>
             </div>
 
             <div id="protectedSettings" style="display:none; margin-top: 20px;">
-                <h3 style="color: var(--owner-gold);">Authorized Master Panel</h3>
-                
-                <div style="margin-top: 30px;">
+                <div style="margin-top: 20px;">
                     <h4>Category Management</h4>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="newCatInput" placeholder="Add new category">
+                        <input type="text" id="newCatInput" placeholder="New category name">
                         <button onclick="addCategory()" style="width:100px; margin:0;">Add</button>
                     </div>
-                    <div id="category-list" style="margin-top:15px;"></div>
+                    <div id="category-list" style="margin-top:10px;"></div>
                 </div>
 
-                <div style="margin-top: 30px;">
-                    <h4>Security History Log</h4>
-                    <table class="log-table">
-                        <thead><tr><th>Date & Time</th><th>Action</th><th>Status</th></tr></thead>
-                        <tbody id="security-logs"></tbody>
-                    </table>
-                </div>
+                <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
 
-                <div style="margin-top: 40px; padding: 20px; background: #fdfdfd; border-radius: 15px; border: 1px solid #eee;">
-                    <h4>Update Security Credentials</h4>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div><label style="font-size: 0.8rem;">Admin Password</label><input type="text" id="newAdminPass" placeholder="Standard Login"></div>
-                        <div><label style="font-size: 0.8rem;">Owner Password</label><input type="text" id="newOwnerPass" placeholder="Master Key"></div>
+                <div style="margin-top: 20px;">
+                    <h4>Staff Access (Multiple Admins)</h4>
+                    <p style="font-size:0.8rem; color:#666;">Add passwords that staff can use to login. They cannot access these settings.</p>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="newAdminPassInput" placeholder="Create Admin Password">
+                        <button onclick="addAdminPass()" style="width:100px; margin:0; background:#2d3436;">Add</button>
                     </div>
-                    <button onclick="updateSecurity()" style="background: #2d3436;">Save New Credentials</button>
+                    <div id="admin-pass-list" style="margin-top:10px;"></div>
+                </div>
+
+                <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
+
+                <div>
+                    <h4>Change Owner Master Password</h4>
+                    <input type="text" id="newOwnerPass" placeholder="New Master Key">
+                    <button onclick="updateOwnerPass()" style="background: var(--owner-gold);">Update Master Key</button>
                 </div>
             </div>
         </div>
@@ -147,7 +137,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
@@ -163,63 +153,64 @@
     let editID = null;
     let localItems = [];
 
-    // --- SECURITY & LOGGING ---
+    // --- MULTI-LOGIN LOGIC ---
     window.login = async () => {
-        const passDoc = await getDoc(doc(db, "config", "security"));
-        const adminPass = passDoc.exists() ? passDoc.data().admin : "zab123";
-        if(document.getElementById('entryPass').value === adminPass) {
+        const pass = document.getElementById('entryPass').value;
+        const staffSnap = await getDocs(collection(db, "admin_passwords"));
+        let valid = false;
+        
+        staffSnap.forEach(d => { if(d.id === pass) valid = true; });
+        
+        // Also allow owner password as a login backup
+        const ownerSnap = await getDoc(doc(db, "config", "security"));
+        if(pass === (ownerSnap.data()?.owner || "master789")) valid = true;
+
+        if(valid) {
             sessionStorage.setItem("zabAuth", "true");
             document.getElementById('login-gate').style.display = "none";
             initApp();
-        } else { alert("Wrong Password"); }
+        } else { alert("Invalid Password"); }
     };
 
+    // --- MASTER SETTINGS ---
     window.unlockSettings = async () => {
         const passDoc = await getDoc(doc(db, "config", "security"));
         const ownerPass = passDoc.exists() ? passDoc.data().owner : "master789";
-        
         if(document.getElementById('ownerPassInput').value === ownerPass) {
-            // Log the access
-            await addDoc(collection(db, "security_logs"), {
-                timestamp: new Date().toLocaleString(),
-                action: "Owner Settings Unlocked",
-                status: "Authorized"
-            });
             document.getElementById('ownerGate').style.display = "none";
             document.getElementById('protectedSettings').style.display = "block";
-            loadLogs();
-        } else { alert("Unauthorized Owner Password"); }
+            loadAdminPasses();
+        } else { alert("Unauthorized"); }
     };
 
-    function loadLogs() {
-        const q = query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(10));
-        onSnapshot(q, (snap) => {
-            const logBody = document.getElementById('security-logs');
-            logBody.innerHTML = "";
+    window.addAdminPass = async () => {
+        const pass = document.getElementById('newAdminPassInput').value.trim();
+        if(pass) await setDoc(doc(db, "admin_passwords", pass), {});
+        document.getElementById('newAdminPassInput').value = "";
+    };
+
+    window.deleteAdminPass = async (id) => {
+        if(confirm("Remove this admin access?")) await deleteDoc(doc(db, "admin_passwords", id));
+    };
+
+    function loadAdminPasses() {
+        onSnapshot(collection(db, "admin_passwords"), (snap) => {
+            const list = document.getElementById('admin-pass-list');
+            list.innerHTML = "";
             snap.forEach(d => {
-                logBody.innerHTML += `<tr><td>${d.data().timestamp}</td><td>${d.data().action}</td><td class="log-status">${d.data().status}</td></tr>`;
+                list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="deleteAdminPass('${d.id}')">×</span></div>`;
             });
         });
     }
 
-    window.updateSecurity = async () => {
-        const admin = document.getElementById('newAdminPass').value || "zab123";
+    window.updateOwnerPass = async () => {
         const owner = document.getElementById('newOwnerPass').value || "master789";
-        await setDoc(doc(db, "config", "security"), { admin, owner });
-        alert("Credentials updated! System will restart.");
+        await setDoc(doc(db, "config", "security"), { owner });
+        alert("Owner Password Updated. Logging out.");
         logout();
     };
 
-    // --- DASHBOARD LOGIC ---
-    window.switchTab = (tabId, el) => {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        el.classList.add('active');
-    };
-
-    window.logout = () => { sessionStorage.clear(); location.reload(); };
-
+    // --- INVENTORY LOGIC ---
     function initApp() {
         onSnapshot(collection(db, "categories"), (snap) => {
             const catList = document.getElementById('category-list');
@@ -241,26 +232,27 @@
                     <div class="product-row">
                         <img src="${item.imgUrl}">
                         <div style="flex-grow:1"><b>${item.name}</b><br><small>₱${item.price}</small></div>
-                        <button onclick="startEdit('${item.id}')" style="width:60px; font-size:10px; padding:5px; margin:0;">Edit</button>
+                        <div class="action-btns">
+                            <button class="btn-small" onclick="startEdit('${item.id}')">Edit</button>
+                            <button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button>
+                        </div>
                     </div>`;
             });
         });
     }
 
+    window.deleteItem = async (id) => { if(confirm("Permanently delete item?")) await deleteDoc(doc(db, "products", id)); };
     window.addCategory = async () => {
         const name = document.getElementById('newCatInput').value;
         if(name) await setDoc(doc(db, "categories", name), {});
         document.getElementById('newCatInput').value = "";
     };
-
     window.deleteCat = async (id) => { if(confirm("Delete category?")) await deleteDoc(doc(db, "categories", id)); };
-
     window.updateLiveView = () => {
         document.getElementById('pre-name').innerText = document.getElementById('pName').value || "Product Name";
         document.getElementById('pre-price').innerText = "₱" + (document.getElementById('pPrice').value || "0.00");
         document.getElementById('pre-img').src = document.getElementById('pImg').value || "https://via.placeholder.com/350x320?text=Preview";
     };
-
     document.getElementById('saveBtn').onclick = async () => {
         const data = {
             name: document.getElementById('pName').value,
@@ -273,7 +265,6 @@
         else await addDoc(collection(db, "products"), { ...data, createdAt: Date.now() });
         location.reload();
     };
-
     window.startEdit = (id) => {
         const item = localItems.find(i => i.id === id);
         editID = id;
@@ -284,11 +275,14 @@
         updateLiveView();
         window.scrollTo({top:0, behavior:'smooth'});
     };
-
-    if(sessionStorage.getItem("zabAuth")) {
-        document.getElementById('login-gate').style.display = "none";
-        initApp();
-    }
+    window.switchTab = (tabId, el) => {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        el.classList.add('active');
+    };
+    window.logout = () => { sessionStorage.clear(); location.reload(); };
+    if(sessionStorage.getItem("zabAuth")) { document.getElementById('login-gate').style.display = "none"; initApp(); }
 </script>
 </body>
 </html>
