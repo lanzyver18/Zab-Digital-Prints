@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zab Admin | Professional Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; }
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f8f9fa; color: var(--text); display: flex; min-height: 100vh; }
         
         /* Sidebar Nav */
-        .sidebar { width: 280px; background: white; border-right: 1px solid #edf2f7; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+        .sidebar { width: 260px; background: white; border-right: 1px solid #edf2f7; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 100; }
         .sidebar-header { padding: 30px; border-bottom: 1px solid #f1f1f1; text-align: center; }
         .sidebar-menu { padding: 20px; flex-grow: 1; }
         .menu-item { padding: 12px 15px; border-radius: 10px; color: #636e72; cursor: pointer; margin-bottom: 5px; transition: 0.3s; font-weight: 500; }
@@ -19,35 +19,46 @@
 
         /* Main Workspace */
         .workspace { flex-grow: 1; padding: 40px; overflow-y: auto; }
-        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .stat-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #f1f1f1; }
-        .stat-card h5 { margin: 0; color: #b2bec3; font-size: 0.8rem; text-transform: uppercase; }
+        .stat-card h5 { margin: 0; color: #b2bec3; font-size: 0.75rem; text-transform: uppercase; }
         .stat-card div { font-size: 1.8rem; font-weight: bold; color: var(--dark-pink); }
 
-        /* Split Layout */
-        .content-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
+        /* Content Layout */
+        .content-grid { display: grid; grid-template-columns: 380px 1fr; gap: 40px; }
         
-        .form-container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: fit-content; position: sticky; top: 30px; }
+        /* Form & Live Preview Side */
+        .editor-side { position: sticky; top: 20px; height: fit-content; }
+        .form-container { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-top: 20px; }
         input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; background: #fcfcfc; font-family: inherit; transition: 0.3s; }
         input:focus { border-color: var(--pink); outline: none; background: white; }
         
         button { width: 100%; padding: 14px; background: var(--dark-pink); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
         button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 129, 146, 0.3); }
 
+        /* --- Live Card Preview (Same as Index Styling) --- */
+        .preview-label { font-size: 0.8rem; font-weight: bold; color: var(--dark-pink); margin-bottom: 10px; display: block; text-transform: uppercase; }
+        .live-card { background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 15px 35px rgba(212, 129, 146, 0.15); position: relative; width: 100%; max-width: 320px; margin: 0 auto; transition: 0.3s; pointer-events: none; }
+        .live-card img { width: 100%; height: 280px; object-fit: cover; background: #f0f0f0; }
+        .live-badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; color: white; text-transform: uppercase; }
+        .b-avail { background: #8ecae6; } .b-sold { background: #e07a5f; }
+        .live-body { padding: 20px; text-align: center; }
+        .live-body h3 { margin: 0; font-family: 'Playfair Display', serif; font-size: 1.3rem; }
+        .live-price { color: var(--dark-pink); font-size: 1.4rem; font-weight: 600; margin: 10px 0; }
+        .live-btn { background: var(--pink); color: white; padding: 10px 25px; border-radius: 50px; font-weight: bold; display: inline-block; font-size: 0.9rem; }
+
         /* Inventory List */
-        .inventory-list { background: white; padding: 20px; border-radius: 20px; border: 1px solid #f1f1f1; }
-        .product-row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f9f9f9; transition: 0.2s; }
-        .product-row:hover { background: #fafafa; }
-        .product-row img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; margin-right: 20px; border: 1px solid #eee; }
+        .inventory-list { background: white; padding: 25px; border-radius: 20px; border: 1px solid #f1f1f1; }
+        .product-row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f9f9f9; }
+        .product-row img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; margin-right: 20px; }
         .info { flex-grow: 1; }
-        .info b { display: block; font-size: 1rem; }
+        .info b { display: block; font-size: 0.95rem; }
         .info span { font-size: 0.8rem; color: #999; }
         
         .action-btns { display: flex; gap: 8px; }
-        .btn-edit { background: #e3f2fd; color: #1976d2; padding: 8px 15px; border-radius: 8px; font-size: 0.75rem; border: none; cursor: pointer; }
-        .btn-del { background: #ffebee; color: #d32f2f; padding: 8px 15px; border-radius: 8px; font-size: 0.75rem; border: none; cursor: pointer; }
+        .btn-edit { background: #e3f2fd; color: #1976d2; padding: 8px 12px; border-radius: 8px; font-size: 0.7rem; border: none; cursor: pointer; }
+        .btn-del { background: #ffebee; color: #d32f2f; padding: 8px 12px; border-radius: 8px; font-size: 0.7rem; border: none; cursor: pointer; }
 
-        /* Responsive */
         @media (max-width: 1100px) { .content-grid { grid-template-columns: 1fr; } .sidebar { display: none; } }
         #login-gate { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -55,8 +66,8 @@
 <body>
 
 <div id="login-gate">
-    <div style="width: 350px; text-align: center;">
-        <h2 style="color: var(--dark-pink);">Zab Admin</h2>
+    <div style="width: 320px; text-align: center;">
+        <h2 style="color: var(--dark-pink); font-family: 'Playfair Display';">Zab Admin</h2>
         <input type="password" id="entryPass" placeholder="Enter Admin Password">
         <button onclick="login()">Enter Workspace</button>
     </div>
@@ -64,54 +75,53 @@
 
 <aside class="sidebar">
     <div class="sidebar-header">
-        <b style="color: var(--dark-pink); font-size: 1.2rem;">ZAB PRINTS</b>
+        <b style="color: var(--dark-pink); font-size: 1.2rem; font-family: 'Playfair Display';">ZAB PRINTS</b>
     </div>
     <div class="sidebar-menu">
-        <div class="menu-item active">Dashboard</div>
-        <div class="menu-item">Orders (Coming Soon)</div>
-        <div class="menu-item" onclick="location.reload()">Logout</div>
+        <div class="menu-item active">Inventory</div>
+        <div class="menu-item" onclick="logout()">Logout</div>
     </div>
 </aside>
 
 <main class="workspace">
     <div class="stats-bar">
-        <div class="stat-card">
-            <h5>Total Products</h5>
-            <div id="count-all">0</div>
-        </div>
-        <div class="stat-card">
-            <h5>Available Items</h5>
-            <div id="count-avail">0</div>
-        </div>
-        <div class="stat-card">
-            <h5>Sold Out</h5>
-            <div id="count-sold" style="color: #fab1a0;">0</div>
-        </div>
+        <div class="stat-card"><h5>Total Items</h5><div id="count-all">0</div></div>
+        <div class="stat-card"><h5>In Stock</h5><div id="count-avail">0</div></div>
+        <div class="stat-card"><h5>Out of Stock</h5><div id="count-sold" style="color: #fab1a0;">0</div></div>
     </div>
 
     <div class="content-grid">
-        <div class="form-container">
-            <h3 id="formHeader" style="margin-top:0;">Add New Product</h3>
-            <input type="text" id="pName" placeholder="Product Name">
-            <input type="number" id="pPrice" placeholder="Price (PHP)">
-            
-            <label style="font-size:0.7rem; color:#aaa; margin-left:5px;">Category</label>
-            <select id="pCat">
-                <option value="Mugs">Mugs</option>
-                <option value="Keychains">Keychains</option>
-                <option value="Others">Others</option>
-            </select>
+        <div class="editor-side">
+            <span class="preview-label">Live Shop Preview</span>
+            <div class="live-card">
+                <div id="pre-badge" class="live-badge b-avail">Available</div>
+                <img id="pre-img" src="https://via.placeholder.com/300x280?text=No+Image" alt="Preview">
+                <div class="live-body">
+                    <h3 id="pre-name">Product Name</h3>
+                    <div class="live-price" id="pre-price">₱0.00</div>
+                    <div class="live-btn">Order Now</div>
+                </div>
+            </div>
 
-            <label style="font-size:0.7rem; color:#aaa; margin-left:5px;">Visibility</label>
-            <select id="pStatus">
-                <option value="Available">Available</option>
-                <option value="Sold Out">Sold Out</option>
-            </select>
+            <div class="form-container">
+                <h3 id="formHeader" style="margin-top:0; font-size: 1.1rem;">Item Editor</h3>
+                <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
+                <input type="number" id="pPrice" placeholder="Price (PHP)" oninput="updateLiveView()">
+                
+                <select id="pCat">
+                    <option value="Mugs">Mugs</option>
+                    <option value="Keychains">Keychains</option>
+                    <option value="Others">Others</option>
+                </select>
 
-            <input type="text" id="pImg" placeholder="Direct Image URL" oninput="showPrev(this.value)">
-            <img id="prev" style="width:100%; height:180px; object-fit:cover; display:none; border-radius:15px; margin-top:15px;">
-            
-            <button id="saveBtn">Save to Catalog</button>
+                <select id="pStatus" onchange="updateLiveView()">
+                    <option value="Available">Available</option>
+                    <option value="Sold Out">Sold Out</option>
+                </select>
+
+                <input type="text" id="pImg" placeholder="Direct Image URL" oninput="updateLiveView()">
+                <button id="saveBtn">Publish to Catalog</button>
+            </div>
         </div>
 
         <div class="inventory-list">
@@ -138,16 +148,41 @@
     const db = getFirestore(app);
     let editID = null;
 
+    // Check session on load
+    window.addEventListener('load', () => {
+        if (sessionStorage.getItem("zabLoggedIn") === "true") {
+            document.getElementById('login-gate').style.display = "none";
+            loadData();
+        }
+    });
+
     window.login = () => {
         if(document.getElementById('entryPass').value === "zab123") {
+            sessionStorage.setItem("zabLoggedIn", "true");
             document.getElementById('login-gate').style.display = "none";
             loadData();
         } else { alert("Incorrect password"); }
     };
 
-    window.showPrev = (url) => {
-        const p = document.getElementById('prev');
-        p.src = url; p.style.display = url ? 'block' : 'none';
+    window.logout = () => {
+        sessionStorage.removeItem("zabLoggedIn");
+        location.reload();
+    };
+
+    // --- Live View Logic ---
+    window.updateLiveView = () => {
+        const name = document.getElementById('pName').value || "Product Name";
+        const price = document.getElementById('pPrice').value || "0.00";
+        const img = document.getElementById('pImg').value || "https://via.placeholder.com/300x280?text=No+Image";
+        const status = document.getElementById('pStatus').value;
+
+        document.getElementById('pre-name').innerText = name;
+        document.getElementById('pre-price').innerText = "₱" + price;
+        document.getElementById('pre-img').src = img;
+        
+        const badge = document.getElementById('pre-badge');
+        badge.innerText = status;
+        badge.className = status === "Available" ? "live-badge b-avail" : "live-badge b-sold";
     };
 
     document.getElementById('saveBtn').onclick = async () => {
@@ -159,12 +194,14 @@
             imgUrl: document.getElementById('pImg').value
         };
 
+        if(!data.name || !data.price || !data.imgUrl) return alert("Fill all fields!");
+
         if(editID) {
             await updateDoc(doc(db, "products", editID), data);
             alert("Updated!");
         } else {
             await addDoc(collection(db, "products"), { ...data, createdAt: Date.now() });
-            alert("Added!");
+            alert("Published!");
         }
         location.reload();
     };
@@ -178,22 +215,38 @@
             snap.forEach(d => {
                 const item = d.data();
                 all++;
-                if(item.status === 'Available') avail++; else sold++;
+                item.status === 'Available' ? avail++ : sold++;
 
                 const row = document.createElement('div');
                 row.className = "product-row";
                 row.innerHTML = `
-                    <img src="${item.imgUrl}">
+                    <img src="${item.imgUrl}" onerror="this.src='https://via.placeholder.com/60?text=Error'">
                     <div class="info">
                         <b>${item.name}</b>
                         <span>₱${item.price} • ${item.category}</span>
                     </div>
                     <div class="action-btns">
-                        <button class="btn-edit" onclick="editProduct('${d.id}', '${item.name}', '${item.price}', '${item.category}', '${item.status}', '${item.imgUrl}')">Edit</button>
-                        <button class="btn-del" onclick="deleteItem('${d.id}')">Delete</button>
+                        <button class="btn-edit" id="edit-${d.id}">Edit</button>
+                        <button class="btn-del" id="del-${d.id}">Delete</button>
                     </div>
                 `;
                 list.appendChild(row);
+
+                document.getElementById(`edit-${d.id}`).onclick = () => {
+                    editID = d.id;
+                    document.getElementById('pName').value = item.name;
+                    document.getElementById('pPrice').value = item.price;
+                    document.getElementById('pCat').value = item.category;
+                    document.getElementById('pStatus').value = item.status;
+                    document.getElementById('pImg').value = item.imgUrl;
+                    document.getElementById('saveBtn').innerText = "Update Product";
+                    document.getElementById('formHeader').innerText = "Edit Mode";
+                    updateLiveView();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                document.getElementById(`del-${d.id}`).onclick = async () => {
+                    if(confirm("Delete this forever?")) await deleteDoc(doc(db, "products", d.id));
+                };
             });
 
             document.getElementById('count-all').innerText = all;
@@ -201,21 +254,6 @@
             document.getElementById('count-sold').innerText = sold;
         });
     }
-
-    window.editProduct = (id, n, p, c, s, i) => {
-        editID = id;
-        document.getElementById('pName').value = n;
-        document.getElementById('pPrice').value = p;
-        document.getElementById('pCat').value = c;
-        document.getElementById('pStatus').value = s;
-        document.getElementById('pImg').value = i;
-        document.getElementById('saveBtn').innerText = "Update Product";
-        document.getElementById('formHeader').innerText = "Edit Mode";
-        showPrev(i);
-        window.scrollTo(0,0);
-    };
-
-    window.deleteItem = async (id) => { if(confirm("Permanently delete?")) await deleteDoc(doc(db, "products", id)); };
 </script>
 </body>
 </html>
