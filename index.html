@@ -95,19 +95,16 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 35px; }
         .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(212, 129, 146, 0.1); }
-        .card img { width: 100%; height: 350px; object-fit: cover; background: #fdfdfd; }
+        .card img { width: 100%; height: 350px; object-fit: cover; background: #fafafa; }
         
         .badge { position: absolute; top: 20px; left: 20px; padding: 6px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; color: var(--white); text-transform: uppercase; z-index: 10; }
         .badge-available { background: #8ecae6; }
         .badge-soldout { background: #e07a5f; }
 
         .card-body { padding: 25px; text-align: center; }
-        .price { color: var(--dark-pink); font-size: 1.6rem; font-weight: 600; margin: 15px 0; }
-        .moq-label { display: block; font-size: 0.8rem; color: #999; margin-bottom: 10px; }
+        .price { color: var(--dark-pink); font-size: 1.4rem; font-weight: 600; margin: 15px 0; }
         .btn { background: var(--pink); color: var(--white); padding: 14px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; }
-        .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
 
-        /* Back to Top Button */
         #backToTop { position: fixed; bottom: 110px; right: 30px; background: var(--white); color: var(--dark-pink); width: 50px; height: 50px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid var(--pink); cursor: pointer; z-index: 1999; font-weight: bold; }
 
         .messenger-fab { position: fixed; bottom: 30px; right: 30px; background: #0084ff; color: var(--white); width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,132,255,0.3); z-index: 2000; transition: 0.3s; }
@@ -200,9 +197,7 @@
     onSnapshot(collection(db, "categories"), (snap) => {
         const filterBar = document.getElementById('dynamic-filter-bar');
         filterBar.innerHTML = `<button class="filter-btn active" id="btn-all">All Items</button>`;
-        
         document.getElementById('btn-all').onclick = function() { setCategory('All', this); };
-
         snap.forEach(d => {
             const catName = d.id;
             const btn = document.createElement('button');
@@ -235,15 +230,13 @@
         filtered.forEach(item => {
             const isSoldOut = item.status === "Sold Out";
             const displayPrice = (item.price && item.price > 0) ? `₱${item.price}` : "Contact us for price";
-            const displayImg = item.imgUrl || "https://via.placeholder.com/400x350?text=Design+Preview+Soon";
-            const displayMoq = item.moq ? `Minimum Order: ${item.moq}` : "";
-            
-            let orderMsg;
+            const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : "IMG_1218.jpeg";
+
+            let orderMsg = encodeURIComponent(`Hi Zab! I'm interested in the ${item.name}.`);
             if (item.price && item.price > 0) {
                 orderMsg = encodeURIComponent(`Hi Zab Digital Prints! I would like to order: ${item.name} (₱${item.price})`);
-            } else {
-                orderMsg = encodeURIComponent(`Hi Zab! I'm interested in the ${item.name}. Could I get a price quote for this?`);
             }
+            
             const messengerUrl = `https://www.facebook.com/messages/t/zabprintsdigital?text=${orderMsg}`;
 
             grid.innerHTML += `
@@ -253,12 +246,8 @@
                     <div class="card-body">
                         <h3 style="margin:0; font-family:'Playfair Display'">${item.name}</h3>
                         <div class="price">${displayPrice}</div>
-                        ${displayMoq ? `<span class="moq-label">${displayMoq}</span>` : ''}
-                        <a href="${isSoldOut ? '#' : messengerUrl}" 
-                           target="${isSoldOut ? '' : '_blank'}"
-                           class="btn" 
-                           ${isSoldOut ? 'style="background:#ccc; cursor:not-allowed"' : ''}>
-                            ${isSoldOut ? 'Sold Out' : (item.price > 0 ? 'Order Now' : 'Inquire Now')}
+                        <a href="${isSoldOut ? '#' : messengerUrl}" target="${isSoldOut ? '' : '_blank'}" class="btn" ${isSoldOut ? 'style="background:#ccc; cursor:not-allowed"' : ''}>
+                            ${isSoldOut ? 'Sold Out' : (item.price > 0 ? 'Order via Messenger' : 'Inquire Now')}
                         </a>
                     </div>
                 </div>`;
@@ -267,14 +256,9 @@
 
     window.onscroll = function() {
         const btn = document.getElementById("backToTop");
-        if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
-            btn.style.display = "flex";
-        } else {
-            btn.style.display = "none";
-        }
+        if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) { btn.style.display = "flex"; } else { btn.style.display = "none"; }
     };
     window.scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); };
-
 </script>
 </body>
 </html>
