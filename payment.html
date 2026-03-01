@@ -3,82 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Details | Zab Digital Prints</title>
+    <title>Complete Your Order | Zab Digital Prints</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; --success: #2ecc71; }
+        
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         
         .pay-card { 
             background: var(--white); 
             padding: 40px; 
             border-radius: 40px; 
-            box-shadow: 0 30px 60px rgba(212, 129, 146, 0.15); 
+            box-shadow: 0 40px 80px rgba(212, 129, 146, 0.12); 
             text-align: center; 
             max-width: 480px; 
             width: 100%; 
-            animation: slideUp 0.6s ease;
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Decorative top bar */
+        .pay-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--pink), var(--dark-pink)); }
 
-        h1 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 2rem; margin-bottom: 10px; }
-        .order-summary { background: var(--bg); padding: 20px; border-radius: 20px; margin: 20px 0; border: 1px dashed var(--pink); }
-        .total-amount { font-size: 2.2rem; font-weight: 600; color: var(--dark-pink); }
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .method-badge { display: inline-block; padding: 5px 15px; background: var(--dark-pink); color: white; border-radius: 50px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; }
-        .acct-details { text-align: left; background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 20px; border-left: 5px solid var(--pink); font-size: 0.9rem; line-height: 1.6; }
+        .header-section { margin-bottom: 30px; }
+        h1 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 2.2rem; margin: 10px 0 5px 0; }
+        .order-ref { font-size: 0.75rem; color: #bbb; text-transform: uppercase; letter-spacing: 2px; }
+
+        .order-summary { 
+            background: var(--bg); 
+            padding: 25px; 
+            border-radius: 25px; 
+            margin: 20px 0; 
+            border: 1px solid rgba(212, 129, 146, 0.2);
+            position: relative;
+        }
+        .total-label { font-size: 0.8rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .total-amount { font-size: 2.5rem; font-weight: 600; color: var(--dark-pink); margin: 0; }
+
+        .method-badge { display: inline-block; padding: 6px 18px; background: var(--dark-pink); color: white; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(212, 129, 146, 0.3); }
         
-        .qr-container { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid #eee; margin-bottom: 25px; }
-        .qr-container img { width: 100%; max-width: 220px; height: auto; object-fit: contain; }
+        .acct-details { 
+            text-align: left; 
+            background: #fff; 
+            padding: 20px; 
+            border-radius: 20px; 
+            margin-bottom: 25px; 
+            border: 1px solid #f0f0f0; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            position: relative;
+        }
+        .acct-details .row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+        .acct-details small { font-size: 0.7rem; color: #999; text-transform: uppercase; font-weight: 600; }
+        .acct-details div.val { font-size: 1rem; font-weight: 600; color: #333; }
+        
+        .copy-btn { 
+            background: var(--bg); color: var(--dark-pink); border: none; padding: 4px 10px; 
+            border-radius: 6px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .copy-btn:hover { background: var(--pink); color: white; }
 
-        .btn { background: var(--pink); color: var(--white); padding: 15px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; display: block; transition: 0.3s; margin-top: 10px; }
-        .btn:hover { background: var(--dark-pink); transform: scale(1.02); }
+        .qr-container { 
+            background: #fff; 
+            padding: 20px; 
+            border-radius: 25px; 
+            border: 1px solid #eee; 
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+        .qr-container img { width: 200px; height: 200px; object-fit: contain; }
+        .qr-label { font-size: 0.7rem; color: #aaa; margin-top: 10px; font-weight: 500; }
+
+        .instructions { 
+            text-align: left; 
+            font-size: 0.85rem; 
+            line-height: 1.6; 
+            margin-bottom: 30px; 
+            padding: 0 10px;
+            color: #777;
+        }
+        .instructions b { color: #444; }
+
+        .btn { 
+            background: var(--dark-pink); 
+            color: var(--white); 
+            padding: 18px 35px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            display: block; 
+            transition: 0.4s; 
+            box-shadow: 0 10px 20px rgba(212, 129, 146, 0.2);
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 129, 146, 0.3); }
 
         @media (max-width: 600px) {
             .pay-card { padding: 30px 20px; border-radius: 30px; }
-            h1 { font-size: 1.7rem; }
-            .total-amount { font-size: 1.8rem; }
+            h1 { font-size: 1.8rem; }
+            .total-amount { font-size: 2.1rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="pay-card">
-        <div id="methodBadge" class="method-badge">Payment Selection</div>
-        <h1>Almost Done!</h1>
-        <p>Hi <span id="custName" style="font-weight:600;">Customer</span>, please settle your payment to begin production:</p>
+        <div class="header-section">
+            <div class="order-ref" id="orderID">REF: ZAB-88219</div>
+            <h1>Payment Details</h1>
+            <p style="font-size: 0.9rem; color: #888;">Order placed by <span id="custName" style="color: var(--dark-pink); font-weight:600;">Customer</span></p>
+        </div>
+
+        <div id="methodBadge" class="method-badge">GCash Payment</div>
         
         <div class="order-summary">
-            <div class="total-amount" id="orderTotal">₱0</div>
+            <span class="total-label">Amount Due</span>
+            <div class="total-amount" id="orderTotal">₱0.00</div>
         </div>
 
-        <div class="acct-details" id="acctInfo"></div>
+        <div class="acct-details" id="acctInfo">
+            </div>
 
         <div class="qr-container">
-            <img id="qrImage" src="placeholder-qr.png" alt="Scan to Pay">
-            <p style="font-size: 0.7rem; color: #999; margin-top: 10px;">Scan QR to Pay</p>
+            <img id="qrImage" src="placeholder-qr.png" alt="Payment QR Code">
+            <div class="qr-label">Scan QR with your banking app</div>
         </div>
 
-        <div style="text-align: left; font-size: 0.8rem; line-height: 1.6; margin-bottom: 20px;">
-            <b>Instructions:</b><br>
-            1. Send the exact amount shown above.<br>
-            2. Send your receipt to our <a href="https://m.me/zabprintsdigital" style="color:var(--dark-pink); font-weight:bold;">Messenger</a>.<br>
-            3. Order will be processed once payment is verified.
+        <div class="instructions">
+            <b>Final Steps:</b><br>
+            1. Settle the amount via the method shown above.<br>
+            2. Take a <b>screenshot</b> of your successful transaction.<br>
+            3. Send it to <a href="https://m.me/zabprintsdigital" style="color:var(--dark-pink); font-weight:bold; text-decoration:none;">Messenger</a> for verification.
         </div>
 
-        <a href="index.html" class="btn">Return to Shop</a>
+        <a href="index.html" class="btn">Return to Homepage</a>
     </div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
         const name = params.get('name') || "Valued Customer";
-        const total = params.get('total') || "₱0";
+        const total = params.get('total') || "₱0.00";
         const method = params.get('method') || "GCash";
+
+        // Random Reference ID for a professional touch
+        const randomID = "ZAB-" + Math.floor(10000 + Math.random() * 90000);
+        document.getElementById('orderID').innerText = `REF: ${randomID}`;
 
         document.getElementById('custName').innerText = decodeURIComponent(name);
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
-        document.getElementById('methodBadge').innerText = method + " Payment";
+        document.getElementById('methodBadge').innerText = method;
+
+        const acctBox = document.getElementById('acctInfo');
+        const qrImg = document.getElementById('qrImage');
 
         const paymentData = {
             "GCash": { 
@@ -87,20 +164,49 @@
                 qr: "gcash-qr.jpg" 
             },
             "BPI": { 
-                number: "Account: XXXX-XXXX-XX", 
+                number: "XXXX-XXXX-XX", 
                 name: "Zab Digital Prints", 
                 qr: "bpi-qr.jpg" 
             },
             "BDO": { 
-                number: "Account: XXXXXXXXXXX", 
+                number: "XXXXXXXXXXX", 
                 name: "Zab Digital Prints", 
                 qr: "bdo-qr.jpg" 
             }
         };
 
         const selected = paymentData[method] || paymentData["GCash"];
-        document.getElementById('acctInfo').innerHTML = `<b>Account Name:</b><br>${selected.name}<br><b>Account Details:</b><br>${selected.number}`;
-        document.getElementById('qrImage').src = selected.qr;
+
+        acctBox.innerHTML = `
+            <div class="row">
+                <div>
+                    <small>Account Name</small>
+                    <div class="val">${selected.name}</div>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom:0;">
+                <div>
+                    <small>Account Number</small>
+                    <div class="val" id="acctNum">${selected.number}</div>
+                </div>
+                <button class="copy-btn" onclick="copyAcct()">Copy</button>
+            </div>
+        `;
+        qrImg.src = selected.qr;
+
+        function copyAcct() {
+            const num = document.getElementById('acctNum').innerText;
+            navigator.clipboard.writeText(num);
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = "Copied!";
+            btn.style.background = "#2ecc71";
+            btn.style.color = "white";
+            setTimeout(() => {
+                btn.innerText = "Copy";
+                btn.style.background = "var(--bg)";
+                btn.style.color = "var(--dark-pink)";
+            }, 2000);
+        }
     </script>
 </body>
 </html>
