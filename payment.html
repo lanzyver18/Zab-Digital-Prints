@@ -6,139 +6,184 @@
     <title>Complete Your Order | Zab Digital Prints</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --pink: #ffb7c5; 
-            --dark-pink: #d48192; 
-            --deep-pink: #b86072; /* New deeper accent */
-            --bg: #fff5f6; 
-            --text: #2d3436; 
-            --white: #ffffff; 
-            --messenger: #0084ff; 
-            --glow: rgba(212, 129, 146, 0.4);
-        }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; --success: #2ecc71; --messenger: #0084ff; --pop-shadow: 0 15px 30px rgba(212, 129, 146, 0.4); --msg-shadow: 0 15px 30px rgba(0, 132, 255, 0.4); }
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         
+        /* Digital UI (reverted to previous style) */
         .pay-card { 
             background: var(--white); 
             padding: 40px; 
             border-radius: 40px; 
-            box-shadow: 0 30px 60px rgba(212, 129, 146, 0.2); 
+            box-shadow: 0 40px 80px rgba(212, 129, 146, 0.12); 
             text-align: center; 
             max-width: 480px; 
             width: 100%; 
             animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        /* Gradient top bar */
-        .pay-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: linear-gradient(90deg, var(--pink), var(--deep-pink), var(--pink)); }
+        .pay-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--pink), var(--dark-pink)); }
 
         @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .header-section { margin-bottom: 25px; }
-        h1 { font-family: 'Playfair Display', serif; color: var(--deep-pink); font-size: 2.2rem; margin: 5px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .order-ref { font-size: 0.8rem; color: #a2a2a2; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
+        h1 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 2rem; margin: 10px 0 5px 0; }
+        .order-ref { font-size: 0.75rem; color: #bbb; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
 
-        /* Pop Order Summary */
         .order-summary { 
-            background: linear-gradient(145deg, #fffcfd, #fff0f3);
-            padding: 25px; 
-            border-radius: 30px; 
-            margin: 15px 0 25px 0; 
-            border: 2px solid var(--pink);
-            box-shadow: inset 0 2px 10px rgba(212, 129, 146, 0.1);
+            background: var(--bg); 
+            padding: 20px; 
+            border-radius: 25px; 
+            margin: 10px 0 25px 0; 
+            border: 1px dashed var(--dark-pink);
         }
-        .total-label { font-size: 0.8rem; color: var(--deep-pink); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .total-amount { font-size: 3rem; font-weight: 800; color: var(--deep-pink); margin: 0; }
+        .total-label { font-size: 0.75rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .total-amount { font-size: 2.8rem; font-weight: 700; color: var(--dark-pink); margin: 0; }
 
-        .section-title { font-size: 0.9rem; font-weight: 700; text-align: left; margin-bottom: 12px; color: var(--text); display: flex; align-items: center; gap: 10px; }
-        .section-title span { background: var(--deep-pink); color: white; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.75rem; box-shadow: 0 4px 10px var(--glow); }
-
-        .acct-details { text-align: left; background: #fff; padding: 22px; border-radius: 24px; margin-bottom: 25px; border: 1px solid #f0f0f0; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-        .acct-details small { font-size: 0.7rem; color: #999; text-transform: uppercase; font-weight: 700; }
-        .acct-details div.val { font-size: 1.1rem; font-weight: 600; color: #2d3436; }
+        .method-badge { display: inline-block; padding: 6px 18px; background: var(--dark-pink); color: white; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
         
-        .copy-btn { background: var(--bg); color: var(--deep-pink); border: 2px solid var(--pink); padding: 5px 15px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .copy-btn:hover { background: var(--deep-pink); color: white; border-color: var(--deep-pink); }
+        .section-title { font-size: 0.85rem; font-weight: 600; text-align: left; margin-bottom: 10px; color: #888; display: flex; align-items: center; gap: 8px; }
+        .section-title span { background: var(--pink); color: white; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.7rem; flex-shrink: 0; }
 
-        .qr-container { background: #fff; padding: 20px; border-radius: 30px; border: 2px solid #f9f9f9; margin-bottom: 30px; display: inline-block; cursor: zoom-in; transition: 0.4s; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
-        .qr-container:hover { transform: scale(1.03); border-color: var(--pink); box-shadow: 0 15px 35px var(--glow); }
-
-        /* THE BAR FIX - REDESIGNED */
-        .verification-area { 
-            background: #fffcfd; 
-            padding: 25px; 
-            border-radius: 30px; 
+        .acct-details { 
+            text-align: left; 
+            background: #fff; 
+            padding: 20px; 
+            border-radius: 20px; 
             margin-bottom: 25px; 
-            border: 2px solid var(--pink); 
-            box-sizing: border-box;
+            border: 1px solid #f0f0f0; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+        }
+        .acct-details div.val { font-size: 1rem; font-weight: 600; color: #333; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* THE BAR FIX */
+        .verification-area { 
+            background: #fdf2f4; 
+            padding: 20px; 
+            border-radius: 20px; 
+            margin-bottom: 25px; 
+            border: 1.5px solid var(--pink); 
+            box-sizing: border-box; /* Crucial fix */
             width: 100%;
-            box-shadow: 0 10px 20px rgba(212, 129, 146, 0.05);
         }
-        .verification-area label { font-size: 0.75rem; color: var(--deep-pink); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 12px; }
+        .verification-area label {
+            font-size: 0.7rem; 
+            color: var(--dark-pink); 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            display: block; 
+            margin-bottom: 8px;
+        }
         .verification-area input { 
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 15px; 
-            border: 2px solid #eee; 
+            width: 100%; /* Spans full width of parent padding */
+            padding: 14px; 
+            border-radius: 12px; 
+            border: 1px solid var(--pink); 
             outline: none; 
-            text-align: center; 
-            font-weight: 700; 
-            font-size: 1.3rem; 
-            box-sizing: border-box;
+            text-align: center; /* Centered for intuition */
+            font-weight: bold; 
+            font-size: 1.2rem; 
+            box-sizing: border-box; /* Ensured fix */
             font-family: 'Courier Prime', monospace;
-            transition: 0.3s;
-            background: #fff;
-            color: var(--text);
         }
-        .verification-area input:focus { border-color: var(--deep-pink); box-shadow: 0 0 15px var(--glow); }
 
-        /* Button Glow & Pop */
-        .btn { padding: 20px 35px; border-radius: 50px; text-decoration: none; font-weight: 700; display: block; transition: 0.4s; margin-bottom: 12px; border: none; cursor: pointer; width: 100%; box-sizing: border-box; font-size: 1.05rem; }
+        /* BUTTON POP - Updated High Pop Styles */
+        .btn { 
+            padding: 18px 35px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            display: block; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Snappy pop animation */
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.05rem;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Copy Button Pop */
+        .copy-btn { 
+            background: var(--dark-pink); color: white; border: none; padding: 6px 15px; 
+            border-radius: 8px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 5px 10px rgba(212, 129, 146, 0.3);
+        }
+        .copy-btn:hover { background: #b86072; transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 15px rgba(212, 129, 146, 0.4); }
+
+        /* Messenger Button Pop */
         .btn-messenger { 
             background: var(--messenger); 
             color: white; 
             display: flex !important; 
             align-items: center; 
             justify-content: center; 
-            gap: 12px; 
-            opacity: 0.4; 
+            gap: 10px; 
+            opacity: 0.5; 
             pointer-events: none; 
-            box-shadow: 0 8px 20px rgba(0, 132, 255, 0.2);
+            transition: 0.4s;
+            box-shadow: 0 10px 20px rgba(0, 132, 255, 0.2);
+            margin-bottom: 12px;
         }
-        .btn-messenger.active { opacity: 1; pointer-events: auto; box-shadow: 0 12px 25px rgba(0, 132, 255, 0.4); }
-        .btn-messenger:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        .btn-messenger.active { opacity: 1; pointer-events: auto; box-shadow: var(--msg-shadow); }
+        .btn-messenger.active:hover { transform: translateY(-5px) scale(1.02); filter: brightness(1.1); box-shadow: 0 20px 40px rgba(0, 132, 255, 0.5); }
 
-        .btn-small-group { display: flex; gap: 12px; }
-        .btn-small { flex: 1; padding: 14px; border-radius: 50px; border: 2px solid #eee; background: white; color: #bbb; font-weight: 700; font-size: 0.85rem; cursor: not-allowed; pointer-events: none; transition: 0.3s; }
-        .btn-small.active { color: var(--deep-pink); border-color: var(--pink); cursor: pointer; pointer-events: auto; box-shadow: 0 5px 15px rgba(212, 129, 146, 0.1); }
-        .btn-small.active:hover { background: var(--bg); transform: translateY(-2px); }
+        /* Small Group Pop */
+        .btn-small-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        
+        .btn-small { 
+            flex: 1; padding: 14px; border-radius: 50px; border: 1px solid #eee; text-decoration: none; font-size: 0.85rem; font-weight: 600; color: #ccc; background: white; cursor: not-allowed; pointer-events: none; text-align: center; box-sizing: border-box; transition: 0.3s;
+        }
+        /* Lock logic applied via printBtn ID */
+        #printBtn.active { color: white; background: #333; cursor: pointer; border-color: #333; pointer-events: auto; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        #printBtn.active:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
 
-        .timer-box { font-size: 0.8rem; color: #e74c3c; font-weight: 700; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 6px; background: #fff1f0; padding: 8px 20px; border-radius: 50px; border: 1px solid #ffecec; }
+        /* This is the back/cancel button which is always active */
+        .btn-outline-pop { background: var(--white); color: #888; border: 2px solid #eee; font-size: 0.85rem; padding: 12px; font-weight: 600; cursor: pointer; pointer-events: auto; transition: 0.3s; }
+        .btn-outline-pop:hover { border-color: var(--pink); color: var(--dark-pink); background: var(--bg); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 129, 146, 0.1); }
+
+        .qr-container { 
+            background: #fff; 
+            padding: 15px; 
+            border-radius: 25px; 
+            border: 1px solid #eee; 
+            margin-bottom: 30px;
+            display: inline-block;
+            cursor: zoom-in;
+            transition: 0.3s;
+        }
+        .qr-container:hover { transform: scale(1.02); border-color: var(--pink); }
+        .qr-container img { width: 180px; height: 180px; object-fit: contain; }
+
+        /* Receipt styling for PDF (remains authentic thermal style) */
+        #printableReceipt { display: none; font-family: 'Courier Prime', monospace; padding: 30px; width: 380px; margin: 0 auto; color: black; }
+        .receipt-line { border-bottom: 1px dashed black; margin: 15px 0; }
+        .receipt-row { display: flex; justify-content: space-between; margin: 5px 0; font-size: 0.85rem; }
+
+        #qrModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
+        #qrModal img { width: 80%; max-width: 400px; background: white; padding: 20px; border-radius: 10px; }
+        .timer-box { font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; background: #fff1f0; padding: 6px 16px; border-radius: 50px; }
 
         @media print {
             #paymentUI, #qrModal { display: none !important; }
             #printableReceipt { display: block !important; }
-            body { background: white; }
+            body { background: white; padding: 0; }
         }
-        /* Hidden Receipt remains same for thermal look */
-        #printableReceipt { display: none; font-family: 'Courier Prime', monospace; padding: 30px; width: 380px; margin: 0 auto; color: black; }
-        .receipt-line { border-bottom: 1px dashed black; margin: 15px 0; }
     </style>
 </head>
 <body>
 
-    <div id="qrModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out;" onclick="this.style.display='none'">
-        <img id="zoomedImg" style="width: 85%; max-width: 450px; background: white; padding: 20px; border-radius: 20px;" src="">
+    <div id="qrModal" onclick="closeZoom()">
+        <img id="zoomedImg" src="">
     </div>
 
-    <div class="pay-card" id="paymentUI">
+    <div class="pay-card">
         <div class="timer-box">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span id="timer">30:00</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Void in <span id="timer">30:00</span>
         </div>
         
         <div class="order-ref" id="orderID">REF: LOADING...</div>
@@ -149,48 +194,54 @@
             <div class="total-amount" id="orderTotal">₱0.00</div>
         </div>
 
-        <div class="section-title"><span>1</span> Send Payment to <b id="displayMethod" style="color:var(--deep-pink); margin-left:5px;">GCash</b></div>
+        <div class="section-title"><span>1</span> Transfer to <b id="displayMethod" style="color:var(--dark-pink); margin-left:4px;">GCash</b></div>
         <div class="acct-details" id="acctInfo"></div>
 
         <div class="qr-container" onclick="zoomQR()">
-            <img id="qrImage" src="placeholder-qr.png" alt="Payment QR">
-            <div style="font-size: 0.65rem; color: var(--dark-pink); margin-top: 10px; font-weight: 700; letter-spacing: 1px;">TAP TO ENLARGE</div>
+            <img id="qrImage" src="placeholder-qr.png" alt="QR">
+            <div style="font-size: 0.6rem; color: #ccc; margin-top: 10px; font-weight: 600;">TAP TO ENLARGE</div>
         </div>
 
-        <div class="section-title"><span>2</span> Verify & Finish</div>
+        <div class="section-title"><span>2</span> Verify & Confirm</div>
         
         <div class="verification-area">
-            <label>Reference / Transaction No.</label>
-            <input type="text" id="transNum" placeholder="0000 000 0000" oninput="validateVerification()">
-            <p style="font-size: 0.7rem; color: #888; margin-top: 10px; text-align: center;">Required to unlock receipt and confirmation.</p>
+            <label style="text-align: center;">Transaction / Reference No.</label>
+            <input type="text" id="transNum" placeholder="Enter Ref. No." oninput="validateVerification()">
+            <p style="font-size: 0.65rem; color: #888; margin-top: 8px; text-align: center; line-height: 1.3;">Required to unlock Messenger and PDF receipt.</p>
         </div>
 
         <a href="#" id="messengerLink" target="_blank" class="btn btn-messenger">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
             Confirm on Messenger
         </a>
 
         <div class="btn-small-group">
-            <button id="printBtn" onclick="window.print()" class="btn-small">Save PDF Receipt</button>
-            <a href="index.html" class="btn-small active" style="border:none; color:#bbb; flex:0.4;">Cancel</a>
+            <button id="printBtn" onclick="window.print()" class="btn-small">Save PDF Receipt (Locked)</button>
+            <a href="index.html" class="btn btn-small btn-outline-pop">Cancel</a>
         </div>
     </div>
 
     <div id="printableReceipt">
         <center>
-            <h2 style="margin-bottom:0; font-size: 1.4rem;">ZAB DIGITAL PRINTS</h2>
-            <p style="font-size: 0.75rem; margin-top:5px;">Keeping memories within view<br>Calamba City, Laguna</p>
+            <h2 style="margin-bottom:0;">ZAB DIGITAL PRINTS</h2>
+            <p style="font-size: 0.7rem; margin-top:5px;">Keeping memories within view<br>Calamba City, Laguna</p>
         </center>
         <div class="receipt-line"></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.85rem;"><span>REF NO:</span><b id="recID">---</b></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.85rem;"><span>TRANS NO:</span><b id="recTrans">---</b></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.85rem;"><span>DATE:</span><span id="recDate">---</span></div>
+        <div class="receipt-row"><span>REF NO:</span><b id="recID">---</b></div>
+        <div class="receipt-row"><span>TRANS NO:</span><b id="recTrans">---</b></div>
+        <div class="receipt-row"><span>DATE:</span><span id="recDate">---</span></div>
+        <div class="receipt-row"><span>CUST:</span><span id="recName">---</span></div>
         <div class="receipt-line"></div>
         <div id="receiptItems"></div>
         <div class="receipt-line"></div>
-        <div style="display:flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem;"><span>TOTAL</span><span id="recTotal">₱0.00</span></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.85rem; margin-top:5px;"><span>METHOD:</span><span id="recMethod">---</span></div>
-        <p style="font-size: 0.75rem; text-align: center; margin-top: 25px; border: 1px solid black; padding: 10px;"><b>OFFICIAL E-RECEIPT</b><br>Please send this to our Messenger for final verification.</p>
+        <div class="receipt-row" style="font-weight: bold; font-size: 1.1rem;"><span>TOTAL</span><span id="recTotal">₱0.00</span></div>
+        <div class="receipt-row"><span>METHOD:</span><span id="recMethod">---</span></div>
+        <div class="receipt-line" style="margin-top:20px;"></div>
+        <p style="font-size: 0.7rem; text-align: center;"><b>STATUS: PENDING</b><br>Submit this receipt via Messenger for verification.</p>
+        <center style="margin-top:30px; opacity:0.8;">
+            <svg width="150" height="40" viewBox="0 0 100 30"><rect x="0" width="2" height="30"/><rect x="5" width="4" height="30"/><rect x="12" width="1" height="30"/><rect x="15" width="6" height="30"/><rect x="25" width="2" height="30"/><rect x="35" width="4" height="30"/><rect x="42" width="8" height="30"/><rect x="55" width="2" height="30"/><rect x="62" width="4" height="30"/><rect x="75" width="6" height="30"/></svg>
+            <p style="font-size: 0.5rem; margin-top:5px;">ZAB DIGITAL PRINTS</p>
+        </center>
     </div>
 
     <script>
@@ -205,6 +256,7 @@
         document.getElementById('displayMethod').innerText = method;
 
         document.getElementById('recID').innerText = syncedID;
+        document.getElementById('recName').innerText = decodeURIComponent(name).toUpperCase();
         document.getElementById('recTotal').innerText = decodeURIComponent(total);
         document.getElementById('recMethod').innerText = method.toUpperCase();
         document.getElementById('recDate').innerText = new Date().toLocaleDateString();
@@ -213,12 +265,11 @@
             const items = JSON.parse(decodeURIComponent(params.get('items') || "[]"));
             const itemsDiv = document.getElementById('receiptItems');
             items.forEach(i => {
-                itemsDiv.innerHTML += `<div style="display:flex; justify-content:space-between; font-size:0.8rem; margin:4px 0;">
-                    <span>${i.qty}x ${i.name.toUpperCase()}</span><span>₱${i.price * i.qty}</span>
-                </div>`;
+                itemsDiv.innerHTML += `<div class="receipt-row"><span>${i.qty}x ${i.name.toUpperCase()}</span><span>₱${i.price * i.qty}</span></div>`;
             });
         } catch(e) {}
 
+        // Validation logic for unlocking buttons
         function validateVerification() {
             const trans = document.getElementById('transNum').value.trim();
             const messengerBtn = document.getElementById('messengerLink');
@@ -228,12 +279,15 @@
             if(trans.length >= 6) {
                 messengerBtn.classList.add('active');
                 printBtn.classList.add('active');
+                printBtn.innerText = "Save PDF Receipt";
                 recTrans.innerText = trans;
-                const text = encodeURIComponent(`Hi! Order: ${syncedID}\nTrans No: ${trans}\nCustomer: ${decodeURIComponent(name)}\nTotal: ${decodeURIComponent(total)}`);
-                messengerBtn.href = `https://m.me/zabprintsdigital?text=${text}`;
+                
+                const messageText = encodeURIComponent(`Hi! Order Ref: ${syncedID}\nTransaction No: ${trans}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nVerified payment attached.`);
+                messengerBtn.href = `https://m.me/zabprintsdigital?text=${messageText}`;
             } else {
                 messengerBtn.classList.remove('active');
                 printBtn.classList.remove('active');
+                printBtn.innerText = "Save PDF Receipt (Locked)";
                 recTrans.innerText = "---";
             }
         }
@@ -245,12 +299,13 @@
         };
         const selected = paymentData[method] || paymentData["GCash"];
         document.getElementById('acctInfo').innerHTML = `
-            <small>Name</small><div class="val" style="margin-bottom:12px;">${selected.name}</div>
-            <small>Account Number</small><div class="val"><span>${selected.number}</span> <button class="copy-btn" onclick="copyAcct(event)">COPY</button></div>`;
+            <div style="margin-bottom:10px;"><small>NAME</small><div class="val">${selected.name}</div></div>
+            <div><small>ACCOUNT NO.</small><div class="val"><span>${selected.number}</span> <button class="copy-btn" onclick="copyNum('${selected.number}', this)">COPY</button></div></div>`;
         document.getElementById('qrImage').src = selected.qr;
 
+        function copyNum(n, btn) { navigator.clipboard.writeText(n); btn.innerText="COPIED"; setTimeout(()=> btn.innerText="COPY", 2000); }
         function zoomQR() { document.getElementById('zoomedImg').src = document.getElementById('qrImage').src; document.getElementById('qrModal').style.display = 'flex'; }
-        function copyAcct(e) { e.stopPropagation(); navigator.clipboard.writeText(selected.number); e.target.innerText="COPIED"; setTimeout(()=>e.target.innerText="COPY", 2000); }
+        function closeZoom() { document.getElementById('qrModal').style.display = 'none'; }
 
         let time = 1800;
         setInterval(() => {
