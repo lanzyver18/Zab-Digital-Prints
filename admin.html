@@ -53,6 +53,18 @@
         /* Live Choice UI */
         .choice-list { width: 100%; margin-top: 10px; border-top: 1px dashed #eee; padding-top: 10px; }
         .choice-item { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--pink); padding: 5px 0; font-size: 0.85rem; color: #555; }
+
+        /* Order Management Styles */
+        .order-card { border: 1.5px solid #eee; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: white; transition: 0.3s; }
+        .order-card:hover { border-color: var(--pink); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f9f9f9; padding-bottom: 10px; margin-bottom: 10px; }
+        .order-customer { font-weight: 600; color: var(--dark-pink); }
+        .order-date { font-size: 0.75rem; color: #999; }
+        .order-items { margin: 10px 0; }
+        .order-item-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 3px 0; border-bottom: 1px dotted #eee; }
+        .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f9f9f9; }
+        .order-total { font-weight: bold; color: var(--text); }
+        .btn-clear { background: #ff7675; width: auto; margin: 0; padding: 5px 15px; font-size: 0.75rem; }
     </style>
 </head>
 <body>
@@ -69,6 +81,7 @@
     <div class="sidebar-header"><b style="color: var(--dark-pink); font-family: 'Playfair Display';">ZAB CONTROL</b></div>
     <div class="sidebar-menu">
         <div class="menu-item active" onclick="switchTab('inventory', this)">Inventory</div>
+        <div class="menu-item" onclick="switchTab('orders-tab', this)">Orders</div>
         <div class="menu-item" onclick="switchTab('settings', this)">Settings</div>
         <div class="menu-item" onclick="logout()" style="margin-top: 20px; color: #999;">Logout</div>
     </div>
@@ -126,6 +139,14 @@
                     <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Inquire Now</div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="orders-tab" class="tab-content">
+        <div class="panel">
+            <h2 style="margin-top:0;">Website Orders</h2>
+            <p style="font-size: 0.85rem; color: #666;">View and manage orders submitted through the site form.</p>
+            <div id="admin-orders-list">Loading orders...</div>
         </div>
     </div>
 
@@ -282,7 +303,46 @@
             snap.forEach(d => { localItems.push({ id: d.id, ...d.data() }); });
             filterInventoryList();
         });
+
+        initOrders();
     }
+
+    // --- ORDERS LOGIC ---
+    function initOrders() {
+        onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
+            const list = document.getElementById('admin-orders-list');
+            list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders found yet.</p>" : "";
+            
+            snap.forEach(d => {
+                const order = d.data();
+                const date = new Date(order.createdAt).toLocaleString();
+                let itemsHtml = "";
+                order.items.forEach(i => {
+                    itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`;
+                });
+
+                list.innerHTML += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-customer">${order.customerName}</span>
+                            <span class="order-date">${date}</span>
+                        </div>
+                        <div class="order-items">${itemsHtml}</div>
+                        <div style="font-size:0.8rem; color:#666;"><b>Shipping Address:</b><br>${order.address}</div>
+                        <div class="order-footer">
+                            <span class="order-total">Total: ${order.total}</span>
+                            <button class="btn-small btn-clear" onclick="deleteOrderRecord('${d.id}')">Clear Record</button>
+                        </div>
+                    </div>`;
+            });
+        });
+    }
+
+    window.deleteOrderRecord = async (id) => {
+        if(confirm("Permanently remove this order record?")) {
+            await deleteDoc(doc(db, "orders", id));
+        }
+    };
 
     window.filterInventoryList = () => {
         const categoryVal = document.getElementById('inventoryFilter').value;
@@ -299,12 +359,14 @@
 
     // Options Logic
     window.addOption = () => {
-        const name = document.getElementById('optName').value.trim();
-        const price = document.getElementById('optPrice').value;
+        const nameInput = document.getElementById('optName');
+        const priceInput = document.getElementById('optPrice');
+        const name = nameInput.value.trim();
+        const price = parseFloat(priceInput.value) || 0;
+
         if(name) {
-            currentOptions.push({ name, price: price || 0 });
-            document.getElementById('optName').value = "";
-            document.getElementById('optPrice').value = "";
+            currentOptions.push({ name, price });
+            nameInput.value = ""; priceInput.value = "";
             renderOptions(); updateLiveView();
         }
     };
@@ -336,7 +398,6 @@
 
         document.getElementById('pre-name').innerText = name;
         
-        // Price Range Display
         if (currentOptions.length > 0) {
             const prices = currentOptions.map(o => parseFloat(o.price));
             const min = Math.min(...prices);
