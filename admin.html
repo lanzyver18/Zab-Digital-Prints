@@ -51,8 +51,8 @@
         .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
 
         /* Live Choice UI */
-        .choice-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; justify-content: center; }
-        .choice-pill { padding: 5px 15px; border: 1px solid var(--pink); border-radius: 50px; font-size: 0.75rem; color: var(--dark-pink); background: white; }
+        .choice-list { width: 100%; margin-top: 10px; }
+        .choice-item { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--pink); padding: 5px 0; font-size: 0.85rem; color: #555; }
     </style>
 </head>
 <body>
@@ -81,14 +81,15 @@
                 <div class="panel">
                     <h3 id="formHeader" style="margin-top:0;">Product Editor</h3>
                     <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
-                    <input type="number" id="pPrice" placeholder="Price (Leave empty for 'Contact Us')" oninput="updateLiveView()">
+                    <input type="number" id="pPrice" placeholder="Base Price (Optional)" oninput="updateLiveView()">
                     <input type="text" id="pMoq" placeholder="Minimum Quantity (e.g. 12pcs)" oninput="updateLiveView()">
                     <textarea id="pDesc" placeholder="Product Description (Optional)" oninput="updateLiveView()"></textarea>
                     
                     <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: #999;">Product Choices/Sizes</label>
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #999;">Add Choices/Options with Specific Prices</label>
                         <div style="display: flex; gap: 10px;">
-                            <input type="text" id="newOptInput" placeholder="e.g. Small Size, Matte, Blue" style="margin: 0;">
+                            <input type="text" id="optName" placeholder="Choice (e.g. Big Size)" style="margin: 0;">
+                            <input type="number" id="optPrice" placeholder="Price" style="margin: 0; width: 100px;">
                             <button onclick="addOption()" style="width: 100px; margin: 0; background: #74b9ff;">Add</button>
                         </div>
                         <div id="current-options-list" style="margin-top: 10px;"></div>
@@ -119,7 +120,7 @@
                     <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">Contact us for price</div>
                     <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
                     
-                    <div class="choice-pills" id="pre-choices"></div>
+                    <div class="choice-list" id="pre-choices"></div>
 
                     <div id="pre-desc" style="font-size:0.85rem; color:#666; margin:15px 0; line-height: 1.4;"></div>
                     <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Inquire Now</div>
@@ -199,7 +200,7 @@
     const db = getFirestore(app);
     let editID = null;
     let localItems = [];
-    let currentOptions = []; // Array to store options for current item
+    let currentOptions = []; // Array of {name: string, price: number}
 
     // --- SECURITY & LOGGING ---
     window.login = async () => {
@@ -209,20 +210,12 @@
         let role = "Staff Admin";
 
         staffSnap.forEach(d => { if(d.id === pass) valid = true; });
-        
         const ownerSnap = await getDoc(doc(db, "config", "security"));
         const ownerPass = ownerSnap.data()?.owner || "master789";
-        if(pass === ownerPass) {
-            valid = true;
-            role = "Owner Admin";
-        }
+        if(pass === ownerPass) { valid = true; role = "Owner Admin"; }
 
         if(valid) {
-            await addDoc(collection(db, "security_logs"), {
-                timestamp: new Date().toLocaleString(),
-                action: `Authorized Login: ${role}`
-            });
-            
+            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), action: `Authorized Login: ${role}` });
             sessionStorage.setItem("zabAuth", "true");
             document.getElementById('login-gate').style.display = "none";
             initApp();
@@ -233,14 +226,10 @@
         const passDoc = await getDoc(doc(db, "config", "security"));
         const ownerPass = passDoc.exists() ? passDoc.data().owner : "master789";
         if(document.getElementById('ownerPassInput').value === ownerPass) {
-            await addDoc(collection(db, "security_logs"), {
-                timestamp: new Date().toLocaleString(),
-                action: "Master Settings Unlocked"
-            });
+            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), action: "Master Settings Unlocked" });
             document.getElementById('ownerGate').style.display = "none";
             document.getElementById('protectedSettings').style.display = "block";
-            loadAdminPasses();
-            loadLogs();
+            loadAdminPasses(); loadLogs();
         } else { alert("Unauthorized"); }
     };
 
@@ -258,25 +247,19 @@
         document.getElementById('newAdminPassInput').value = "";
     };
 
-    window.deleteAdminPass = async (id) => {
-        if(confirm("Remove this admin access?")) await deleteDoc(doc(db, "admin_passwords", id));
-    };
+    window.deleteAdminPass = async (id) => { if(confirm("Remove this admin access?")) await deleteDoc(doc(db, "admin_passwords", id)); };
 
     function loadAdminPasses() {
         onSnapshot(collection(db, "admin_passwords"), (snap) => {
-            const list = document.getElementById('admin-pass-list');
-            list.innerHTML = "";
-            snap.forEach(d => {
-                list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="deleteAdminPass('${d.id}')">×</span></div>`;
-            });
+            const list = document.getElementById('admin-pass-list'); list.innerHTML = "";
+            snap.forEach(d => { list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="deleteAdminPass('${d.id}')">×</span></div>`; });
         });
     }
 
     window.updateOwnerPass = async () => {
         const owner = document.getElementById('newOwnerPass').value || "master789";
         await setDoc(doc(db, "config", "security"), { owner });
-        alert("Owner Password Updated. Logging out.");
-        logout();
+        alert("Owner Password Updated. Logging out."); logout();
     };
 
     // --- INVENTORY LOGIC ---
@@ -296,9 +279,7 @@
 
         onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
             localItems = [];
-            snap.forEach(d => {
-                localItems.push({ id: d.id, ...d.data() });
-            });
+            snap.forEach(d => { localItems.push({ id: d.id, ...d.data() }); });
             filterInventoryList();
         });
     }
@@ -310,49 +291,35 @@
         list.innerHTML = "";
         
         localItems.forEach(item => {
-            const matchesCategory = (categoryVal === "All" || item.category === categoryVal);
-            const matchesSearch = item.name.toLowerCase().includes(searchVal);
-
-            if (matchesCategory && matchesSearch) {
+            if ((categoryVal === "All" || item.category === categoryVal) && item.name.toLowerCase().includes(searchVal)) {
                 const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : 'IMG_1218.jpeg';
                 const displayPrice = item.price > 0 ? '₱'+item.price : 'Inquire';
-                
-                list.innerHTML += `
-                    <div class="product-row">
-                        <img src="${displayImg}" onerror="this.src='https://via.placeholder.com/50'">
-                        <div style="flex-grow:1"><b>${item.name}</b><br><small>${displayPrice} | ${item.category}</small></div>
-                        <div class="action-btns">
-                            <button class="btn-small" onclick="startEdit('${item.id}')">Edit</button>
-                            <button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button>
-                        </div>
-                    </div>`;
+                list.innerHTML += `<div class="product-row"><img src="${displayImg}" onerror="this.src='https://via.placeholder.com/50'"><div style="flex-grow:1"><b>${item.name}</b><br><small>${displayPrice} | ${item.category}</small></div><div class="action-btns"><button class="btn-small" onclick="startEdit('${item.id}')">Edit</button><button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button></div></div>`;
             }
         });
     };
 
-    // Options/Choices Logic
+    // Options Logic with Prices
     window.addOption = () => {
-        const input = document.getElementById('newOptInput');
-        const val = input.value.trim();
-        if(val && !currentOptions.includes(val)) {
-            currentOptions.push(val);
-            input.value = "";
-            renderOptions();
-            updateLiveView();
+        const nameInput = document.getElementById('optName');
+        const priceInput = document.getElementById('optPrice');
+        const name = nameInput.value.trim();
+        const price = parseFloat(priceInput.value) || 0;
+
+        if(name) {
+            currentOptions.push({ name, price });
+            nameInput.value = ""; priceInput.value = "";
+            renderOptions(); updateLiveView();
         }
     };
 
-    window.removeOption = (opt) => {
-        currentOptions = currentOptions.filter(o => o !== opt);
-        renderOptions();
-        updateLiveView();
-    };
+    window.removeOption = (idx) => { currentOptions.splice(idx, 1); renderOptions(); updateLiveView(); };
 
     function renderOptions() {
         const list = document.getElementById('current-options-list');
         list.innerHTML = "";
-        currentOptions.forEach(opt => {
-            list.innerHTML += `<div class="opt-tag">${opt} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="removeOption('${opt}')">×</span></div>`;
+        currentOptions.forEach((opt, idx) => {
+            list.innerHTML += `<div class="opt-tag">${opt.name} (₱${opt.price}) <span style="margin-left:8px; cursor:pointer; color:red;" onclick="removeOption(${idx})">×</span></div>`;
         });
     }
 
@@ -376,13 +343,12 @@
         document.getElementById('pre-moq').innerText = moq ? "Minimum Order: " + moq : "";
         document.getElementById('pre-desc').innerText = desc || "";
         document.getElementById('pre-img').src = img;
-        document.getElementById('pre-btn').innerText = (price && price > 0) ? "Order Now" : "Inquire Now";
+        document.getElementById('pre-btn').innerText = (price && price > 0 || currentOptions.length > 0) ? "Order Now" : "Inquire Now";
 
-        // Update choices in preview
         const choicesDiv = document.getElementById('pre-choices');
         choicesDiv.innerHTML = "";
         currentOptions.forEach(opt => {
-            choicesDiv.innerHTML += `<div class="choice-pill">${opt}</div>`;
+            choicesDiv.innerHTML += `<div class="choice-item"><span>${opt.name}</span><b>₱${opt.price}</b></div>`;
         });
     };
 
@@ -392,7 +358,7 @@
             price: document.getElementById('pPrice').value || 0,
             moq: document.getElementById('pMoq').value || "",
             description: document.getElementById('pDesc').value || "",
-            options: currentOptions, // Save the options array
+            options: currentOptions, 
             category: document.getElementById('pCat').value,
             status: document.getElementById('pStatus').value,
             imgUrl: document.getElementById('pImg').value || ""
@@ -410,12 +376,11 @@
         document.getElementById('pPrice').value = item.price || "";
         document.getElementById('pMoq').value = item.moq || "";
         document.getElementById('pDesc').value = item.description || "";
-        currentOptions = item.options || []; // Load existing options
+        currentOptions = item.options || []; 
         document.getElementById('pCat').value = item.category;
         document.getElementById('pStatus').value = item.status;
         document.getElementById('pImg').value = item.imgUrl || "";
-        renderOptions();
-        updateLiveView();
+        renderOptions(); updateLiveView();
         window.scrollTo({top:0, behavior:'smooth'});
     };
 
