@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Payment | Zab Digital Prints</title>
+    <title>Complete Your Order | Zab Digital Prints</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; --messenger: #0084ff; }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; --success: #2ecc71; --messenger: #0084ff; }
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         
-        /* PAYMENT UI */
+        /* Digital UI */
         #paymentUI { 
             background: var(--white); padding: 40px; border-radius: 40px; 
             box-shadow: 0 40px 80px rgba(212, 129, 146, 0.12); 
@@ -19,40 +19,44 @@
         }
         #paymentUI::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--pink), var(--dark-pink)); }
 
-        .order-summary { background: var(--bg); padding: 20px; border-radius: 25px; margin: 15px 0 25px 0; border: 1px dashed var(--dark-pink); }
-        .total-amount { font-size: 2.5rem; font-weight: 700; color: var(--dark-pink); margin: 0; }
+        .order-summary { background: var(--bg); padding: 25px; border-radius: 25px; margin: 20px 0; border: 1px solid rgba(212, 129, 146, 0.2); }
+        .total-amount { font-size: 2.5rem; font-weight: 600; color: var(--dark-pink); margin: 0; }
+
+        .acct-details { text-align: left; background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #f0f0f0; box-shadow: 0 10px 20px rgba(0,0,0,0.02); }
+        .acct-details .row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+        .acct-details small { font-size: 0.7rem; color: #999; text-transform: uppercase; font-weight: 600; }
+        .acct-details div.val { font-size: 1rem; font-weight: 600; color: #333; }
         
-        .section-title { font-size: 0.85rem; font-weight: 600; text-align: left; margin-bottom: 10px; color: #888; display: flex; align-items: center; gap: 8px; }
-        .section-title span { background: var(--pink); color: white; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.7rem; flex-shrink: 0; }
+        .copy-btn { background: var(--bg); color: var(--dark-pink); border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .copy-btn:hover { background: var(--pink); color: white; }
 
-        .acct-details { text-align: left; background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #f0f0f0; }
-        .acct-details div.val { font-size: 1rem; font-weight: 600; color: #333; display: flex; justify-content: space-between; align-items: center; }
+        /* Restored QR Look */
+        .qr-container { background: #fff; padding: 20px; border-radius: 25px; border: 1px solid #eee; margin-bottom: 30px; display: inline-block; cursor: zoom-in; }
+        .qr-container img { width: 200px; height: 200px; object-fit: contain; }
+        .qr-label { font-size: 0.7rem; color: #aaa; margin-top: 10px; font-weight: 500; }
 
-        /* Verification Input Area */
-        .verification-area { background: #fdf2f4; padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1.5px solid var(--pink); }
-        .verification-area input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--pink); outline: none; text-align: center; font-weight: bold; font-size: 1.1rem; box-sizing: border-box; }
-        .verification-area input:focus { border-color: var(--dark-pink); box-shadow: 0 0 10px rgba(212, 129, 146, 0.2); }
+        .verification-area { background: var(--bg); padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1.5px solid var(--pink); text-align: left; }
+        .verification-area input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin-top: 10px; outline: none; font-weight: bold; text-align: center; }
 
-        .btn-messenger { background: var(--messenger); color: white; display: flex !important; align-items: center; justify-content: center; gap: 12px; padding: 18px; border-radius: 50px; text-decoration: none; font-weight: 600; margin-bottom: 10px; width: 100%; box-sizing: border-box; opacity: 0.5; pointer-events: none; transition: 0.3s; }
-        .btn-messenger.active { opacity: 1; pointer-events: auto; }
+        .btn { padding: 18px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; display: block; transition: 0.4s; margin-bottom: 10px; border: none; cursor: pointer; width: 100%; box-sizing: border-box; }
+        .btn-messenger { background: var(--messenger); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; opacity: 0.5; pointer-events: none; }
+        .btn-messenger.active { opacity: 1; pointer-events: auto; box-shadow: 0 10px 20px rgba(0, 132, 255, 0.3); }
+        .btn-outline { background: transparent; color: var(--dark-pink); border: 2px solid var(--pink); font-size: 0.9rem; }
+        
+        #printBtn { background: #555; color: white; font-size: 0.8rem; opacity: 0.5; pointer-events: none; }
+        #printBtn.active { opacity: 1; pointer-events: auto; }
 
-        .btn-small { width: 100%; padding: 12px; border-radius: 50px; border: 1px solid #eee; background: #fff; color: #ccc; cursor: not-allowed; font-weight: 600; font-size: 0.8rem; margin-bottom: 10px; pointer-events: none; }
-        .btn-small.active { color: #999; cursor: pointer; border-color: #ddd; pointer-events: auto; }
+        /* Hidden Receipt styling for PDF */
+        #printableReceipt { display: none; font-family: 'Courier Prime', monospace; padding: 30px; width: 380px; margin: 0 auto; color: black; }
+        .receipt-line { border-bottom: 1px dashed black; margin: 15px 0; }
 
-        /* RECEIPT STYLING (Print Only) */
-        #printableReceipt { display: none; font-family: 'Courier Prime', monospace; color: black; background: white; padding: 20px; width: 380px; margin: 0 auto; }
-        .receipt-line { border-bottom: 1px dashed black; margin: 10px 0; }
-        .receipt-row { display: flex; justify-content: space-between; margin: 5px 0; font-size: 0.85rem; }
-        .item-row { font-size: 0.8rem; margin: 5px 0; }
-
-        /* QR Modal */
         #qrModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
-        #qrModal img { width: 80%; max-width: 400px; background: white; padding: 20px; border-radius: 10px; }
+        #qrModal img { width: 85%; max-width: 450px; background: white; padding: 20px; border-radius: 20px; }
 
         @media print {
             #paymentUI, #qrModal { display: none !important; }
-            body { background: white; padding: 0; }
             #printableReceipt { display: block !important; }
+            body { background: white; padding: 0; }
         }
     </style>
 </head>
@@ -63,38 +67,38 @@
     </div>
 
     <div id="paymentUI">
-        <div style="font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 10px;">Expires in <span id="timer">30:00</span></div>
-        <div style="font-size: 0.75rem; color: #bbb; letter-spacing: 2px;" id="displayID">REF: LOADING...</div>
+        <div style="font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 15px;">Expires in <span id="timer">30:00</span></div>
+        
+        <div class="order-ref" id="orderID">REF: LOADING...</div>
+        <h1 style="font-family:'Playfair Display'; color: var(--dark-pink); margin: 5px 0;">Payment Details</h1>
         
         <div class="order-summary">
-            <span style="font-size: 0.75rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase;">Amount Due</span>
+            <span style="font-size: 0.8rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase;">Amount Due</span>
             <div class="total-amount" id="orderTotal">₱0.00</div>
         </div>
 
-        <div class="section-title"><span>1</span> Transfer to <b id="displayMethod" style="color:var(--dark-pink); margin-left:4px;">GCash</b></div>
+        <div id="methodBadge" style="display:inline-block; padding: 6px 18px; background: #333; color: white; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;">GCash</div>
+
         <div class="acct-details" id="acctInfo"></div>
 
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div class="qr-container" onclick="zoomQR()">
-                <img id="qrImage" src="placeholder-qr.png" alt="QR">
-            </div>
-            <div style="font-size: 0.6rem; color: #ccc; margin-top: 5px;">TAP TO ENLARGE QR</div>
+        <div class="qr-container" onclick="zoomQR()">
+            <img id="qrImage" src="placeholder-qr.png" alt="Payment QR">
+            <div class="qr-label">Tap to Enlarge QR</div>
         </div>
 
-        <div class="section-title"><span>2</span> Verify & Confirm</div>
         <div class="verification-area">
-            <label style="font-size: 0.7rem; color: var(--dark-pink); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px;">Enter Transaction / Reference Number</label>
-            <input type="text" id="transNum" placeholder="e.g. 500214872" oninput="validateVerification()">
-            <p style="font-size: 0.65rem; color: #888; margin-top: 8px; line-height: 1.3;">Enter the reference number from your bank app receipt to unlock your official PDF receipt.</p>
+            <small style="font-weight: 700; color: var(--dark-pink);">STEP 2: VERIFY TRANSACTION</small>
+            <input type="text" id="transNum" placeholder="Enter Ref / Transaction No." oninput="validateForm()">
+            <p style="font-size: 0.65rem; color: #888; margin-top: 8px;">Submit your reference number to unlock the PDF receipt and Messenger confirmation.</p>
         </div>
 
-        <a href="#" id="messengerLink" target="_blank" class="btn-messenger">
+        <a href="#" id="messengerLink" target="_blank" class="btn btn-messenger">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
-            Submit to Messenger
+            Confirm on Messenger
         </a>
 
-        <button id="printBtn" onclick="window.print()" class="btn-small">Download Receipt (Locked)</button>
-        <button onclick="location.href='index.html'" class="btn-small active" style="border:none; color:#bbb; pointer-events: auto; cursor: pointer;">Cancel & Return</button>
+        <button id="printBtn" onclick="window.print()" class="btn">Download Receipt (Locked)</button>
+        <a href="index.html" class="btn btn-outline" style="border:none; color:#bbb;">Return to Shop</a>
     </div>
 
     <div id="printableReceipt">
@@ -103,27 +107,14 @@
             <p style="font-size: 0.7rem; margin-top:5px;">Keeping memories within view<br>Calamba City, Laguna</p>
         </center>
         <div class="receipt-line"></div>
-        <div class="receipt-row"><span>REF NO:</span><b id="recID">---</b></div>
-        <div class="receipt-row"><span>TRANS NO:</span><b id="recTrans">---</b></div>
-        <div class="receipt-row"><span>DATE:</span><span id="recDate">---</span></div>
-        <div class="receipt-row"><span>CUST:</span><span id="recName">---</span></div>
+        <div style="display:flex; justify-content: space-between; font-size: 0.8rem; margin: 5px 0;"><span>REF NO:</span><b id="recID">---</b></div>
+        <div style="display:flex; justify-content: space-between; font-size: 0.8rem; margin: 5px 0;"><span>TRANS NO:</span><b id="recTrans">---</b></div>
+        <div style="display:flex; justify-content: space-between; font-size: 0.8rem; margin: 5px 0;"><span>DATE:</span><span id="recDate">---</span></div>
         <div class="receipt-line"></div>
-        
-        <div style="font-weight: bold; margin-bottom: 10px;">ORDER DETAILS:</div>
         <div id="receiptItems"></div>
-
         <div class="receipt-line"></div>
-        <div class="receipt-row" style="font-weight: bold; font-size: 1.2rem;">
-            <span>TOTAL</span>
-            <span id="recTotal">₱0.00</span>
-        </div>
-        <div class="receipt-row"><span>PAY METHOD:</span><span id="recMethod">---</span></div>
-        <div class="receipt-line" style="margin-top:20px;"></div>
-        <p style="font-size: 0.7rem; text-align: center;"><b>STATUS: VERIFICATION PENDING</b><br>Please send a screenshot of your bank app's receipt along with this PDF to our Messenger.</p>
-        <center style="margin-top:30px; opacity:0.8;">
-            <svg width="150" height="40" viewBox="0 0 100 30"><rect x="0" width="2" height="30"/><rect x="5" width="4" height="30"/><rect x="12" width="1" height="30"/><rect x="15" width="6" height="30"/><rect x="25" width="2" height="30"/><rect x="35" width="4" height="30"/><rect x="42" width="8" height="30"/><rect x="55" width="2" height="30"/><rect x="62" width="4" height="30"/><rect x="75" width="6" height="30"/></svg>
-            <p style="font-size: 0.5rem; margin-top:5px;">*** THANK YOU ***</p>
-        </center>
+        <div style="display:flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;"><span>TOTAL</span><span id="recTotal">₱0.00</span></div>
+        <p style="font-size: 0.7rem; text-align: center; margin-top: 20px;">Present this receipt via Messenger for verification.</p>
     </div>
 
     <script>
@@ -132,55 +123,39 @@
         const total = params.get('total') || "₱0.00";
         const method = params.get('method') || "GCash";
         const syncedID = params.get('id') || "ZAB-" + Math.floor(100000 + Math.random() * 900000);
-        
-        let items = [];
-        try {
-            const itemsRaw = params.get('items');
-            if(itemsRaw) items = JSON.parse(decodeURIComponent(itemsRaw));
-        } catch(e) { console.error("Error parsing items", e); }
 
-        document.getElementById('displayID').innerText = `REF: ${syncedID}`;
+        document.getElementById('orderID').innerText = `REF: ${syncedID}`;
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
-        document.getElementById('displayMethod').innerText = method;
+        document.getElementById('methodBadge').innerText = method;
 
         document.getElementById('recID').innerText = syncedID;
-        document.getElementById('recName').innerText = decodeURIComponent(name).toUpperCase();
         document.getElementById('recTotal').innerText = decodeURIComponent(total);
-        document.getElementById('recMethod').innerText = method.toUpperCase();
         document.getElementById('recDate').innerText = new Date().toLocaleDateString();
 
-        const receiptItemsDiv = document.getElementById('receiptItems');
-        if(items.length > 0) {
-            items.forEach(item => {
-                receiptItemsDiv.innerHTML += `
-                    <div class="item-row">
-                        <div>${item.qty}x ${item.name.toUpperCase()}</div>
-                        <div style="display:flex; justify-content:space-between; color:#666;">
-                            <span>  [${item.variant}]</span>
-                            <span>₱${item.price * item.qty}</span>
-                        </div>
-                    </div>`;
+        // Load Items into printable receipt
+        try {
+            const items = JSON.parse(decodeURIComponent(params.get('items') || "[]"));
+            const itemsDiv = document.getElementById('receiptItems');
+            items.forEach(i => {
+                itemsDiv.innerHTML += `<div style="display:flex; justify-content:space-between; font-size:0.75rem; margin:3px 0;">
+                    <span>${i.qty}x ${i.name.toUpperCase()}</span><span>₱${i.price * i.qty}</span>
+                </div>`;
             });
-        }
+        } catch(e) {}
 
-        // Logic to Unlock Buttons
-        function validateVerification() {
-            const trans = document.getElementById('transNum').value.trim();
-            const messengerBtn = document.getElementById('messengerLink');
-            const printBtn = document.getElementById('printBtn');
-            
-            if(trans.length >= 6) {
-                messengerBtn.classList.add('active');
-                printBtn.classList.add('active');
-                printBtn.innerText = "Download Official Receipt (PDF)";
-                document.getElementById('recTrans').innerText = trans;
-                
-                const messageText = encodeURIComponent(`Hi! Order Ref: ${syncedID}\nTransaction No: ${trans}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nVerified payment attached.`);
-                messengerBtn.href = `https://m.me/zabprintsdigital?text=${messageText}`;
+        function validateForm() {
+            const val = document.getElementById('transNum').value.trim();
+            const mBtn = document.getElementById('messengerLink');
+            const pBtn = document.getElementById('printBtn');
+            if(val.length >= 6) {
+                mBtn.classList.add('active'); pBtn.classList.add('active');
+                pBtn.innerText = "Download Official Receipt (PDF)";
+                document.getElementById('recTrans').innerText = val;
+                const text = encodeURIComponent(`Hi! Paid for Order: ${syncedID}\nTrans No: ${val}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}`);
+                mBtn.href = `https://m.me/zabprintsdigital?text=${text}`;
             } else {
-                messengerBtn.classList.remove('active');
-                printBtn.classList.remove('active');
-                printBtn.innerText = "Download Receipt (Locked)";
+                mBtn.classList.remove('active'); pBtn.classList.remove('active');
+                pBtn.innerText = "Download Receipt (Locked)";
             }
         }
 
@@ -191,13 +166,13 @@
         };
         const selected = paymentData[method] || paymentData["GCash"];
         document.getElementById('acctInfo').innerHTML = `
-            <div style="margin-bottom:10px;"><small>NAME</small><div class="val">${selected.name}</div></div>
-            <div><small>ACCOUNT NO.</small><div class="val"><span>${selected.number}</span> <button style="background:var(--pink); color:white; border:none; padding:4px 12px; border-radius:8px; font-size:0.7rem; cursor:pointer;" onclick="copyNum('${selected.number}', this)">COPY</button></div></div>`;
+            <div class="row"><div><small>Account Name</small><div class="val">${selected.name}</div></div></div>
+            <div class="row" style="margin-bottom:0;"><div><small>Account Number</small><div class="val" id="acctNum">${selected.number}</div></div><button class="copy-btn" onclick="copyAcct(event)">Copy</button></div>`;
         document.getElementById('qrImage').src = selected.qr;
 
-        function copyNum(n, btn) { navigator.clipboard.writeText(n); btn.innerText="COPIED"; setTimeout(()=> btn.innerText="COPY", 2000); }
         function zoomQR() { document.getElementById('zoomedImg').src = document.getElementById('qrImage').src; document.getElementById('qrModal').style.display = 'flex'; }
         function closeZoom() { document.getElementById('qrModal').style.display = 'none'; }
+        function copyAcct(e) { e.stopPropagation(); navigator.clipboard.writeText(document.getElementById('acctNum').innerText); e.target.innerText="Copied!"; setTimeout(()=>e.target.innerText="Copy", 2000); }
 
         let time = 1800;
         setInterval(() => {
