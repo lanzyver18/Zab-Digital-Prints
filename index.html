@@ -130,8 +130,6 @@
         .btn { background: var(--pink); color: var(--white); padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; font-size: 0.9rem; }
         .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
 
-        .btn-secondary { background: white; border: 2px solid var(--pink); color: var(--dark-pink); margin-top: 8px; width: 100%; }
-
         /* Modal Choices UI */
         .m-choices-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
         .m-choice-pill { padding: 6px 16px; border: 1px solid var(--pink); border-radius: 50px; font-size: 0.8rem; color: var(--dark-pink); background: var(--bg); font-weight: 500; cursor: pointer; transition: 0.3s; }
@@ -158,10 +156,11 @@
         .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
         .cart-item { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; position: relative; }
         .cart-item img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
-        .cart-footer { padding: 25px; border-top: 1px solid #eee; background: #fffcfd; }
+        .cart-footer { padding: 25px; border-top: 1px solid #eee; background: #fffcfd; overflow-y: auto; }
 
         /* Checkout Box Styles */
         .checkout-box input, .checkout-box textarea { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box; }
+        .info-callout { background: #fff1f2; border-left: 4px solid var(--pink); padding: 10px; font-size: 0.75rem; color: var(--dark-pink); margin-bottom: 15px; border-radius: 0 10px 10px 0; }
 
         footer { background: white; color: var(--text); padding: 60px 5% 30px 5%; border-top: 1px solid #f0f0f0; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 50px; }
@@ -286,9 +285,17 @@
             <span id="cartTotal">₱0</span>
         </div>
         <button onclick="clearCart()" style="background: none; border: none; color: #ff4757; font-size: 0.75rem; cursor: pointer; padding: 0; margin-bottom: 15px;">Clear Bag</button>
+        
+        <div class="info-callout">
+            📌 <b>Note:</b> A representative will call your number for order confirmation once the form is submitted.
+        </div>
+
         <div class="checkout-box">
             <input type="text" id="custName" placeholder="Full Name">
+            <input type="email" id="custEmail" placeholder="Email Address">
+            <input type="tel" id="custPhone" placeholder="Contact Number (e.g. 0917...)">
             <textarea id="custAddr" rows="2" placeholder="Shipping Address"></textarea>
+            
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
                 <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem;">Remember my details</label>
             </div>
@@ -439,27 +446,36 @@
 
     function generateOrderSummaryText() {
         const name = document.getElementById('custName').value.trim();
+        const email = document.getElementById('custEmail').value.trim();
+        const phone = document.getElementById('custPhone').value.trim();
         const addr = document.getElementById('custAddr').value.trim();
-        if(!cart.length || !name || !addr) return null;
+        
+        if(!cart.length || !name || !addr || !email || !phone) return null;
         
         let summary = `ORDER FORM - ZAB DIGITAL PRINTS\n---\n`;
         cart.forEach(i => summary += `• ${i.name} (${i.variant}) x${i.qty} - ₱${i.price * i.qty}\n`);
-        summary += `---\nTotal: ${document.getElementById('cartTotal').innerText}\n\nName: ${name}\nAddress: ${addr}`;
+        summary += `---\nTotal: ${document.getElementById('cartTotal').innerText}\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nAddress: ${addr}`;
         return summary;
     }
 
     window.checkoutCart = async () => {
         const text = generateOrderSummaryText();
-        if(!text) return alert("Please fill bag and details!");
+        if(!text) return alert("Please fill bag and all customer details!");
 
         const name = document.getElementById('custName').value;
+        const email = document.getElementById('custEmail').value;
+        const phone = document.getElementById('custPhone').value;
         const addr = document.getElementById('custAddr').value;
 
         if(document.getElementById('saveInfo').checked) {
             localStorage.setItem('custName', name);
+            localStorage.setItem('custEmail', email);
+            localStorage.setItem('custPhone', phone);
             localStorage.setItem('custAddr', addr);
         } else {
             localStorage.removeItem('custName');
+            localStorage.removeItem('custEmail');
+            localStorage.removeItem('custPhone');
             localStorage.removeItem('custAddr');
         }
 
@@ -467,6 +483,8 @@
         try {
             await addDoc(collection(db, "orders"), {
                 customerName: name,
+                customerEmail: email,
+                customerPhone: phone,
                 address: addr,
                 items: cart,
                 total: document.getElementById('cartTotal').innerText,
@@ -483,7 +501,7 @@
 
     window.copyOrderForm = () => {
         const text = generateOrderSummaryText();
-        if(!text) return alert("Please fill bag and details!");
+        if(!text) return alert("Please fill bag and all customer details!");
         navigator.clipboard.writeText(text).then(() => {
             alert("Order form copied to clipboard! You can now paste it in Messenger.");
         });
@@ -526,8 +544,6 @@
         if (btn) btn.classList.add('active');
         applyFilters();
     };
-
-    window.expandShop = () => { isExpanded = true; applyFilters(); };
 
     window.applyFilters = () => {
         const term = document.getElementById('searchInput').value.toLowerCase();
@@ -574,9 +590,12 @@
         document.getElementById('m-img').src = (item.imgUrl && item.imgUrl.trim() !== "") ? item.imgUrl : "IMG_1218.jpeg";
         document.getElementById('m-name').innerText = item.name;
         document.getElementById('m-moq-label').innerText = item.moq ? "Minimum: " + item.moq : "";
+        document.getElementById('m-price').innerText = getPriceText(item);
         document.getElementById('m-desc').innerText = item.description || "No description provided.";
         
         if(localStorage.getItem('custName')) document.getElementById('custName').value = localStorage.getItem('custName');
+        if(localStorage.getItem('custEmail')) document.getElementById('custEmail').value = localStorage.getItem('custEmail');
+        if(localStorage.getItem('custPhone')) document.getElementById('custPhone').value = localStorage.getItem('custPhone');
         if(localStorage.getItem('custAddr')) document.getElementById('custAddr').value = localStorage.getItem('custAddr');
         if(localStorage.getItem('custName')) document.getElementById('saveInfo').checked = true;
 
