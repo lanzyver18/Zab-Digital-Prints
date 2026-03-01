@@ -159,7 +159,7 @@
         .cart-footer { padding: 25px; border-top: 1px solid #eee; background: #fffcfd; overflow-y: auto; }
 
         /* Checkout Box Styles */
-        .checkout-box input, .checkout-box textarea { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box; }
+        .checkout-box input, .checkout-box textarea, .checkout-box select { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box; }
         .info-callout { background: #fff1f2; border-left: 4px solid var(--pink); padding: 10px; font-size: 0.75rem; color: var(--dark-pink); margin-bottom: 15px; border-radius: 0 10px 10px 0; }
 
         footer { background: white; color: var(--text); padding: 60px 5% 30px 5%; border-top: 1px solid #f0f0f0; }
@@ -296,9 +296,17 @@
             <input type="tel" id="custPhone" placeholder="Contact Number (e.g. 0917...)">
             <textarea id="custAddr" rows="2" placeholder="Shipping Address"></textarea>
             
+            <select id="paymentMethod">
+                <option value="" disabled selected>Select Payment Method</option>
+                <option value="GCash">GCash</option>
+                <option value="Maya">Maya</option>
+                <option value="Bank Transfer">Bank Transfer (BDO)</option>
+            </select>
+
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
                 <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem;">Remember my details</label>
             </div>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <button class="btn" style="background:#0084ff; font-size:0.8rem;" onclick="processCheckout('messenger')">Messenger</button>
                 <button class="btn" style="font-size:0.8rem; background:var(--dark-pink);" onclick="processCheckout('website')">Checkout Web</button>
@@ -452,24 +460,26 @@
         const email = document.getElementById('custEmail').value.trim();
         const phone = document.getElementById('custPhone').value.trim();
         const addr = document.getElementById('custAddr').value.trim();
+        const payMeth = document.getElementById('paymentMethod').value;
         
         if(!cart.length || !name || !addr || !email || !phone) return null;
         
         let summary = `ORDER FORM - ZAB DIGITAL PRINTS\n---\n`;
         cart.forEach(i => summary += `• ${i.name} (${i.variant}) x${i.qty} - ₱${i.price * i.qty}\n`);
-        summary += `---\nTotal: ${document.getElementById('cartTotal').innerText}\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nAddress: ${addr}`;
+        summary += `---\nTotal: ${document.getElementById('cartTotal').innerText}\nPayment Method: ${payMeth || 'Not selected'}\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nAddress: ${addr}`;
         return summary;
     }
 
-    // UPDATED: Central Checkout Function
+    // UPDATED: Dual Checkout Function
     window.processCheckout = async (method) => {
         const name = document.getElementById('custName').value.trim();
         const email = document.getElementById('custEmail').value.trim();
         const phone = document.getElementById('custPhone').value.trim();
         const addr = document.getElementById('custAddr').value.trim();
+        const payMeth = document.getElementById('paymentMethod').value;
         
-        if(!cart.length || !name || !addr || !email || !phone) {
-            return alert("Please fill in all customer details and add items to your bag.");
+        if(!cart.length || !name || !addr || !email || !phone || (method === 'website' && !payMeth)) {
+            return alert("Please fill in all details and select a payment method.");
         }
 
         const totalStr = document.getElementById('cartTotal').innerText;
@@ -480,14 +490,8 @@
             localStorage.setItem('custEmail', email);
             localStorage.setItem('custPhone', phone);
             localStorage.setItem('custAddr', addr);
-        } else {
-            localStorage.removeItem('custName');
-            localStorage.removeItem('custEmail');
-            localStorage.removeItem('custPhone');
-            localStorage.removeItem('custAddr');
         }
 
-        // Save order to Firebase
         try {
             await addDoc(collection(db, "orders"), {
                 customerName: name,
@@ -497,6 +501,7 @@
                 items: cart,
                 total: totalStr,
                 method: method === 'messenger' ? 'Messenger' : 'Website',
+                paymentChoice: payMeth || "Messenger Inquiry",
                 status: "Pending",
                 paid: false,
                 createdAt: Date.now()
@@ -506,15 +511,13 @@
                 const text = generateOrderSummaryText();
                 window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(text)}`, '_blank');
             } else {
-                // Website checkout redirect
-                window.location.href = `payment.html?name=${encodeURIComponent(name)}&total=${encodeURIComponent(totalStr)}`;
+                window.location.href = `payment.html?name=${encodeURIComponent(name)}&total=${encodeURIComponent(totalStr)}&method=${encodeURIComponent(payMeth)}`;
             }
 
             cart = [];
             saveCart();
             toggleCart();
         } catch (e) {
-            console.error("Error saving order: ", e);
             alert("Order failed. Please check your connection.");
         }
     };
