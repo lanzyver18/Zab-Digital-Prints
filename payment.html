@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment | Zab Prints</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #fff5f6; }
+        .box { background: #fff; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .total { font-size: 2rem; color: #d48192; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Thank you, <span id="p-name"></span>!</h1>
+        <p>Your order is saved. Please pay via GCash:</p>
+        <div class="total" id="p-total"></div>
+        <p><b>GCash Number:</b> 0917-XXX-XXXX</p>
+        <p>Send screenshot to our Messenger to confirm.</p>
+        <a href="index.html">Back to Shop</a>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById('p-name').innerText = urlParams.get('name');
+        document.getElementById('p-total').innerText = urlParams.get('total');
+    </script>
+</body>
+</html>
