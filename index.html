@@ -350,8 +350,7 @@
                 <button class="btn" style="background:#0084ff; font-size:0.8rem;" onclick="processCheckout('messenger')">Messenger</button>
                 <button class="btn" style="font-size:0.8rem; background:var(--dark-pink);" onclick="processCheckout('website')">Checkout Web</button>
             </div>
-            <button class="btn btn-secondary" style="margin-top:10px; width:100%;" onclick="copyOrderForm()">Copy Order Form</button>
-        </div>
+            </div>
     </div>
 </div>
 
@@ -641,14 +640,6 @@
         } catch (e) {
             alert("Order failed. Please check your connection.");
         }
-    };
-
-    window.copyOrderForm = () => {
-        const text = generateOrderSummaryText();
-        if(!text) return alert("Please fill bag and all customer details!");
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Order form copied to clipboard! You can now paste it in Messenger.");
-        });
     };
 
     // --- CATALOG LOGIC ---
