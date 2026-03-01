@@ -3,55 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zab Digital Prints | Shop</title>
+    <title>Zab Digital Prints | Memories within view</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #fff; }
-        * { box-sizing: border-box; }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; overflow-x: hidden; }
+        
+        /* Navigation */
         nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
-        section { padding: 40px 5%; }
-        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
-        .btn { background: var(--pink); color: #fff; padding: 12px 25px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.3s; text-align: center; }
-        .btn:hover { background: var(--dark-pink); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: var(--white); border-radius: 25px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; cursor: pointer; position: relative; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .card img { width: 100%; height: 280px; object-fit: cover; }
+        .logo-img { height: 50px; width: auto; }
+        .cart-btn { background: none; border: none; cursor: pointer; position: relative; color: var(--dark-pink); }
+        .cart-count { position: absolute; top: -5px; right: -10px; background: #ff4757; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
+
+        /* Hero Section */
+        .hero { background: var(--white); min-height: 85vh; display: flex; align-items: center; padding: 0 8%; gap: 60px; }
+        .hero-content { flex: 1; }
+        .hero-content h1 { font-family: 'Playfair Display'; font-size: clamp(2.5rem, 6vw, 4rem); color: var(--dark-pink); line-height: 1.1; margin: 0 0 20px 0; }
+        .hero-img-card { width: 100%; max-width: 400px; height: 550px; background: var(--bg); border-radius: 200px 200px 30px 30px; overflow: hidden; box-shadow: 0 25px 50px rgba(212, 129, 146, 0.15); animation: float 6s ease-in-out infinite; }
+        .hero-img-card img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* Trust Bar */
+        .trust-bar { background: var(--white); display: flex; justify-content: space-around; padding: 40px 5%; border-top: 1px solid #f0f0f0; text-align: center; flex-wrap: wrap; gap: 20px; }
+        .trust-item b { display: block; color: var(--dark-pink); font-size: 1.1rem; }
+
+        /* Catalog Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 40px 5%; background: var(--white); }
+        .card { background: var(--white); border-radius: 30px; overflow: hidden; border: 1px solid #f9f9f9; cursor: pointer; transition: 0.4s; position: relative; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 320px; object-fit: cover; }
         .card-body { padding: 20px; text-align: center; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #fff; width: 100%; max-width: 800px; border-radius: 30px; display: flex; overflow: hidden; position: relative; max-height: 90vh; }
-        #cartDrawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100vh; background: #fff; z-index: 3000; transition: 0.4s; padding: 25px; box-shadow: -10px 0 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .price { color: var(--dark-pink); font-size: 1.3rem; font-weight: 600; }
+        .btn { background: var(--pink); color: white; padding: 12px 30px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn:hover { background: var(--dark-pink); }
+
+        /* Modal & Drawer */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2001; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #fff; max-width: 900px; width: 100%; border-radius: 40px; display: flex; overflow: hidden; position: relative; max-height: 90vh; }
+        #cartDrawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: white; z-index: 3000; transition: 0.4s; box-shadow: -10px 0 30px rgba(0,0,0,0.1); padding: 25px; display: flex; flex-direction: column; }
         #cartDrawer.active { right: 0; }
-        input, textarea { padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; width: 100%; font-family: inherit; }
-        .filter-btn { background: #fff; border: 1px solid var(--pink); padding: 8px 20px; border-radius: 50px; cursor: pointer; margin: 5px; }
-        .filter-btn.active { background: var(--pink); color: white; }
-        @media (max-width: 768px) { .modal-content { flex-direction: column; overflow-y: auto; } .modal-content img { width: 100%; height: 200px; } }
+        
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; font-family: inherit; }
+        .filter-btn { background: #fff; border: 2px solid var(--pink); color: var(--dark-pink); padding: 8px 20px; border-radius: 50px; cursor: pointer; margin: 5px; font-weight: 600; }
+        .filter-btn.active { background: var(--pink); color: #fff; }
+
+        @media (max-width: 768px) {
+            .hero { flex-direction: column-reverse; text-align: center; padding: 40px 5%; }
+            .modal-content { flex-direction: column; overflow-y: auto; }
+            .modal-content img { width: 100%; height: 250px; }
+            .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+        }
     </style>
 </head>
 <body>
 
 <nav>
-    <a href="#"><img src="IMG_1218.jpeg" style="height:50px;"></a>
-    <button onclick="toggleCart()" style="background:none; border:none; cursor:pointer; font-size: 1.5rem; position: relative;">
-        🛒 <span id="cartCount" style="position:absolute; top:-5px; right:-10px; background:red; color:white; font-size:10px; padding:2px 6px; border-radius:50%;">0</span>
+    <a href="#"><img src="IMG_1218.jpeg" class="logo-img"></a>
+    <button class="cart-btn" onclick="toggleCart()">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span class="cart-count" id="cartCount">0</span>
     </button>
 </nav>
 
-<section>
-    <div id="filterBar" class="flex-center" style="justify-content:center; display:flex; margin-bottom:30px;"></div>
-    <div id="catalog-grid" class="grid">Loading collection...</div>
+<header class="hero">
+    <div class="hero-content">
+        <h1>Beautifully Printed,<br>Unique to You.</h1>
+        <p>Turning favorite memories into premium keepsakes.</p>
+        <a href="#catalog" class="btn">Explore Catalog</a>
+    </div>
+    <div class="hero-img-card"><img src="IMG_1217.jpeg"></div>
+</header>
+
+<div class="trust-bar">
+    <div class="trust-item"><b>Nationwide Shipping</b><span>Across the Philippines</span></div>
+    <div class="trust-item"><b>Premium Quality</b><span>Vibrant & long-lasting</span></div>
+    <div class="trust-item"><b>Custom Layouts</b><span>Personalized for you</span></div>
+</div>
+
+<section id="catalog" style="text-align:center;">
+    <div id="filterBar" class="flex-center" style="margin-bottom:30px;"></div>
+    <div id="catalog-grid" class="grid">Loading...</div>
 </section>
 
 <div id="productModal" class="overlay" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <img id="m-img" style="width:45%; object-fit:cover; background:#fafafa;">
         <div style="padding:40px; flex:1; overflow-y:auto;">
-            <h2 id="m-name" class="serif" style="margin:0"></h2>
+            <h2 id="m-name" style="font-family:'Playfair Display'; margin:0"></h2>
             <p id="m-moq" style="font-size:0.8rem; color:#999; margin: 5px 0 15px 0;"></p>
-            <div id="m-choices" style="margin-bottom:20px; display:flex; gap:8px; flex-wrap:wrap;"></div>
-            <div id="m-price" style="font-size:1.5rem; color:var(--dark-pink); font-weight:bold; margin-bottom:20px;"></div>
-            <p id="m-desc" style="font-size:0.85rem; line-height:1.6; color:#666;"></p>
+            <div id="m-choices" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+            <div id="m-price" class="price" style="margin-bottom:20px;"></div>
+            <p id="m-desc" style="font-size:0.85rem; color:#666; line-height:1.6;"></p>
             <button class="btn" style="width:100%;" onclick="addToCart()">Add to Bag</button>
         </div>
     </div>
@@ -59,10 +101,10 @@
 
 <div id="cartDrawer">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 class="serif" style="margin:0">Your Bag</h2>
+        <h2 style="font-family:'Playfair Display'; margin:0;">Your Bag</h2>
         <button onclick="toggleCart()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
     </div>
-    <div id="cartItems" style="flex:1; overflow-y:auto; margin-bottom:20px;"></div>
+    <div id="cartItems" style="flex:1; overflow-y:auto;"></div>
     <div style="border-top:1px solid #eee; padding-top:15px;">
         <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:15px;">
             <span>Total:</span><span id="cartTotal">₱0</span>
@@ -91,13 +133,18 @@
 
     onSnapshot(collection(db, "categories"), snap => {
         const bar = document.getElementById('filterBar');
-        bar.innerHTML = `<button class="filter-btn ${state.curCat === 'All' ? 'active' : ''}" onclick="window.setCat('All')">All</button>`;
+        bar.innerHTML = `<button class="filter-btn active" onclick="window.setCat('All', this)">All Items</button>`;
         snap.forEach(d => {
-            bar.innerHTML += `<button class="filter-btn ${state.curCat === d.id ? 'active' : ''}" onclick="window.setCat('${d.id}')">${d.id}</button>`;
+            bar.innerHTML += `<button class="filter-btn" onclick="window.setCat('${d.id}', this)">${d.id}</button>`;
         });
     });
 
-    window.setCat = (c) => { state.curCat = c; render(); };
+    window.setCat = (c, btn) => {
+        state.curCat = c;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+    };
 
     function render() {
         const grid = document.getElementById('catalog-grid');
@@ -107,8 +154,8 @@
                 <img src="${p.imgUrl || 'IMG_1218.jpeg'}">
                 <div class="card-body">
                     <h3 style="margin:0">${p.name}</h3>
-                    <p style="color:var(--dark-pink); font-weight:bold; margin:5px 0;">₱${p.price || 'Inquire'}</p>
-                    <button class="btn" style="padding:8px 20px; font-size:0.8rem;">View</button>
+                    <p class="price">₱${p.price || 'Inquire'}</p>
+                    <button class="btn" style="padding:8px 20px;">View</button>
                 </div>
             </div>
         `).join('');
@@ -120,11 +167,9 @@
         document.getElementById('m-name').innerText = p.name;
         document.getElementById('m-img').src = p.imgUrl || 'IMG_1218.jpeg';
         document.getElementById('m-price').innerText = `₱${p.price || 'Inquire'}`;
-        document.getElementById('m-moq').innerText = p.moq ? `Minimum Order: ${p.moq}` : "";
         document.getElementById('m-desc').innerText = p.description || "";
         document.getElementById('m-choices').innerHTML = (p.options || []).map(o => `<button class="filter-btn" onclick="window.selectOpt('${o.name}', ${o.price}, this)">${o.name}</button>`).join('');
         document.getElementById('productModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
     };
 
     window.selectOpt = (n, p, btn) => {
@@ -135,13 +180,7 @@
     };
 
     window.addToCart = () => {
-        if(state.selected.options?.length && !state.opt) return alert("Select a variant");
-        const item = { 
-            name: state.selected.name, 
-            variant: state.opt?.name || 'Standard', 
-            price: Number(state.opt?.price || state.selected.price || 0), 
-            qty: 1 
-        };
+        const item = { name: state.selected.name, variant: state.opt?.name || 'Standard', price: Number(state.opt?.price || state.selected.price || 0) };
         state.cart.push(item);
         updateCartUI();
         closeModal();
@@ -150,41 +189,21 @@
 
     function updateCartUI() {
         document.getElementById('cartCount').innerText = state.cart.length;
-        document.getElementById('cartItems').innerHTML = state.cart.map((i, idx) => `
-            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:10px;">
-                <span>${i.name} (${i.variant})</span>
-                <b>₱${i.price} <span onclick="window.removeItem(${idx})" style="color:red; cursor:pointer; margin-left:10px;">&times;</span></b>
-            </div>
-        `).join('');
+        document.getElementById('cartItems').innerHTML = state.cart.map((i, idx) => `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:0.9rem;"><span>${i.name}</span><b>₱${i.price}</b></div>`).join('');
         const total = state.cart.reduce((a, b) => a + b.price, 0);
         document.getElementById('cartTotal').innerText = `₱${total}`;
     }
 
-    window.removeItem = i => { state.cart.splice(i, 1); updateCartUI(); };
-
     window.processCheckout = async (method) => {
         const n = document.getElementById('c-name').value, e = document.getElementById('c-email').value, p = document.getElementById('c-phone').value, a = document.getElementById('c-addr').value;
-        if(!n || !e || !p || !a || !state.cart.length) return alert("Fill all details and add items to bag.");
-        
+        if(!n || !e || !p || !a || !state.cart.length) return alert("Please fill details");
         const total = document.getElementById('cartTotal').innerText;
-        try {
-            await addDoc(collection(db, "orders"), {
-                customerName: n, email: e, phone: p, address: a,
-                items: state.cart, total: total, method: method,
-                createdAt: Date.now(), status: "Pending", paid: false
-            });
-
-            if(method === 'messenger') {
-                window.open(`https://m.me/zabprintsdigital?text=Order for ${n}: ${total}`);
-                state.cart = []; updateCartUI(); toggleCart();
-            } else {
-                window.location.href = `payment.html?name=${encodeURIComponent(n)}&total=${encodeURIComponent(total)}`;
-            }
-        } catch(err) { alert("Error saving order."); }
+        await addDoc(collection(db, "orders"), { customerName: n, email: e, phone: p, address: a, items: state.cart, total: total, method: method, createdAt: Date.now(), status: "Pending", paid: false });
+        method === 'messenger' ? window.open(`https://m.me/zabprintsdigital?text=Order: ${total}`) : window.location.href = `payment.html?name=${n}&total=${total}`;
     };
 
     window.toggleCart = () => document.getElementById('cartDrawer').classList.toggle('active');
-    window.closeModal = () => { document.getElementById('productModal').style.display = 'none'; document.body.style.overflow = 'auto'; };
+    window.closeModal = () => document.getElementById('productModal').style.display = 'none';
 </script>
 </body>
 </html>
