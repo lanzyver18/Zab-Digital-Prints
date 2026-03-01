@@ -74,11 +74,11 @@
         .btn-msg { background: #0084ff; font-size: 0.75rem; width: auto; margin: 0; padding: 5px 12px; }
         .btn-export { background: var(--text); margin-bottom: 20px; font-size: 0.8rem; }
         
-        /* Order ID styling */
         .order-id-badge { font-family: monospace; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: #555; margin-left: 10px; border: 1px solid #ddd; }
-        
-        /* New Danger Button for Owner */
-        .btn-danger { background: #ff7675; margin-top: 15px; font-size: 0.75rem; width: auto; padding: 10px 20px; }
+        .btn-danger { background: #ff7675 !important; margin-top: 20px; font-size: 0.75rem; width: auto; padding: 8px 15px; }
+
+        /* Staff Table Styling */
+        .staff-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #f1f1f1; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -86,8 +86,8 @@
 <div id="login-gate">
     <div style="width: 320px; text-align: center;">
         <h2 style="color: var(--dark-pink); font-family: 'Playfair Display';">Zab Admin</h2>
-        <input type="text" id="entryName" placeholder="Admin Name (e.g. Juan)">
-        <input type="password" id="entryPass" placeholder="Access Password">
+        <input type="text" id="entryName" placeholder="Login Name" style="display:none;"> <p style="font-size: 0.8rem; color: #999; margin-bottom: 15px;">Please enter your personal access password</p>
+        <input type="password" id="entryPass" placeholder="Admin Password">
         <button onclick="login()">Open Workspace</button>
     </div>
 </div>
@@ -184,6 +184,19 @@
 
             <div id="protectedSettings" style="display:none; margin-top: 20px;">
                 <div style="margin-top: 20px;">
+                    <h4>Admin Account Management</h4>
+                    <p style="font-size:0.8rem; color:#666;">Create individual accounts for staff. Actions will be logged under their names.</p>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:10px; margin-bottom: 20px;">
+                        <input type="text" id="newStaffName" placeholder="Admin Name (e.g. Juan)" style="margin:0;">
+                        <input type="text" id="newStaffPass" placeholder="Admin Password" style="margin:0;">
+                        <button onclick="addStaffAccount()" style="margin:0; width: 100px; background: var(--text);">Create</button>
+                    </div>
+                    <div id="staff-account-list" style="border: 1px solid #eee; border-radius: 10px; padding: 5px;"></div>
+                </div>
+
+                <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
+
+                <div style="margin-top: 20px;">
                     <h4>Category Management</h4>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="newCatInput" placeholder="New category name">
@@ -196,24 +209,11 @@
 
                 <div style="margin-top: 20px;">
                     <h4>Audit Log (Security History)</h4>
-                    <p style="font-size: 0.8rem; color: #666;">Shows login activity and changes.</p>
                     <table class="log-table">
                         <thead><tr><th>Time</th><th>Admin Name</th><th>Action</th></tr></thead>
                         <tbody id="security-logs"></tbody>
                     </table>
                     <button class="btn btn-danger" onclick="clearAuditHistory()">Clear Audit History</button>
-                </div>
-
-                <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
-
-                <div style="margin-top: 20px;">
-                    <h4>Authorized Admin Passwords</h4>
-                    <p style="font-size:0.8rem; color:#666;">Created passwords for staff use.</p>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="newAdminPassInput" placeholder="New Password">
-                        <button onclick="addAdminPass()" style="width:100px; margin:0; background:#2d3436;">Add</button>
-                    </div>
-                    <div id="admin-pass-list" style="margin-top:10px;"></div>
                 </div>
 
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
@@ -245,23 +245,40 @@
     const db = getFirestore(app);
     let editID = null, localItems = [], currentOptions = [], orderCountCache = 0; 
 
-    // --- LOGIN ---
+    // --- LOGIN LOGIC ---
     window.login = async () => {
-        const adminName = document.getElementById('entryName').value.trim();
         const pass = document.getElementById('entryPass').value;
-        if(!adminName) return alert("Enter name.");
-        const staffSnap = await getDocs(collection(db, "admin_passwords"));
-        let valid = false; let role = "Staff";
-        staffSnap.forEach(d => { if(d.id === pass) valid = true; });
+        
         const ownerSnap = await getDoc(doc(db, "config", "security"));
         const ownerPass = ownerSnap.data()?.owner || "master789";
-        if(pass === ownerPass) { valid = true; role = "Owner"; }
+
+        let adminName = "Owner";
+        let valid = false;
+        let role = "Staff";
+
+        // Check staff collection
+        const staffSnap = await getDocs(collection(db, "staff_accounts"));
+        staffSnap.forEach(d => {
+            if(d.data().password === pass) {
+                valid = true;
+                adminName = d.data().name;
+            }
+        });
+
+        // Check owner password
+        if(pass === ownerPass) { valid = true; adminName = "Owner"; role = "Owner"; }
+
         if(valid) {
-            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Login: ${role}` });
-            sessionStorage.setItem("zabAuth", "true"); sessionStorage.setItem("zabAdminName", adminName);
-            document.getElementById('login-gate').style.display = "none"; initApp();
-            if (Notification.permission !== "granted") Notification.requestPermission();
-        } else { alert("Wrong Password"); }
+            await addDoc(collection(db, "security_logs"), { 
+                timestamp: new Date().toLocaleString(), 
+                admin: adminName, 
+                action: `Login: ${role}` 
+            });
+            sessionStorage.setItem("zabAuth", "true");
+            sessionStorage.setItem("zabAdminName", adminName);
+            document.getElementById('login-gate').style.display = "none";
+            initApp();
+        } else { alert("Invalid Password"); }
     };
 
     window.unlockSettings = async () => {
@@ -270,9 +287,36 @@
         if(document.getElementById('ownerPassInput').value === ownerPass) {
             document.getElementById('ownerGate').style.display = "none";
             document.getElementById('protectedSettings').style.display = "block";
-            loadAdminPasses(); loadLogs();
+            loadStaffAccounts(); loadLogs();
         } else { alert("Unauthorized"); }
     };
+
+    // --- STAFF ACCOUNT MANAGEMENT ---
+    window.addStaffAccount = async () => {
+        const name = document.getElementById('newStaffName').value.trim();
+        const pass = document.getElementById('newStaffPass').value.trim();
+        if(!name || !pass) return alert("Fill all fields.");
+        await addDoc(collection(db, "staff_accounts"), { name, password: pass });
+        document.getElementById('newStaffName').value = "";
+        document.getElementById('newStaffPass').value = "";
+    };
+
+    window.deleteStaff = async (id) => { if(confirm("Remove this account?")) await deleteDoc(doc(db, "staff_accounts", id)); };
+
+    function loadStaffAccounts() {
+        onSnapshot(collection(db, "staff_accounts"), (snap) => {
+            const list = document.getElementById('staff-account-list');
+            list.innerHTML = "";
+            snap.forEach(d => {
+                const staff = d.data();
+                list.innerHTML += `
+                    <div class="staff-row">
+                        <span><b>${staff.name}</b> (Pass: ${staff.password})</span>
+                        <button class="btn-small btn-del" onclick="deleteStaff('${d.id}')">Delete</button>
+                    </div>`;
+            });
+        });
+    }
 
     function loadLogs() {
         onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
@@ -284,36 +328,16 @@
         });
     }
 
-    // --- FEATURE: Clear Audit History ---
     window.clearAuditHistory = async () => {
-        if(!confirm("Permanently delete all logs? This cannot be undone.")) return;
-        try {
-            const logsSnap = await getDocs(collection(db, "security_logs"));
-            const batch = writeBatch(db);
-            logsSnap.forEach((doc) => batch.delete(doc.ref));
-            await batch.commit();
-            await addDoc(collection(db, "security_logs"), { 
-                timestamp: new Date().toLocaleString(), 
-                admin: sessionStorage.getItem("zabAdminName"), 
-                action: "Audit History Cleared" 
-            });
-            alert("History cleared.");
-        } catch (e) { alert("Error clearing history."); }
+        if(!confirm("Clear all logs?")) return;
+        const snap = await getDocs(collection(db, "security_logs"));
+        const batch = writeBatch(db);
+        snap.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        location.reload();
     };
 
-    // --- STAFF ---
-    window.addAdminPass = async () => {
-        const pass = document.getElementById('newAdminPassInput').value.trim();
-        if(pass) await setDoc(doc(db, "admin_passwords", pass), {});
-        document.getElementById('newAdminPassInput').value = "";
-    };
-    window.deleteAdminPass = async (id) => { if(confirm("Remove?")) await deleteDoc(doc(db, "admin_passwords", id)); };
-    function loadAdminPasses() {
-        onSnapshot(collection(db, "admin_passwords"), (snap) => {
-            const list = document.getElementById('admin-pass-list'); list.innerHTML = "";
-            snap.forEach(d => { list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span onclick="deleteAdminPass('${d.id}')" style="cursor:pointer; color:red; margin-left:10px;">×</span></div>`; });
-        });
-    }
+    // --- STAFF ACCOUNT END ---
 
     window.updateOwnerPass = async () => {
         const owner = document.getElementById('newOwnerPass').value || "master789";
@@ -321,7 +345,6 @@
         logout();
     };
 
-    // --- APP ---
     function initApp() {
         onSnapshot(collection(db, "categories"), (snap) => {
             const catList = document.getElementById('category-list'), catSelect = document.getElementById('pCat'), catFilter = document.getElementById('inventoryFilter');
@@ -339,7 +362,6 @@
         initOrders();
     }
 
-    // --- ORDERS ---
     function initOrders() {
         onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
             const list = document.getElementById('admin-orders-list');
