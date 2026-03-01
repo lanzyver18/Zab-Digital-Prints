@@ -74,6 +74,7 @@
         .btn-msg { background: #0084ff; font-size: 0.75rem; width: auto; margin: 0; padding: 5px 12px; }
         .btn-export { background: var(--text); margin-bottom: 20px; font-size: 0.8rem; }
         
+        /* Order ID styling */
         .order-id-badge { font-family: monospace; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: #555; margin-left: 10px; border: 1px solid #ddd; }
         .btn-danger { background: #ff7675 !important; margin-top: 20px; font-size: 0.75rem; width: auto; padding: 8px 15px; }
 
@@ -87,7 +88,7 @@
     <div style="width: 320px; text-align: center;">
         <h2 style="color: var(--dark-pink); font-family: 'Playfair Display';">Zab Admin</h2>
         <input type="text" id="entryName" placeholder="Login Name" style="display:none;"> <p style="font-size: 0.8rem; color: #999; margin-bottom: 15px;">Please enter your personal access password</p>
-        <input type="password" id="entryPass" placeholder="Admin Password">
+        <input type="password" id="entryPass" placeholder="Admin Password" onkeydown="if(event.key==='Enter') login()">
         <button onclick="login()">Open Workspace</button>
     </div>
 </div>
@@ -178,7 +179,7 @@
             <h2>Business Settings</h2>
             <div class="owner-gate" id="ownerGate">
                 <span class="owner-label">⚠️ Master Authorization</span>
-                <input type="password" id="ownerPassInput" placeholder="Enter Owner Password">
+                <input type="password" id="ownerPassInput" placeholder="Enter Owner Password" onkeydown="if(event.key==='Enter') unlockSettings()">
                 <button onclick="unlockSettings()" style="background: var(--owner-gold);">Unlock Master Settings</button>
             </div>
 
