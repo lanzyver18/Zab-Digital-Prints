@@ -346,11 +346,11 @@
                 <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem;">Remember my details</label>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button class="btn" style="background:#0084ff; font-size:0.8rem;" onclick="processCheckout('messenger')">Messenger</button>
-                <button class="btn" style="font-size:0.8rem; background:var(--dark-pink);" onclick="processCheckout('website')">Checkout Web</button>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn" style="background:var(--dark-pink);" onclick="processCheckout('website')">Checkout Web</button>
+                <button class="btn btn-secondary" style="background:#eee; color:#444;" onclick="copyOrderForm()">Copy Order Form</button>
             </div>
-            </div>
+        </div>
     </div>
 </div>
 
@@ -439,7 +439,6 @@
         resultDiv.style.display = "block";
 
         try {
-            // Index-free query: only filter by email
             const q = query(collection(db, "orders"), where("customerEmail", "==", emailInput));
             const snap = await getDocs(q);
 
@@ -450,7 +449,6 @@
                     <a href="https://m.me/zabprintsdigital" target="_blank" class="btn" style="font-size:0.75rem; padding:8px 15px; margin-top:10px;">Contact Support</a>
                 `;
             } else {
-                // Sort locally by timestamp to find the latest
                 const orders = snap.docs.map(d => d.data());
                 orders.sort((a, b) => b.createdAt - a.createdAt);
                 
@@ -570,20 +568,13 @@
 
     window.clearCart = () => { if(confirm("Clear your shopping bag?")) { cart = []; saveCart(); } };
 
-    function generateOrderSummaryText() {
-        const name = document.getElementById('custName').value.trim();
-        const email = document.getElementById('custEmail').value.trim();
-        const phone = document.getElementById('custPhone').value.trim();
-        const addr = document.getElementById('custAddr').value.trim();
-        const payMeth = document.getElementById('paymentMethod').value;
-        
-        if(!cart.length || !name || !addr || !email || !phone) return null;
-        
-        let summary = `ORDER FORM - ZAB DIGITAL PRINTS\n---\n`;
-        cart.forEach(i => summary += `• ${i.name} (${i.variant}) x${i.qty} - ₱${i.price * i.qty}\n`);
-        summary += `---\nTotal: ${document.getElementById('cartTotal').innerText}\nPayment Method: ${payMeth || 'Not selected'}\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nAddress: ${addr}`;
-        return summary;
-    }
+    window.copyOrderForm = () => {
+        const text = generateOrderSummaryText();
+        if(!text) return alert("Please fill bag and all customer details!");
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Order form copied to clipboard! You can now paste it in Messenger.");
+        });
+    };
 
     window.processCheckout = async (method) => {
         const name = document.getElementById('custName').value.trim();
@@ -615,8 +606,8 @@
                 address: addr,
                 items: cart,
                 total: totalStr,
-                method: method === 'messenger' ? 'Messenger' : 'Website',
-                paymentChoice: payMeth || "Messenger Inquiry",
+                method: 'Website',
+                paymentChoice: payMeth,
                 status: "Pending",
                 paid: false,
                 createdAt: Date.now()
@@ -626,12 +617,7 @@
             toast.classList.add('show');
 
             setTimeout(() => {
-                if (method === 'messenger') {
-                    const text = generateOrderSummaryText() + `\nOrder Ref: ${orderID}`;
-                    window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(text)}`, '_blank');
-                } else {
-                    window.location.href = `payment.html?id=${orderID}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(totalStr)}&method=${encodeURIComponent(payMeth)}`;
-                }
+                window.location.href = `payment.html?id=${orderID}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(totalStr)}&method=${encodeURIComponent(payMeth)}`;
                 cart = [];
                 saveCart();
                 toggleCart();
