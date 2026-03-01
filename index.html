@@ -113,7 +113,6 @@
         .catalog-section { padding: 40px 5% 40px 5%; background: var(--white); display: flex; flex-direction: column; align-items: center; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; width: 100%; }
         .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; cursor: pointer; animation: fadeIn 0.6s ease forwards; }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(212, 129, 146, 0.1); }
         .card img { width: 100%; height: 320px; object-fit: cover; background: #fafafa; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -129,7 +128,8 @@
 
         /* Modal Choices UI */
         .m-choices-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-        .m-choice-pill { padding: 6px 16px; border: 1px solid var(--pink); border-radius: 50px; font-size: 0.8rem; color: var(--dark-pink); background: var(--bg); font-weight: 500; }
+        .m-choice-pill { padding: 6px 16px; border: 1px solid var(--pink); border-radius: 50px; font-size: 0.8rem; color: var(--dark-pink); background: var(--bg); font-weight: 500; cursor: pointer; transition: 0.3s; }
+        .m-choice-pill:hover, .m-choice-pill.selected { background: var(--pink); color: white; border-color: var(--pink); }
 
         /* Description Modal */
         #productModal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2001; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -352,25 +352,53 @@
 
     window.showModal = (item) => {
         const modal = document.getElementById('productModal');
-        const orderMsg = (item.price && item.price > 0) ? `Hi Zab Digital Prints! I would like to order: ${item.name}` : `Hi Zab! Price quote for ${item.name}?`;
+        const priceDiv = document.getElementById('m-price');
+        const link = document.getElementById('m-link');
         
         document.getElementById('m-img').src = (item.imgUrl && item.imgUrl.trim() !== "") ? item.imgUrl : "IMG_1218.jpeg";
         document.getElementById('m-name').innerText = item.name;
         document.getElementById('m-moq').innerText = item.moq ? "MOQ: " + item.moq : "";
-        document.getElementById('m-price').innerText = (item.price && item.price > 0) ? `₱${item.price}` : "Contact for price";
-        document.getElementById('m-desc').innerText = item.description || "";
+        document.getElementById('m-desc').innerText = item.description || "No description provided.";
         
-        // Render Choices/Options
+        // Base setup for order message
+        const updateOrderInfo = (selectedOption = null) => {
+            let finalPriceText = "";
+            let currentMsg = "";
+
+            if (selectedOption) {
+                finalPriceText = selectedOption.price > 0 ? `₱${selectedOption.price}` : "Inquire";
+                currentMsg = `Hi Zab! I would like to order: ${item.name} (${selectedOption.name} - ${finalPriceText})`;
+            } else {
+                finalPriceText = (item.price && item.price > 0) ? `₱${item.price}` : "Contact for price";
+                currentMsg = (item.price && item.price > 0) ? `Hi Zab! I would like to order: ${item.name} (₱${item.price})` : `Hi Zab! Price quote for ${item.name}?`;
+            }
+
+            priceDiv.innerText = finalPriceText;
+            link.href = `https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(currentMsg)}`;
+        };
+
+        // Render Choices
         const choicesDiv = document.getElementById('m-choices');
         choicesDiv.innerHTML = "";
+        
         if(item.options && item.options.length > 0) {
             item.options.forEach(opt => {
-                choicesDiv.innerHTML += `<div class="m-choice-pill">${opt}</div>`;
+                const pill = document.createElement('div');
+                pill.className = "m-choice-pill";
+                pill.innerText = `${opt.name} (₱${opt.price})`;
+                pill.onclick = (e) => {
+                    document.querySelectorAll('.m-choice-pill').forEach(p => p.classList.remove('selected'));
+                    pill.classList.add('selected');
+                    updateOrderInfo(opt);
+                };
+                choicesDiv.appendChild(pill);
             });
+            // Show default/base price first
+            updateOrderInfo();
+        } else {
+            updateOrderInfo();
         }
 
-        const link = document.getElementById('m-link');
-        link.href = `https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(orderMsg)}`;
         modal.style.display = "flex";
         document.body.style.overflow = "hidden";
     };
