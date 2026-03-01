@@ -3,119 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zab Digital Prints | Memories within view</title>
+    <title>Zab Digital Prints | Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #fff; }
         * { box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; overflow-x: hidden; }
-        
-        nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
-        section { padding: 60px 5%; }
-        .flex-center { display: flex; align-items: center; justify-content: center; }
-        
-        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
-        .btn { background: var(--pink); color: var(--white); padding: 12px 25px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; display: inline-block; text-decoration: none; font-size: 0.9rem; text-align: center; }
-        .btn:hover { background: var(--dark-pink); transform: scale(1.02); }
-        .price { color: var(--dark-pink); font-size: 1.2rem; font-weight: 600; }
-
-        .hero { background: var(--white); min-height: 80vh; display: flex; align-items: center; gap: 40px; }
-        .hero-content h1 { font-size: clamp(2.5rem, 6vw, 4rem); color: var(--dark-pink); line-height: 1.1; margin-bottom: 20px; }
-        .hero-img-card { width: 100%; max-width: 400px; height: 500px; background: var(--bg); border-radius: 200px 200px 30px 30px; overflow: hidden; animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; width: 100%; }
-        .card { background: var(--white); border-radius: 30px; overflow: hidden; transition: 0.4s; position: relative; cursor: pointer; border: 1px solid #f0f0f0; }
-        .card img { width: 100%; height: 320px; object-fit: cover; }
-        .card-body { padding: 20px; text-align: center; }
-        .badge { position: absolute; top: 15px; left: 15px; padding: 4px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; color: #fff; text-transform: uppercase; }
-
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2001; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--white); max-width: 900px; width: 100%; border-radius: 40px; display: flex; overflow: hidden; position: relative; max-height: 90vh; }
-        
-        #cartDrawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: white; z-index: 3000; transition: 0.4s; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; }
+        nav { background: rgba(255, 255, 255, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
+        section { padding: 40px 5%; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .btn { background: var(--pink); color: #fff; padding: 12px 25px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: var(--white); border-radius: 20px; overflow: hidden; border: 1px solid #eee; text-align: center; padding-bottom: 20px; }
+        .card img { width: 100%; height: 250px; object-fit: cover; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-content { background: #fff; width: 90%; max-width: 800px; border-radius: 20px; display: flex; overflow: hidden; }
+        #cartDrawer { position: fixed; top: 0; right: -400px; width: 350px; height: 100vh; background: #fff; z-index: 3000; transition: 0.4s; padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         #cartDrawer.active { right: 0; }
-        
-        input, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 10px; width: 100%; font-family: inherit; }
-        .search-box { max-width: 600px; border: 2px solid var(--pink); border-radius: 50px; margin-bottom: 20px; }
-        .filter-btn { background: #fff; border: 2px solid var(--pink); color: var(--dark-pink); padding: 8px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; margin: 5px; transition: 0.3s; }
-        .filter-btn.active { background: var(--pink); color: #fff; }
-
-        @media (max-width: 768px) {
-            .hero { flex-direction: column-reverse; text-align: center; padding: 40px 5%; }
-            .modal-content { flex-direction: column; overflow-y: auto; }
-            .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            #cartDrawer { max-width: 100%; }
-        }
+        input, textarea { padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; width: 100%; }
     </style>
 </head>
 <body>
 
 <nav>
-    <a href="#"><img src="IMG_1218.jpeg" alt="Logo" style="height:50px;"></a>
-    <button onclick="toggleCart()" style="background:none; border:none; cursor:pointer; position:relative; color:var(--dark-pink)">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-        <span id="cartCount" style="position:absolute; top:0; right:0; background:#ff4757; color:white; border-radius:50%; padding:2px 6px; font-size:10px;">0</span>
-    </button>
+    <a href="#"><img src="IMG_1218.jpeg" style="height:50px;"></a>
+    <button onclick="toggleCart()" style="background:none; border:none; cursor:pointer;">🛒 <span id="cartCount">0</span></button>
 </nav>
 
-<section class="hero">
-    <div class="hero-content">
-        <h1>Beautifully Printed,<br>Unique to You.</h1>
-        <p>Turning favorite memories into premium keepsakes.</p>
-        <a href="#catalog" class="btn">Explore Catalog</a>
-    </div>
-    <div class="hero-img-card"><img src="IMG_1217.jpeg" style="width:100%; height:100%; object-fit:cover;"></div>
-</section>
-
-<section id="catalog" style="text-align:center;">
-    <input type="text" id="searchInput" class="search-box" placeholder="Search souvenirs...">
-    <div id="filterBar" class="flex-center" style="flex-wrap:wrap; margin-bottom:30px;"></div>
-    <div id="catalog-grid" class="grid">Loading collection...</div>
+<section id="catalog">
+    <div id="catalog-grid" class="grid">Loading products...</div>
 </section>
 
 <div id="productModal" class="overlay" onclick="closeModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <img src="" id="m-img" style="width:45%; object-fit:cover; background:#fafafa;">
-        <div style="padding:40px; flex:1; overflow-y:auto;">
-            <h2 id="m-name" class="serif" style="margin:0"></h2>
-            <p id="m-moq" style="font-size:0.8rem; color:#999; margin-bottom:20px;"></p>
-            <div id="m-choices" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
-            <div id="m-price" class="price" style="margin-bottom:20px;"></div>
-            <p id="m-desc" style="font-size:0.85rem; color:#666; line-height:1.6;"></p>
-            <div class="flex-center" style="justify-content:start; gap:15px; margin-bottom:20px;">
-                <button onclick="updateQty(-1)" class="btn" style="padding:5px 15px;">-</button>
-                <b id="m-qty">1</b>
-                <button onclick="updateQty(1)" class="btn" style="padding:5px 15px;">+</button>
-            </div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn" style="flex:1; background:var(--dark-pink)" onclick="addToCart()">Add to Bag</button>
-                <button class="btn" style="flex:1" onclick="quickOrder()">Buy Now</button>
-            </div>
+    <div class="modal-content" onclick="event.stopPropagation()" id="m-content">
+        <img id="m-img" style="width:40%; object-fit:cover;">
+        <div style="padding:30px; flex:1;">
+            <h2 id="m-name" style="margin:0"></h2>
+            <div id="m-price" style="font-size:1.5rem; color:var(--dark-pink); font-weight:bold;"></div>
+            <div id="m-choices" style="margin:15px 0;"></div>
+            <p id="m-desc"></p>
+            <button class="btn" onclick="addToCart()">Add to Bag</button>
         </div>
     </div>
 </div>
 
 <div id="cartDrawer">
-    <div style="padding:25px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-        <h2 class="serif" style="margin:0">Shopping Bag</h2>
-        <button onclick="toggleCart()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
-    </div>
-    <div id="cartItems" style="flex:1; overflow-y:auto; padding:20px;"></div>
-    <div style="padding:25px; background:#fffcfd; border-top:1px solid #eee;">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:15px;">
-            <span>Total:</span><span id="cartTotal">₱0</span>
-        </div>
-        <div id="checkoutForm" style="display:grid; gap:10px;">
-            <input type="text" id="c-name" placeholder="Full Name">
-            <input type="email" id="c-email" placeholder="Email Address">
-            <input type="tel" id="c-phone" placeholder="Phone Number">
-            <textarea id="c-addr" placeholder="Shipping Address" rows="2"></textarea>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px;">
-                <button class="btn" onclick="processCheckout('messenger')" style="background:#0084ff; font-size:0.8rem;">Messenger</button>
-                <button class="btn" onclick="processCheckout('website')" style="font-size:0.8rem;">Checkout Web</button>
-            </div>
-        </div>
+    <h3>Your Bag</h3>
+    <div id="cartItems" style="flex:1; overflow-y:auto;"></div>
+    <div style="border-top:1px solid #eee; padding-top:10px;">
+        <b>Total: <span id="cartTotal">₱0</span></b>
+        <input type="text" id="c-name" placeholder="Full Name">
+        <input type="email" id="c-email" placeholder="Email">
+        <input type="tel" id="c-phone" placeholder="Phone Number">
+        <textarea id="c-addr" placeholder="Address"></textarea>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="processCheckout('messenger')">Messenger</button>
+        <button class="btn" style="width:100%; margin-top:5px; background:var(--dark-pink)" onclick="processCheckout('website')">Checkout Web</button>
     </div>
 </div>
 
@@ -123,171 +65,68 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, onSnapshot, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
-        projectId: "zab-digital-prints",
-    };
+    const db = getFirestore(initializeApp({ apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0", projectId: "zab-digital-prints" }));
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    let state = { products: [], cart: [], selected: null, opt: null };
 
-    let state = { products: [], cart: JSON.parse(localStorage.getItem('zabCart')) || [], curCat: "All", selected: null, opt: null, qty: 1 };
+    onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), snap => {
+        state.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        render();
+    });
 
-    // --- UI Logic ---
-    const render = () => {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        const grid = document.getElementById('catalog-grid');
-        const filtered = state.products.filter(p => (state.curCat === "All" || p.category === state.curCat) && p.name.toLowerCase().includes(term));
-        
-        grid.innerHTML = filtered.map(p => `
+    function render() {
+        document.getElementById('catalog-grid').innerHTML = state.products.map(p => `
             <div class="card" onclick="openModal('${p.id}')">
-                <div class="badge" style="background:${p.status === 'Sold Out' ? '#e07a5f' : '#8ecae6'}">${p.status || 'Available'}</div>
                 <img src="${p.imgUrl || 'IMG_1218.jpeg'}">
-                <div class="card-body">
-                    <h3>${p.name}</h3>
-                    <div class="price">${getPriceRange(p)}</div>
-                    <button class="btn" style="width:100%; margin-top:10px;" ${p.status === 'Sold Out' ? 'disabled style="background:#ccc"' : ''}>View Item</button>
-                </div>
+                <h3>${p.name}</h3>
+                <button class="btn">View Product</button>
             </div>
-        `).join('') || "No items found.";
-    };
+        `).join('');
+    }
 
-    const getPriceRange = (p) => {
-        if (!p.options?.length) return p.price ? `₱${p.price}` : "Inquire";
-        const prices = p.options.map(o => o.price);
-        return `₱${Math.min(...prices)} - ₱${Math.max(...prices)}`;
-    };
-
-    window.openModal = (id) => {
+    window.openModal = id => {
         const p = state.products.find(x => x.id === id);
-        state.selected = p; state.opt = null; state.qty = parseInt(p.moq) || 1;
+        state.selected = p;
         document.getElementById('m-name').innerText = p.name;
         document.getElementById('m-img').src = p.imgUrl || 'IMG_1218.jpeg';
-        document.getElementById('m-desc').innerText = p.description || "";
-        document.getElementById('m-price').innerText = getPriceRange(p);
-        document.getElementById('m-qty').innerText = state.qty;
-        document.getElementById('m-moq').innerText = p.moq ? `Minimum Order: ${p.moq}` : "";
-        
-        document.getElementById('m-choices').innerHTML = (p.options || []).map(o => 
-            `<button class="filter-btn" onclick="selectOpt('${o.name}', ${o.price}, this)">${o.name}</button>`
-        ).join('');
-        
+        document.getElementById('m-price').innerText = `₱${p.price}`;
+        document.getElementById('m-choices').innerHTML = (p.options || []).map(o => `<button onclick="state.opt='${o.name}'">${o.name}</button>`).join(' ');
         document.getElementById('productModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    };
-
-    window.selectOpt = (name, price, btn) => {
-        state.opt = { name, price };
-        document.querySelectorAll('#m-choices .filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('m-price').innerText = `₱${price}`;
-    };
-
-    window.updateQty = (val) => {
-        state.qty = Math.max(state.qty + val, parseInt(state.selected.moq) || 1);
-        document.getElementById('m-qty').innerText = state.qty;
     };
 
     window.addToCart = () => {
-        if (state.selected.options?.length && !state.opt) return alert("Please select an option first.");
-        const item = { 
-            id: state.selected.id + (state.opt?.name || ''), 
-            name: state.selected.name, 
-            variant: state.opt?.name || 'Standard', 
-            price: state.opt?.price || state.selected.price || 0, 
-            qty: state.qty,
-            img: state.selected.imgUrl || 'IMG_1218.jpeg'
-        };
-        const idx = state.cart.findIndex(i => i.id === item.id);
-        idx > -1 ? state.cart[idx].qty += state.qty : state.cart.push(item);
-        saveCart();
+        state.cart.push({ ...state.selected, variant: state.opt || 'Standard', qty: 1 });
+        updateCartUI();
         closeModal();
-        toggleCart();
     };
 
-    window.quickOrder = () => { addToCart(); };
-
-    window.toggleCart = () => document.getElementById('cartDrawer').classList.toggle('active');
-    
-    const saveCart = () => {
-        localStorage.setItem('zabCart', JSON.stringify(state.cart));
-        const itemsDiv = document.getElementById('cartItems');
-        let total = 0;
-        itemsDiv.innerHTML = state.cart.map(i => {
-            total += i.price * i.qty;
-            return `<div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
-                <img src="${i.img}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;">
-                <div style="flex:1; font-size:0.85rem;"><b>${i.name}</b><br><small>${i.variant} x ${i.qty}</small></div>
-                <b style="font-size:0.85rem;">₱${i.price * i.qty}</b>
-                <button onclick="removeItem('${i.id}')" style="border:none; background:none; color:#ccc; cursor:pointer;">&times;</button>
-            </div>`;
-        }).join('') || "<p style='text-align:center; color:#999;'>Your bag is empty</p>";
-        document.getElementById('cartTotal').innerText = `₱${total}`;
+    function updateCartUI() {
         document.getElementById('cartCount').innerText = state.cart.length;
-    };
-
-    window.removeItem = (id) => {
-        state.cart = state.cart.filter(i => i.id !== id);
-        saveCart();
-    };
+        document.getElementById('cartItems').innerHTML = state.cart.map(i => `<div>${i.name} (${i.variant}) - ₱${i.price}</div>`).join('');
+        const total = state.cart.reduce((a, b) => a + Number(b.price), 0);
+        document.getElementById('cartTotal').innerText = `₱${total}`;
+    }
 
     window.processCheckout = async (method) => {
-        const n = document.getElementById('c-name').value, 
-              e = document.getElementById('c-email').value, 
-              p = document.getElementById('c-phone').value, 
-              a = document.getElementById('c-addr').value;
-
-        if (!state.cart.length) return alert("Bag is empty");
-        if (!n || !e || !p || !a) return alert("Please fill all fields including email.");
-
+        const n = document.getElementById('c-name').value, e = document.getElementById('c-email').value, p = document.getElementById('c-phone').value, a = document.getElementById('c-addr').value;
+        if(!n || !e || !p || !a) return alert("Fill all details");
+        
         const total = document.getElementById('cartTotal').innerText;
-        const summary = `Order for ${n} (${e})\n${state.cart.map(i => `• ${i.name} [${i.variant}] x${i.qty}`).join('\n')}\nTotal: ${total}`;
+        await addDoc(collection(db, "orders"), {
+            customerName: n, email: e, phone: p, address: a,
+            items: state.cart, total: total, method: method,
+            createdAt: Date.now(), status: "Pending", paid: false
+        });
 
-        try {
-            await addDoc(collection(db, "orders"), {
-                name: n, email: e, phone: p, address: a,
-                items: state.cart, total: total, method: method,
-                createdAt: Date.now(), status: "Pending"
-            });
-            
-            if (method === 'messenger') {
-                window.open(`https://m.me/zabprintsdigital?text=${encodeURIComponent(summary)}`);
-            } else {
-                alert("Order recorded! Redirecting to website payment...");
-                // window.location.href = "YOUR_PAYMENT_URL_HERE";
-            }
-            state.cart = []; saveCart(); toggleCart();
-        } catch (err) { alert("Error saving order. Try again."); }
-    };
-
-    // --- Database Listeners ---
-    onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), snap => {
-        state.products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        render();
-    });
-
-    onSnapshot(collection(db, "categories"), snap => {
-        const bar = document.getElementById('filterBar');
-        bar.innerHTML = `<button class="filter-btn active" onclick="setCat('All', this)">All</button>` + 
-            snap.docs.map(d => `<button class="filter-btn" onclick="setCat('${d.id}', this)">${d.id}</button>`).join('');
-    });
-
-    window.setCat = (cat, btn) => {
-        state.curCat = cat;
-        document.querySelectorAll('#filterBar .filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        render();
-    };
-
-    window.closeModal = (e) => { 
-        if (!e || e.target.classList.contains('overlay')) {
-            document.getElementById('productModal').style.display = 'none'; 
-            document.body.style.overflow = 'auto';
+        if(method === 'messenger') {
+            window.open(`https://m.me/zabprintsdigital?text=New Order: ${total}`);
+        } else {
+            window.location.href = `payment.html?name=${n}&total=${total}`;
         }
     };
 
-    document.getElementById('searchInput').oninput = render;
-    saveCart();
+    window.toggleCart = () => document.getElementById('cartDrawer').classList.toggle('active');
+    window.closeModal = () => document.getElementById('productModal').style.display = 'none';
 </script>
 </body>
 </html>
