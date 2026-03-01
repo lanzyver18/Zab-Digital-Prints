@@ -6,199 +6,142 @@
     <title>Zab Admin | Control Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; --owner-gold: #d4af37; --success: #2ecc71; --warning: #f1c40f; }
-        
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; --gold: #d4af37; --white: #fff; }
+        * { box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f8f9fa; color: var(--text); display: flex; min-height: 100vh; }
         
-        /* Sidebar Nav */
-        .sidebar { width: 240px; background: white; border-right: 1px solid #edf2f7; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 100; }
-        .sidebar-header { padding: 30px; border-bottom: 1px solid #f1f1f1; text-align: center; }
-        .sidebar-menu { padding: 20px; flex-grow: 1; }
-        .menu-item { padding: 12px 15px; border-radius: 10px; color: #636e72; cursor: pointer; margin-bottom: 5px; transition: 0.3s; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-        .menu-item:hover, .menu-item.active { background: var(--bg); color: var(--dark-pink); }
-
-        /* Workspace */
+        /* Layout */
+        .sidebar { width: 240px; background: var(--white); border-right: 1px solid #eee; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
         .workspace { flex-grow: 1; padding: 40px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Panels */
-        .panel { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f1f1; margin-bottom: 30px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; background: #fcfcfc; font-family: inherit; box-sizing: border-box; }
-        textarea { resize: vertical; min-height: 80px; }
-        button { width: 100%; padding: 14px; background: var(--dark-pink); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        /* UI Components */
+        .card { background: var(--white); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .menu-item { padding: 12px 15px; border-radius: 10px; color: #666; cursor: pointer; transition: 0.3s; font-weight: 500; }
+        .menu-item:hover, .menu-item.active { background: var(--bg); color: var(--dark-pink); }
         
-        /* Owner Protection Styling */
-        .owner-gate { border: 2px solid var(--owner-gold); background: #fffcf5; padding: 20px; border-radius: 15px; margin-top: 20px; }
-        .owner-label { color: var(--owner-gold); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; font-family: inherit; }
+        .btn { padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; background: var(--dark-pink); color: #fff; width: 100%; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-small { width: auto; padding: 5px 12px; font-size: 0.75rem; }
 
-        /* Grid Layouts */
-        .inventory-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; align-items: start; }
-        .product-row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f9f9f9; }
-        .product-row img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 15px; }
-        
-        .action-btns { display: flex; gap: 5px; }
-        .btn-small { padding: 5px 10px; font-size: 11px; width: auto; margin: 0; }
-        .btn-del { background: #ff7675; }
+        /* Grids */
+        .inventory-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; }
+        .product-row { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f9f9f9; gap: 15px; }
+        .tag { display: inline-flex; align-items: center; background: var(--bg); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; margin: 4px; border: 1px solid var(--pink); }
 
-        #login-gate { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .cat-tag, .staff-tag, .opt-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.85rem; border: 1px solid var(--pink); }
-        .opt-tag { border-color: #74b9ff; background: #ebf5ff; color: #0984e3; }
+        /* Order Styling */
+        .order-card { border: 1.5px solid #eee; padding: 20px; border-radius: 15px; background: #fff; margin-bottom: 15px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
+        .badge.paid { background: #e6fffa; color: #234e52; }
+        .badge.unpaid { background: #fff5f5; color: #822727; }
 
-        /* Order Management Styles */
-        .order-card { border: 1.5px solid #eee; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: white; transition: 0.3s; }
-        .order-card:hover { border-color: var(--pink); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f9f9f9; padding-bottom: 10px; margin-bottom: 10px; }
-        .order-customer { font-weight: 600; color: var(--dark-pink); }
-        .order-date { font-size: 0.75rem; color: #999; }
-        .order-items { margin: 10px 0; }
-        .order-item-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 3px 0; border-bottom: 1px dotted #eee; }
-        .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f9f9f9; }
-        .order-total { font-weight: bold; color: var(--text); }
-        .btn-clear { background: #ff7675; width: auto; margin: 0; padding: 5px 15px; font-size: 0.75rem; }
-
-        /* Status Toggles */
-        .badge-status { padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; cursor: pointer; border: 1px solid transparent; }
-        .paid-yes { background: #e6fffa; color: #234e52; border-color: #b2f5ea; }
-        .paid-no { background: #fff5f5; color: #822727; border-color: #feb2b2; }
-
-        .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
-        .log-table th { text-align: left; padding: 10px; border-bottom: 2px solid var(--owner-gold); color: var(--owner-gold); }
-        .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        #login-gate { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
     </style>
 </head>
 <body>
 
 <div id="login-gate">
-    <div style="width: 320px; text-align: center;">
+    <div style="width: 300px;">
         <h2 style="color: var(--dark-pink); font-family: 'Playfair Display';">Zab Admin</h2>
-        <input type="password" id="entryPass" placeholder="Admin Password">
-        <button onclick="login()">Open Workspace</button>
+        <input type="password" id="entryPass" placeholder="Password">
+        <button class="btn" onclick="login()">Login</button>
     </div>
 </div>
 
 <aside class="sidebar">
-    <div class="sidebar-header"><b style="color: var(--dark-pink); font-family: 'Playfair Display';">ZAB CONTROL</b></div>
-    <div class="sidebar-menu">
+    <div style="padding: 30px; text-align: center;"><b style="color:var(--dark-pink); font-family:'Playfair Display';">ZAB CONTROL</b></div>
+    <div style="padding: 20px; flex: 1;">
         <div class="menu-item active" onclick="switchTab('inventory', this)">Inventory</div>
         <div class="menu-item" onclick="switchTab('orders-tab', this)">Orders</div>
         <div class="menu-item" onclick="switchTab('settings', this)">Settings</div>
-        <div class="menu-item" onclick="logout()" style="margin-top: 20px; color: #999;">Logout</div>
+        <div class="menu-item" onclick="logout()" style="margin-top:20px; color:#999;">Logout</div>
     </div>
 </aside>
 
 <main class="workspace">
     <div id="inventory" class="tab-content active">
         <div class="inventory-grid">
-            <div>
-                <div class="panel">
-                    <h3 id="formHeader" style="margin-top:0;">Product Editor</h3>
-                    <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
-                    <input type="number" id="pPrice" placeholder="Base Price (Optional)" oninput="updateLiveView()">
-                    <input type="text" id="pMoq" placeholder="Minimum Quantity (e.g. 12pcs)" oninput="updateLiveView()">
-                    <textarea id="pDesc" placeholder="Product Description (Optional)" oninput="updateLiveView()"></textarea>
+            <div class="main-col">
+                <div class="card">
+                    <h3 id="formHeader" style="margin:0 0 15px 0;">Product Editor</h3>
+                    <input type="text" id="pName" placeholder="Product Name" oninput="liveUpdate()">
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="pPrice" placeholder="Base Price" oninput="liveUpdate()">
+                        <input type="text" id="pMoq" placeholder="MOQ (e.g. 12pcs)" oninput="liveUpdate()">
+                    </div>
+                    <textarea id="pDesc" placeholder="Description" oninput="liveUpdate()"></textarea>
                     
-                    <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: #999;">Product Choices/Sizes with Prices</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="optName" placeholder="Choice (e.g. Small)" style="margin: 0;">
-                            <input type="number" id="optPrice" placeholder="Price" style="margin: 0; width: 100px;">
-                            <button onclick="addOption()" style="width: 100px; margin: 0; background: #74b9ff;">Add</button>
+                    <div style="background: #fafafa; padding: 15px; border-radius: 10px; margin: 10px 0;">
+                        <label style="font-size:0.75rem; font-weight:bold;">Variants / Sizes</label>
+                        <div style="display:flex; gap:10px; margin-top:5px;">
+                            <input type="text" id="optName" placeholder="Size" style="margin:0;">
+                            <input type="number" id="optPrice" placeholder="Price" style="margin:0; width:100px;">
+                            <button class="btn btn-small" onclick="addOption()" style="background:#74b9ff;">Add</button>
                         </div>
-                        <div id="current-options-list" style="margin-top: 10px;"></div>
+                        <div id="opt-tags-list" style="margin-top:10px;"></div>
                     </div>
 
-                    <select id="pCat"></select>
-                    <select id="pStatus" onchange="updateLiveView()"><option value="Available">Available</option><option value="Sold Out">Sold Out</option></select>
-                    <input type="text" id="pImg" placeholder="Image URL (Leave empty for Logo)" oninput="updateLiveView()">
-                    <button id="saveBtn">Save Product</button>
+                    <div style="display:flex; gap:10px;">
+                        <select id="pCat"></select>
+                        <select id="pStatus" onchange="liveUpdate()"><option>Available</option><option>Sold Out</option></select>
+                    </div>
+                    <input type="text" id="pImg" placeholder="Image URL" oninput="liveUpdate()">
+                    <button class="btn" id="saveBtn">Save Product</button>
                 </div>
-                <div class="panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="margin: 0;">Inventory List</h3>
-                        <div style="display: flex; gap: 5px;">
-                            <input type="text" id="inventorySearch" placeholder="Search..." oninput="filterInventoryList()" style="margin:0; width: 120px; padding: 8px;">
-                            <select id="inventoryFilter" onchange="filterInventoryList()" style="margin: 0; padding: 8px; width: 140px;">
-                                <option value="All">All Categories</option>
-                            </select>
+
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 style="margin:0;">Current Inventory</h3>
+                        <div style="display:flex; gap:5px;">
+                            <input type="text" id="searchIn" placeholder="Search..." oninput="renderList()" style="width:120px; margin:0; padding:8px;">
+                            <select id="filterCat" onchange="renderList()" style="width:140px; margin:0; padding:8px;"><option value="All">All Categories</option></select>
                         </div>
                     </div>
-                    <div id="admin-list"></div>
+                    <div id="inv-list"></div>
                 </div>
             </div>
-            <div class="live-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: sticky; top: 40px;">
-                <img id="pre-img" src="IMG_1218.jpeg" style="width:100%; height:320px; object-fit:cover;">
-                <div style="padding: 25px; text-align: center;">
-                    <h3 id="pre-name" style="font-family:'Playfair Display'; margin:0;">Product Name</h3>
-                    <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">Contact us for price</div>
-                    <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
-                    
-                    <div class="choice-list" id="pre-choices"></div>
 
-                    <div id="pre-desc" style="font-size:0.85rem; color:#666; margin:15px 0; line-height: 1.4;"></div>
-                    <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Inquire Now</div>
+            <div class="preview-col">
+                <div class="card" style="position:sticky; top:40px; padding:0; overflow:hidden;">
+                    <img id="pre-img" src="IMG_1218.jpeg" style="width:100%; height:300px; object-fit:cover;">
+                    <div style="padding:20px; text-align:center;">
+                        <h3 id="pre-name" class="serif">Product Name</h3>
+                        <div id="pre-price" style="color:var(--dark-pink); font-size:1.4rem; font-weight:bold;">₱0.00</div>
+                        <div id="pre-moq" style="font-size:0.75rem; color:#999; margin-bottom:10px;"></div>
+                        <div id="pre-opts" style="margin-bottom:15px;"></div>
+                        <p id="pre-desc" style="font-size:0.8rem; color:#666;"></p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="orders-tab" class="tab-content">
-        <div class="panel">
-            <h2 style="margin-top:0;">Website Orders</h2>
-            <p style="font-size: 0.85rem; color: #666;">Manage payment status and order progress below.</p>
-            <div id="admin-orders-list">Loading orders...</div>
+        <div class="card">
+            <h3>Recent Orders</h3>
+            <div id="order-list">Loading...</div>
         </div>
     </div>
 
     <div id="settings" class="tab-content">
-        <div class="panel">
-            <h2>Business Settings</h2>
-            <div class="owner-gate" id="ownerGate">
-                <span class="owner-label">⚠️ Master Authorization</span>
-                <input type="password" id="ownerPassInput" placeholder="Enter Owner Password">
-                <button onclick="unlockSettings()" style="background: var(--owner-gold);">Unlock Master Settings</button>
+        <div class="card">
+            <h3>Settings</h3>
+            <div id="owner-gate">
+                <input type="password" id="masterPassIn" placeholder="Enter Master Password">
+                <button class="btn" onclick="unlockMaster()" style="background:var(--gold);">Unlock Master Settings</button>
             </div>
-
-            <div id="protectedSettings" style="display:none; margin-top: 20px;">
-                <div style="margin-top: 20px;">
-                    <h4>Category Management</h4>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="newCatInput" placeholder="New category name">
-                        <button onclick="addCategory()" style="width:100px; margin:0;">Add</button>
-                    </div>
-                    <div id="category-list" style="margin-top:10px;"></div>
+            <div id="master-panel" style="display:none; margin-top:20px;">
+                <h4>Categories</h4>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="newCat" style="margin:0;">
+                    <button class="btn btn-small" onclick="addCat()">Add</button>
                 </div>
-
-                <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
-
-                <div style="margin-top: 20px;">
-                    <h4>Security & Login History</h4>
-                    <p style="font-size: 0.8rem; color: #666;">View all recent authorized entries (Admin & Master).</p>
-                    <table class="log-table">
-                        <thead><tr><th>Time</th><th>Action</th></tr></thead>
-                        <tbody id="security-logs"></tbody>
-                    </table>
-                </div>
-
-                <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
-
-                <div style="margin-top: 20px;">
-                    <h4>Staff Access (Multiple Admins)</h4>
-                    <p style="font-size:0.8rem; color:#666;">Add passwords that staff can use to login. They cannot access these settings.</p>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="newAdminPassInput" placeholder="Create Admin Password">
-                        <button onclick="addAdminPass()" style="width:100px; margin:0; background:#2d3436;">Add</button>
-                    </div>
-                    <div id="admin-pass-list" style="margin-top:10px;"></div>
-                </div>
-
-                <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
-
-                <div>
-                    <h4>Change Owner Master Password</h4>
-                    <input type="text" id="newOwnerPass" placeholder="New Master Key">
-                    <button onclick="updateOwnerPass()" style="background: var(--owner-gold);">Update Master Key</button>
-                </div>
+                <div id="cat-tags" style="margin-top:10px;"></div>
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                <h4>Logs</h4>
+                <div id="log-list" style="font-size:0.75rem; max-height:200px; overflow-y:auto;"></div>
             </div>
         </div>
     </div>
@@ -208,288 +151,163 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
+    const db = getFirestore(initializeApp({
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
-        authDomain: "zab-digital-prints.firebaseapp.com",
-        projectId: "zab-digital-prints",
-        storageBucket: "zab-digital-prints.firebasestorage.app",
-        messagingSenderId: "1050157785592",
-        appId: "1:1050157785592:web:e6a3c8f10a9d28aa87b60d"
-    };
+        projectId: "zab-digital-prints"
+    }));
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    let editID = null;
-    let localItems = [];
-    let currentOptions = []; 
+    let editID = null, items = [], opts = [];
 
-    // --- SECURITY & LOGGING ---
+    // --- Auth ---
     window.login = async () => {
         const pass = document.getElementById('entryPass').value;
+        const oSnap = await getDoc(doc(db, "config", "security"));
+        const oPass = oSnap.data()?.owner || "master789";
         const staffSnap = await getDocs(collection(db, "admin_passwords"));
-        let valid = false;
-        let role = "Staff Admin";
-
-        staffSnap.forEach(d => { if(d.id === pass) valid = true; });
-        const ownerSnap = await getDoc(doc(db, "config", "security"));
-        const ownerPass = ownerSnap.data()?.owner || "master789";
-        if(pass === ownerPass) { valid = true; role = "Owner Admin"; }
+        let valid = pass === oPass;
+        staffSnap.forEach(d => { if(d.id === pass) valid = true });
 
         if(valid) {
-            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), action: `Authorized Login: ${role}` });
             sessionStorage.setItem("zabAuth", "true");
             document.getElementById('login-gate').style.display = "none";
-            initApp();
-        } else { alert("Invalid Password"); }
-    };
-
-    window.unlockSettings = async () => {
-        const passDoc = await getDoc(doc(db, "config", "security"));
-        const ownerPass = passDoc.exists() ? passDoc.data().owner : "master789";
-        if(document.getElementById('ownerPassInput').value === ownerPass) {
-            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), action: "Master Settings Unlocked" });
-            document.getElementById('ownerGate').style.display = "none";
-            document.getElementById('protectedSettings').style.display = "block";
-            loadAdminPasses(); loadLogs();
-        } else { alert("Unauthorized"); }
-    };
-
-    function loadLogs() {
-        onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(10)), (snap) => {
-            const l = document.getElementById('security-logs'); l.innerHTML = "";
-            snap.forEach(d => { l.innerHTML += `<tr><td>${d.data().timestamp}</td><td>${d.data().action}</td></tr>`; });
-        });
+            init();
+            addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), action: "Login Success" });
+        } else alert("Denied");
     }
 
-    // --- STAFF MANAGEMENT ---
-    window.addAdminPass = async () => {
-        const pass = document.getElementById('newAdminPassInput').value.trim();
-        if(pass) await setDoc(doc(db, "admin_passwords", pass), {});
-        document.getElementById('newAdminPassInput').value = "";
-    };
-
-    window.deleteAdminPass = async (id) => { if(confirm("Remove this admin access?")) await deleteDoc(doc(db, "admin_passwords", id)); };
-
-    function loadAdminPasses() {
-        onSnapshot(collection(db, "admin_passwords"), (snap) => {
-            const list = document.getElementById('admin-pass-list'); list.innerHTML = "";
-            snap.forEach(d => { list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="deleteAdminPass('${d.id}')">×</span></div>`; });
-        });
+    window.unlockMaster = async () => {
+        const pass = document.getElementById('masterPassIn').value;
+        const oSnap = await getDoc(doc(db, "config", "security"));
+        if(pass === (oSnap.data()?.owner || "master789")) {
+            document.getElementById('owner-gate').style.display = 'none';
+            document.getElementById('master-panel').style.display = 'block';
+            loadMasterData();
+        } else alert("Wrong Password");
     }
 
-    window.updateOwnerPass = async () => {
-        const owner = document.getElementById('newOwnerPass').value || "master789";
-        await setDoc(doc(db, "config", "security"), { owner });
-        alert("Owner Password Updated. Logging out."); logout();
-    };
-
-    // --- INVENTORY LOGIC ---
-    function initApp() {
-        onSnapshot(collection(db, "categories"), (snap) => {
-            const catList = document.getElementById('category-list');
-            const catSelect = document.getElementById('pCat');
-            const catFilter = document.getElementById('inventoryFilter');
-            catList.innerHTML = ""; catSelect.innerHTML = ""; 
-            catFilter.innerHTML = '<option value="All">All Categories</option>';
+    // --- Inventory Core ---
+    function init() {
+        onSnapshot(collection(db, "categories"), snap => {
+            const select = document.getElementById('pCat'), filter = document.getElementById('filterCat'), tags = document.getElementById('cat-tags');
+            select.innerHTML = ""; filter.innerHTML = '<option value="All">All Categories</option>'; tags.innerHTML = "";
             snap.forEach(d => {
-                catList.innerHTML += `<div class="cat-tag">${d.id} <span style="margin-left:8px; cursor:pointer;" onclick="deleteCat('${d.id}')">×</span></div>`;
-                catSelect.innerHTML += `<option value="${d.id}">${d.id}</option>`;
-                catFilter.innerHTML += `<option value="${d.id}">${d.id}</option>`;
+                const h = `<option value="${d.id}">${d.id}</option>`;
+                select.innerHTML += h; filter.innerHTML += h;
+                tags.innerHTML += `<span class="tag">${d.id} <b onclick="delCat('${d.id}')" style="cursor:pointer;margin-left:5px;">×</b></span>`;
             });
         });
 
-        onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
-            localItems = [];
-            snap.forEach(d => { localItems.push({ id: d.id, ...d.data() }); });
-            filterInventoryList();
+        onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), snap => {
+            items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderList();
         });
 
-        initOrders();
+        onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), snap => renderOrders(snap));
     }
 
-    // --- ORDERS LOGIC ---
-    function initOrders() {
-        onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
-            const list = document.getElementById('admin-orders-list');
-            list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders found yet.</p>" : "";
-            
-            snap.forEach(d => {
-                const order = d.data();
-                const date = new Date(order.createdAt).toLocaleString();
-                const isPaid = order.paid === true;
-                const currentStatus = order.status || "Pending";
-                let itemsHtml = "";
-                order.items.forEach(i => {
-                    itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`;
-                });
-
-                list.innerHTML += `
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div>
-                                <span class="order-customer">${order.customerName}</span>
-                                <span class="badge-status ${isPaid ? 'paid-yes' : 'paid-no'}" onclick="togglePaidStatus('${d.id}', ${isPaid})">
-                                    ${isPaid ? 'PAID' : 'UNPAID'}
-                                </span>
-                            </div>
-                            <span class="order-date">${date}</span>
-                        </div>
-                        <div class="order-items">${itemsHtml}</div>
-                        <div style="font-size:0.8rem; color:#666;"><b>Shipping Address:</b><br>${order.address}</div>
-                        
-                        <div style="margin-top:15px; display:flex; gap:10px; align-items:center;">
-                            <label style="font-size:0.75rem; color:#999; margin:0;">Progress:</label>
-                            <select onchange="updateOrderStatus('${d.id}', this.value)" style="margin:0; width:auto; padding:5px; font-size:0.75rem;">
-                                <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Processing" ${currentStatus === 'Processing' ? 'selected' : ''}>Processing</option>
-                                <option value="Ready" ${currentStatus === 'Ready' ? 'selected' : ''}>Ready for Pickup</option>
-                                <option value="Shipped" ${currentStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                                <option value="Cancelled" ${currentStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                            </select>
-                        </div>
-
-                        <div class="order-footer">
-                            <span class="order-total">Total: ${order.total}</span>
-                            <button class="btn-small btn-clear" onclick="deleteOrderRecord('${d.id}')">Clear Record</button>
-                        </div>
-                    </div>`;
-            });
-        });
-    }
-
-    // --- NEW TOGGLE PAID FEATURE ---
-    window.togglePaidStatus = async (id, currentStatus) => {
-        const orderRef = doc(db, "orders", id);
-        await updateDoc(orderRef, { paid: !currentStatus });
-    };
-
-    // --- NEW ORDER PROGRESS FEATURE ---
-    window.updateOrderStatus = async (id, newStatus) => {
-        const orderRef = doc(db, "orders", id);
-        await updateDoc(orderRef, { status: newStatus });
-    };
-
-    window.deleteOrderRecord = async (id) => {
-        if(confirm("Permanently remove this order record?")) {
-            await deleteDoc(doc(db, "orders", id));
-        }
-    };
-
-    window.filterInventoryList = () => {
-        const categoryVal = document.getElementById('inventoryFilter').value;
-        const searchVal = document.getElementById('inventorySearch').value.toLowerCase();
-        const list = document.getElementById('admin-list');
-        list.innerHTML = "";
-        localItems.forEach(item => {
-            if ((categoryVal === "All" || item.category === categoryVal) && item.name.toLowerCase().includes(searchVal)) {
-                const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : 'IMG_1218.jpeg';
-                list.innerHTML += `<div class="product-row"><img src="${displayImg}" onerror="this.src='https://via.placeholder.com/50'"><div style="flex-grow:1"><b>${item.name}</b><br><small>${item.category}</small></div><div class="action-btns"><button class="btn-small" onclick="startEdit('${item.id}')">Edit</button><button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button></div></div>`;
-            }
-        });
-    };
-
-    // Options Logic
     window.addOption = () => {
-        const nameInput = document.getElementById('optName');
-        const priceInput = document.getElementById('optPrice');
-        const name = nameInput.value.trim();
-        const price = parseFloat(priceInput.value) || 0;
-
-        if(name) {
-            currentOptions.push({ name, price });
-            nameInput.value = ""; priceInput.value = "";
-            renderOptions(); updateLiveView();
-        }
-    };
-
-    window.removeOption = (idx) => { currentOptions.splice(idx, 1); renderOptions(); updateLiveView(); };
-
-    function renderOptions() {
-        const list = document.getElementById('current-options-list');
-        list.innerHTML = "";
-        currentOptions.forEach((opt, idx) => {
-            list.innerHTML += `<div class="opt-tag">${opt.name} (₱${opt.price}) <span style="margin-left:8px; cursor:pointer; color:red;" onclick="removeOption(${idx})">×</span></div>`;
-        });
+        const name = document.getElementById('optName').value, price = document.getElementById('optPrice').value;
+        if(name) { opts.push({ name, price }); document.getElementById('optName').value = ""; document.getElementById('optPrice').value = ""; renderOpts(); liveUpdate(); }
     }
 
-    window.deleteItem = async (id) => { if(confirm("Permanently delete item?")) await deleteDoc(doc(db, "products", id)); };
-    window.addCategory = async () => {
-        const name = document.getElementById('newCatInput').value;
-        if(name) await setDoc(doc(db, "categories", name), {});
-        document.getElementById('newCatInput').value = "";
-    };
-    window.deleteCat = async (id) => { if(confirm("Delete category?")) await deleteDoc(doc(db, "categories", id)); };
-    
-    window.updateLiveView = () => {
+    function renderOpts() {
+        document.getElementById('opt-tags-list').innerHTML = opts.map((o,i) => `<span class="tag" style="border-color:#74b9ff;">${o.name} (₱${o.price}) <b onclick="opts.splice(${i},1);renderOpts();liveUpdate()" style="cursor:pointer;color:red;">×</b></span>`).join('');
+    }
+
+    window.renderList = () => {
+        const cat = document.getElementById('filterCat').value, term = document.getElementById('searchIn').value.toLowerCase();
+        document.getElementById('inv-list').innerHTML = items.filter(i => (cat === "All" || i.category === cat) && i.name.toLowerCase().includes(term)).map(i => `
+            <div class="product-row">
+                <img src="${i.imgUrl || 'IMG_1218.jpeg'}" style="width:40px;height:40px;border-radius:5px;object-fit:cover;">
+                <div style="flex:1"><b>${i.name}</b><br><small>${i.category}</small></div>
+                <button class="btn btn-small" onclick="editItem('${i.id}')">Edit</button>
+                <button class="btn btn-small" style="background:#ff7675" onclick="delItem('${i.id}')">Del</button>
+            </div>
+        `).join('');
+    }
+
+    window.liveUpdate = () => {
         const name = document.getElementById('pName').value || "Product Name";
-        const basePrice = document.getElementById('pPrice').value;
-        const moq = document.getElementById('pMoq').value;
-        const desc = document.getElementById('pDesc').value;
-        const img = document.getElementById('pImg').value || "IMG_1218.jpeg";
-
+        const price = document.getElementById('pPrice').value || 0;
         document.getElementById('pre-name').innerText = name;
+        document.getElementById('pre-img').src = document.getElementById('pImg').value || "IMG_1218.jpeg";
+        document.getElementById('pre-desc').innerText = document.getElementById('pDesc').value;
+        document.getElementById('pre-moq').innerText = document.getElementById('pMoq').value ? `MOQ: ${document.getElementById('pMoq').value}` : "";
         
-        if (currentOptions.length > 0) {
-            const prices = currentOptions.map(o => parseFloat(o.price));
-            const min = Math.min(...prices);
-            const max = Math.max(...prices);
-            document.getElementById('pre-price').innerText = min === max ? `₱${min}` : `₱${min} - ₱${max}`;
-        } else {
-            document.getElementById('pre-price').innerText = (basePrice && basePrice > 0) ? "₱" + basePrice : "Contact us for price";
-        }
+        if(opts.length) {
+            const p = opts.map(o => parseFloat(o.price));
+            document.getElementById('pre-price').innerText = `₱${Math.min(...p)} - ₱${Math.max(...p)}`;
+        } else document.getElementById('pre-price').innerText = price > 0 ? `₱${price}` : "Inquire for price";
+    }
 
-        document.getElementById('pre-moq').innerText = moq ? "Minimum Order: " + moq : "";
-        document.getElementById('pre-desc').innerText = desc || "";
-        document.getElementById('pre-img').src = img;
-        document.getElementById('pre-btn').innerText = (basePrice > 0 || currentOptions.length > 0) ? "Order Now" : "Inquire Now";
+    // --- Orders Core ---
+    function renderOrders(snap) {
+        const list = document.getElementById('order-list');
+        list.innerHTML = snap.docs.map(d => {
+            const o = d.data();
+            return `
+            <div class="order-card">
+                <div style="display:flex; justify-content:space-between;">
+                    <b>${o.customerName}</b>
+                    <span class="badge ${o.paid ? 'paid' : 'unpaid'}" onclick="togglePaid('${d.id}', ${o.paid})">${o.paid ? 'PAID' : 'UNPAID'}</span>
+                </div>
+                <div style="font-size:0.8rem; margin:10px 0;">${o.items.map(i => `• ${i.name} (${i.variant}) x${i.qty}`).join('<br>')}</div>
+                <select style="width:auto; font-size:0.7rem; padding:4px;" onchange="updateStatus('${d.id}', this.value)">
+                    ${['Pending','Processing','Shipped','Cancelled'].map(s => `<option ${o.status===s?'selected':''}>${s}</option>`).join('')}
+                </select>
+                <button class="btn btn-small" style="float:right; background:#eee; color:#666;" onclick="delOrder('${d.id}')">Clear</button>
+            </div>`;
+        }).join('') || "No orders.";
+    }
 
-        const choicesDiv = document.getElementById('pre-choices');
-        choicesDiv.innerHTML = "";
-        currentOptions.forEach(opt => {
-            choicesDiv.innerHTML += `<div class="choice-item"><span>${opt.name}</span><b>₱${opt.price}</b></div>`;
-        });
-    };
-
+    // --- DB Actions ---
     document.getElementById('saveBtn').onclick = async () => {
         const data = {
             name: document.getElementById('pName').value,
             price: document.getElementById('pPrice').value || 0,
             moq: document.getElementById('pMoq').value || "",
             description: document.getElementById('pDesc').value || "",
-            options: currentOptions, 
+            options: opts,
             category: document.getElementById('pCat').value,
             status: document.getElementById('pStatus').value,
-            imgUrl: document.getElementById('pImg').value || ""
+            imgUrl: document.getElementById('pImg').value,
+            createdAt: Date.now()
         };
-        if(!data.name) return alert("Product Name is required!");
-        if(editID) await updateDoc(doc(db, "products", editID), data);
-        else await addDoc(collection(db, "products"), { ...data, createdAt: Date.now() });
+        if(!data.name) return alert("Missing Name");
+        editID ? await updateDoc(doc(db, "products", editID), data) : await addDoc(collection(db, "products"), data);
         location.reload();
-    };
+    }
 
-    window.startEdit = (id) => {
-        const item = localItems.find(i => i.id === id);
+    window.editItem = (id) => {
+        const i = items.find(x => x.id === id);
         editID = id;
-        document.getElementById('pName').value = item.name;
-        document.getElementById('pPrice').value = item.price || "";
-        document.getElementById('pMoq').value = item.moq || "";
-        document.getElementById('pDesc').value = item.description || "";
-        currentOptions = item.options || []; 
-        document.getElementById('pCat').value = item.category;
-        document.getElementById('pStatus').value = item.status;
-        document.getElementById('pImg').value = item.imgUrl || "";
-        renderOptions(); updateLiveView();
+        ['pName','pPrice','pMoq','pDesc','pCat','pStatus','pImg'].forEach(k => document.getElementById(k).value = i[k.replace('p','').toLowerCase()] || i[k] || "");
+        opts = i.options || []; renderOpts(); liveUpdate();
         window.scrollTo({top:0, behavior:'smooth'});
-    };
+    }
 
-    window.switchTab = (tabId, el) => {
+    window.delItem = id => confirm("Delete?") && deleteDoc(doc(db, "products", id));
+    window.delOrder = id => confirm("Clear?") && deleteDoc(doc(db, "orders", id));
+    window.togglePaid = (id, s) => updateDoc(doc(db, "orders", id), { paid: !s });
+    window.updateStatus = (id, s) => updateDoc(doc(db, "orders", id), { status: s });
+    window.addCat = () => setDoc(doc(db, "categories", document.getElementById('newCat').value), {});
+    window.delCat = id => deleteDoc(doc(db, "categories", id));
+
+    window.switchTab = (id, el) => {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
+        document.getElementById(id).classList.add('active');
         el.classList.add('active');
-    };
+    }
+
+    function loadMasterData() {
+        onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp","desc"), limit(10)), s => {
+            document.getElementById('log-list').innerHTML = s.docs.map(d => `<div>[${d.data().timestamp}] ${d.data().action}</div>`).join('');
+        });
+    }
+
     window.logout = () => { sessionStorage.clear(); location.reload(); };
-    if(sessionStorage.getItem("zabAuth")) { document.getElementById('login-gate').style.display = "none"; initApp(); }
+    if(sessionStorage.getItem("zabAuth")) { document.getElementById('login-gate').style.display = "none"; init(); }
 </script>
 </body>
 </html>
