@@ -117,7 +117,6 @@
         .catalog-section { padding: 40px 5% 40px 5%; background: var(--white); display: flex; flex-direction: column; align-items: center; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; width: 100%; }
         .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; cursor: pointer; animation: fadeIn 0.6s ease forwards; }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(212, 129, 146, 0.1); }
         .card img { width: 100%; height: 320px; object-fit: cover; background: #fafafa; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -130,6 +129,8 @@
         .price { color: var(--dark-pink); font-size: 1.3rem; font-weight: 600; margin: 10px 0; }
         .btn { background: var(--pink); color: var(--white); padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; font-size: 0.9rem; }
         .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
+
+        .btn-secondary { background: white; border: 2px solid var(--pink); color: var(--dark-pink); margin-top: 8px; width: 100%; }
 
         /* Modal Choices UI */
         .m-choices-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
@@ -292,6 +293,7 @@
                 <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem;">Remember my details</label>
             </div>
             <button class="btn" style="width:100%;" onclick="checkoutCart()">Complete Order via Messenger</button>
+            <button class="btn btn-secondary" onclick="copyOrderForm()">Copy Order Form</button>
         </div>
     </div>
 </div>
@@ -337,7 +339,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
@@ -435,15 +437,25 @@
 
     window.clearCart = () => { if(confirm("Clear your shopping bag?")) { cart = []; saveCart(); } };
 
-    window.checkoutCart = () => {
+    function generateOrderSummaryText() {
         const name = document.getElementById('custName').value.trim();
         const addr = document.getElementById('custAddr').value.trim();
-        const save = document.getElementById('saveInfo').checked;
+        if(!cart.length || !name || !addr) return null;
+        
+        let summary = `ORDER FORM - ZAB DIGITAL PRINTS\n---\n`;
+        cart.forEach(i => summary += `• ${i.name} (${i.variant}) x${i.qty} - ₱${i.price * i.qty}\n`);
+        summary += `---\nTotal: ${document.getElementById('cartTotal').innerText}\n\nName: ${name}\nAddress: ${addr}`;
+        return summary;
+    }
 
-        if(!cart.length) return alert("Your bag is empty!");
-        if(!name || !addr) return alert("Please fill in your shipping details!");
+    window.checkoutCart = async () => {
+        const text = generateOrderSummaryText();
+        if(!text) return alert("Please fill bag and details!");
 
-        if(save) {
+        const name = document.getElementById('custName').value;
+        const addr = document.getElementById('custAddr').value;
+
+        if(document.getElementById('saveInfo').checked) {
             localStorage.setItem('custName', name);
             localStorage.setItem('custAddr', addr);
         } else {
@@ -451,16 +463,30 @@
             localStorage.removeItem('custAddr');
         }
 
-        let summary = `NEW ORDER FORM:%0A---%0A`;
-        cart.forEach(i => {
-            summary += `• ${i.name} (${i.variant}) x${i.qty} - ₱${i.price * i.qty}%0A`;
-        });
-        summary += `---%0ATotal: ${document.getElementById('cartTotal').innerText}%0A%0AName: ${name}%0AAddress: ${addr}`;
+        // Save order to Firebase
+        try {
+            await addDoc(collection(db, "orders"), {
+                customerName: name,
+                address: addr,
+                items: cart,
+                total: document.getElementById('cartTotal').innerText,
+                status: "Pending",
+                createdAt: Date.now()
+            });
+        } catch (e) { console.error("Error saving order: ", e); }
 
-        window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${summary}`, '_blank');
+        window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(text)}`, '_blank');
         cart = [];
         saveCart();
         toggleCart();
+    };
+
+    window.copyOrderForm = () => {
+        const text = generateOrderSummaryText();
+        if(!text) return alert("Please fill bag and details!");
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Order form copied to clipboard! You can now paste it in Messenger.");
+        });
     };
 
     // --- CATALOG LOGIC ---
@@ -536,7 +562,6 @@
         selectedItem = item;
         selectedOption = null;
         
-        // Extract MOQ number
         const match = item.moq ? item.moq.match(/\d+/) : null;
         itemMOQ = match ? parseInt(match[0]) : 1;
         currentQty = itemMOQ;
@@ -551,7 +576,6 @@
         document.getElementById('m-moq-label').innerText = item.moq ? "Minimum: " + item.moq : "";
         document.getElementById('m-desc').innerText = item.description || "No description provided.";
         
-        // Auto-fill remembered info
         if(localStorage.getItem('custName')) document.getElementById('custName').value = localStorage.getItem('custName');
         if(localStorage.getItem('custAddr')) document.getElementById('custAddr').value = localStorage.getItem('custAddr');
         if(localStorage.getItem('custName')) document.getElementById('saveInfo').checked = true;
@@ -592,7 +616,6 @@
     window.scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); };
     window.onscroll = function() { const b = document.getElementById("backToTop"); b.style.display = (window.scrollY > 500) ? "flex" : "none"; };
 
-    // Initial Load
     renderCart();
 </script>
 </body>
