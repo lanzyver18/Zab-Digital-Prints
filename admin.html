@@ -65,6 +65,14 @@
         .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
         .log-table th { text-align: left; padding: 10px; border-bottom: 2px solid var(--owner-gold); color: var(--owner-gold); }
         .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
+
+        /* --- NEW FEATURE STYLES --- */
+        .analytics-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .stat-card small { font-size: 0.7rem; text-transform: uppercase; color: #999; font-weight: bold; letter-spacing: 1px; }
+        .stat-card h2 { margin: 5px 0 0 0; color: var(--dark-pink); font-family: 'Playfair Display'; }
+        .btn-msg { background: #0084ff; font-size: 0.75rem; width: auto; margin: 0; padding: 5px 12px; }
+        .btn-export { background: var(--text); margin-bottom: 20px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -143,6 +151,14 @@
     </div>
 
     <div id="orders-tab" class="tab-content">
+        <div class="analytics-bar">
+            <div class="stat-card"><small>Total Sales (Paid)</small><h2 id="stat-revenue">₱0</h2></div>
+            <div class="stat-card"><small>Active Orders</small><h2 id="stat-active">0</h2></div>
+            <div class="stat-card"><small>Total Processed</small><h2 id="stat-total">0</h2></div>
+        </div>
+
+        <button class="btn btn-export" onclick="exportOrdersToCSV()">Export Paid Orders to CSV</button>
+
         <div class="panel">
             <h2 style="margin-top:0;">Website Orders</h2>
             <p style="font-size: 0.85rem; color: #666;">Manage payment status and order progress below.</p>
@@ -222,6 +238,7 @@
     let editID = null;
     let localItems = [];
     let currentOptions = []; 
+    let orderCountCache = 0; // For notifications
 
     // --- SECURITY & LOGGING ---
     window.login = async () => {
@@ -240,6 +257,9 @@
             sessionStorage.setItem("zabAuth", "true");
             document.getElementById('login-gate').style.display = "none";
             initApp();
+            
+            // Request Notification Permission
+            if (Notification.permission !== "granted") Notification.requestPermission();
         } else { alert("Invalid Password"); }
     };
 
@@ -307,18 +327,32 @@
         initOrders();
     }
 
-    // --- ORDERS LOGIC ---
+    // --- ORDERS & ANALYTICS LOGIC ---
     function initOrders() {
         onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
             const list = document.getElementById('admin-orders-list');
             list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders found yet.</p>" : "";
             
+            let revenue = 0;
+            let active = 0;
+            let total = 0;
+            const ordersArray = [];
+
             snap.forEach(d => {
                 const order = d.data();
+                ordersArray.push({id: d.id, ...order});
+                total++;
+                
+                // Analytics Calc
+                const numericTotal = parseFloat(order.total.replace(/[₱,]/g, '')) || 0;
+                if(order.paid) revenue += numericTotal;
+                if(order.status !== "Cancelled" && order.status !== "Shipped") active++;
+
                 const date = new Date(order.createdAt).toLocaleString();
                 const isPaid = order.paid === true;
                 const currentStatus = order.status || "Pending";
                 const method = order.method || "Messenger";
+                
                 let itemsHtml = "";
                 order.items.forEach(i => {
                     itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`;
@@ -341,18 +375,23 @@
                             <div style="margin-bottom:4px;">📧 <b>Email:</b> ${order.customerEmail || 'N/A'}</div>
                             <div style="margin-bottom:4px;">📞 <b>Phone:</b> ${order.customerPhone || 'N/A'}</div>
                             <div style="margin-bottom:4px;">📍 <b>Address:</b> ${order.address}</div>
-                            <div style="font-size:0.7rem; color:#999; margin-top:6px; border-top:1px solid #eee; padding-top:4px;">Checkout Method: <b>${method}</b></div>
+                            <div style="font-size:0.7rem; color:#999; margin-top:6px; border-top:1px solid #eee; padding-top:4px;">
+                                Method: <b>${method}</b> | Payment: <b>${order.paymentChoice || 'N/A'}</b>
+                            </div>
                         </div>
                         
-                        <div style="margin-top:15px; display:flex; gap:10px; align-items:center;">
-                            <label style="font-size:0.75rem; color:#999; margin:0;">Progress:</label>
-                            <select onchange="updateOrderStatus('${d.id}', this.value)" style="margin:0; width:auto; padding:5px; font-size:0.75rem;">
-                                <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Processing" ${currentStatus === 'Processing' ? 'selected' : ''}>Processing</option>
-                                <option value="Ready" ${currentStatus === 'Ready' ? 'selected' : ''}>Ready for Pickup</option>
-                                <option value="Shipped" ${currentStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                                <option value="Cancelled" ${currentStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                            </select>
+                        <div style="margin-top:15px; display:flex; gap:10px; align-items:center; justify-content: space-between;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <label style="font-size:0.75rem; color:#999; margin:0;">Progress:</label>
+                                <select onchange="updateOrderStatus('${d.id}', this.value)" style="margin:0; width:auto; padding:5px; font-size:0.75rem;">
+                                    <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Processing" ${currentStatus === 'Processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="Ready" ${currentStatus === 'Ready' ? 'selected' : ''}>Ready for Pickup</option>
+                                    <option value="Shipped" ${currentStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="Cancelled" ${currentStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-small btn-msg" onclick="copyMessengerReply('${order.customerName}', '${order.total}')">Message Customer</button>
                         </div>
 
                         <div class="order-footer">
@@ -361,8 +400,52 @@
                         </div>
                     </div>`;
             });
+
+            // Update UI Stats
+            document.getElementById('stat-revenue').innerText = "₱" + revenue.toLocaleString();
+            document.getElementById('stat-active').innerText = active;
+            document.getElementById('stat-total').innerText = total;
+
+            // Browser Notification Logic
+            if (orderCountCache > 0 && total > orderCountCache) {
+                new Notification("New Order Received!", { body: "A customer just checked out from your shop." });
+            }
+            orderCountCache = total;
+            window.latestOrders = ordersArray; // Store for CSV export
         });
     }
+
+    // --- QUICK MESSENGER REPLY ---
+    window.copyMessengerReply = (name, total) => {
+        const text = `Hi ${name}! We received your order from Zab Digital Prints amounting to ${total}. Kindly send your payment screenshot here so we can start production. Thank you!`;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Reply message copied! Opening Messenger...");
+            window.open("https://m.me/zabprintsdigital", "_blank");
+        });
+    };
+
+    // --- EXPORT TO CSV ---
+    window.exportOrdersToCSV = () => {
+        if(!window.latestOrders || window.latestOrders.length === 0) return alert("No orders to export.");
+        
+        let csv = "Date,Customer,Email,Phone,Total,Method,Paid,Status\n";
+        window.latestOrders.forEach(o => {
+            if(o.paid) {
+                const date = new Date(o.createdAt).toLocaleDateString();
+                csv += `${date},"${o.customerName}",${o.customerEmail},${o.customerPhone},"${o.total}",${o.method},${o.paid},${o.status}\n`;
+            }
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `zab_paid_orders_${new Date().toLocaleDateString()}.csv`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
 
     // --- TOGGLE PAID ---
     window.togglePaidStatus = async (id, currentStatus) => {
