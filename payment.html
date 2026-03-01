@@ -65,7 +65,7 @@
             border-radius: 20px; 
             margin-bottom: 25px; 
             border: 1.5px solid var(--pink); 
-            box-sizing: border-box; /* Crucial fix */
+            box-sizing: border-box; 
             width: 100%;
         }
         .verification-area label {
@@ -77,15 +77,15 @@
             margin-bottom: 8px;
         }
         .verification-area input { 
-            width: 100%; /* Spans full width of parent padding */
+            width: 100%; 
             padding: 14px; 
             border-radius: 12px; 
             border: 1px solid var(--pink); 
             outline: none; 
-            text-align: center; /* Centered for intuition */
+            text-align: center; 
             font-weight: bold; 
             font-size: 1.2rem; 
-            box-sizing: border-box; /* Ensured fix */
+            box-sizing: border-box; 
             font-family: 'Courier Prime', monospace;
         }
 
@@ -96,7 +96,7 @@
             text-decoration: none; 
             font-weight: bold; 
             display: block; 
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Snappy pop animation */
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             border: none;
             cursor: pointer;
             width: 100%;
@@ -108,7 +108,7 @@
         
         /* Copy Button Pop */
         .copy-btn { 
-            background: var(--dark-pink); color: white; border: none; padding: 6px 15px; 
+            background: var(--dark-pink); color: white; border: none; padding: 4px 15px; 
             border-radius: 8px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.3s;
             box-shadow: 0 5px 10px rgba(212, 129, 146, 0.3);
         }
@@ -244,7 +244,22 @@
         </center>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
+            authDomain: "zab-digital-prints.firebaseapp.com",
+            projectId: "zab-digital-prints",
+            storageBucket: "zab-digital-prints.firebasestorage.app",
+            messagingSenderId: "1050157785592",
+            appId: "1:1050157785592:web:e6a3c8f10a9d28aa87b60d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         const params = new URLSearchParams(window.location.search);
         const name = params.get('name') || "Customer";
         const total = params.get('total') || "₱0.00";
@@ -261,6 +276,7 @@
         document.getElementById('recMethod').innerText = method.toUpperCase();
         document.getElementById('recDate').innerText = new Date().toLocaleDateString();
 
+        // Load Items into printable receipt
         try {
             const items = JSON.parse(decodeURIComponent(params.get('items') || "[]"));
             const itemsDiv = document.getElementById('receiptItems');
@@ -269,28 +285,43 @@
             });
         } catch(e) {}
 
-        // Validation logic for unlocking buttons
-        function validateVerification() {
+        // --- NEW: AUTO-UPDATE ADMIN LOGIC ---
+        async function markAsPaidInAdmin() {
+            if(!syncedID) return;
             const trans = document.getElementById('transNum').value.trim();
-            const messengerBtn = document.getElementById('messengerLink');
-            const printBtn = document.getElementById('printBtn');
-            const recTrans = document.getElementById('recTrans');
-            
-            if(trans.length >= 6) {
-                messengerBtn.classList.add('active');
-                printBtn.classList.add('active');
-                printBtn.innerText = "Save PDF Receipt";
-                recTrans.innerText = trans;
-                
-                const messageText = encodeURIComponent(`Hi! Order Ref: ${syncedID}\nTransaction No: ${trans}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nVerified payment attached.`);
-                messengerBtn.href = `https://m.me/zabprintsdigital?text=${messageText}`;
+            try {
+                const q = query(collection(db, "orders"), where("orderID", "==", syncedID));
+                const snap = await getDocs(q);
+                if(!snap.empty) {
+                    const orderDoc = snap.docs[0];
+                    await updateDoc(doc(db, "orders", orderDoc.id), { 
+                        paid: true,
+                        status: "Processing",
+                        transactionRef: trans // Save the reference number they typed
+                    });
+                }
+            } catch (e) { console.error("Auto-update failed:", e); }
+        }
+
+        window.validateVerification = () => {
+            const val = document.getElementById('transNum').value.trim();
+            const mBtn = document.getElementById('messengerLink');
+            const pBtn = document.getElementById('printBtn');
+            if(val.length >= 6) {
+                mBtn.classList.add('active'); pBtn.classList.add('active');
+                pBtn.innerText = "Download Official Receipt (PDF)";
+                document.getElementById('recTrans').innerText = val;
+                const text = encodeURIComponent(`Hi! Paid for Order: ${syncedID}\nTrans No: ${val}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}`);
+                mBtn.href = `https://m.me/zabprintsdigital?text=${text}`;
             } else {
-                messengerBtn.classList.remove('active');
-                printBtn.classList.remove('active');
-                printBtn.innerText = "Save PDF Receipt (Locked)";
-                recTrans.innerText = "---";
+                mBtn.classList.remove('active'); pBtn.classList.remove('active');
+                pBtn.innerText = "Download Receipt (Locked)";
             }
         }
+
+        // Event Listeners for update
+        document.getElementById('messengerLink').addEventListener('click', markAsPaidInAdmin);
+        window.onbeforeprint = markAsPaidInAdmin;
 
         const paymentData = {
             "GCash": { number: "0917-XXX-XXXX", name: "Zab Digital Prints", qr: "gcash-qr.jpg" },
@@ -299,13 +330,19 @@
         };
         const selected = paymentData[method] || paymentData["GCash"];
         document.getElementById('acctInfo').innerHTML = `
-            <div style="margin-bottom:10px;"><small>NAME</small><div class="val">${selected.name}</div></div>
-            <div><small>ACCOUNT NO.</small><div class="val"><span>${selected.number}</span> <button class="copy-btn" onclick="copyNum('${selected.number}', this)">COPY</button></div></div>`;
+            <div class="row"><div><small>Account Name</small><div class="val">${selected.name}</div></div></div>
+            <div class="row" style="margin-bottom:0;"><div><small>Account Number</small><div class="val" id="acctNum">${selected.number}</div></div><button class="copy-btn" id="copyBtn">Copy</button></div>`;
         document.getElementById('qrImage').src = selected.qr;
 
-        function copyNum(n, btn) { navigator.clipboard.writeText(n); btn.innerText="COPIED"; setTimeout(()=> btn.innerText="COPY", 2000); }
-        function zoomQR() { document.getElementById('zoomedImg').src = document.getElementById('qrImage').src; document.getElementById('qrModal').style.display = 'flex'; }
-        function closeZoom() { document.getElementById('qrModal').style.display = 'none'; }
+        window.zoomQR = () => { document.getElementById('zoomedImg').src = document.getElementById('qrImage').src; document.getElementById('qrModal').style.display = 'flex'; }
+        window.closeZoom = () => { document.getElementById('qrModal').style.display = 'none'; }
+        
+        document.getElementById('copyBtn').onclick = (e) => { 
+            e.stopPropagation(); 
+            navigator.clipboard.writeText(selected.number); 
+            e.target.innerText="Copied!"; 
+            setTimeout(()=>e.target.innerText="Copy", 2000); 
+        };
 
         let time = 1800;
         setInterval(() => {
