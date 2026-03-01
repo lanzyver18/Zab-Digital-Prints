@@ -23,7 +23,6 @@
             overflow: hidden;
         }
 
-        /* Decorative top bar */
         .pay-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--pink), var(--dark-pink)); }
 
         @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -97,13 +96,17 @@
             transition: 0.4s; 
             box-shadow: 0 10px 20px rgba(212, 129, 146, 0.2);
             margin-bottom: 10px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
         }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 129, 146, 0.3); }
         
         .btn-messenger { background: #0084ff; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-outline { background: transparent; color: var(--dark-pink); border: 2px solid var(--pink); box-shadow: none; }
+        .btn-print { background: #555; font-size: 0.8rem; padding: 10px 20px; margin-top: 10px; }
 
-        /* Timer Style */
         .timer-box { font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 5px; }
 
         @media (max-width: 600px) {
@@ -111,20 +114,28 @@
             h1 { font-size: 1.8rem; }
             .total-amount { font-size: 2.1rem; }
         }
+
+        /* PRINT STYLES */
+        @media print {
+            body { background: white; }
+            .btn, .timer-box, .instructions, .qr-container, .pay-card::before { display: none !important; }
+            .pay-card { box-shadow: none; border: 1px solid #eee; margin: 0; padding: 20px; }
+            .order-summary { border: 1px solid #000; background: white; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="pay-card">
+    <div class="pay-card" id="receiptCard">
         <div class="timer-box">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             Settle within <span id="timer">30:00</span>
         </div>
 
         <div class="header-section">
-            <div class="order-ref" id="orderID">REF: ZAB-88219</div>
-            <h1>Payment Details</h1>
-            <p style="font-size: 0.9rem; color: #888;">Order placed by <span id="custName" style="color: var(--dark-pink); font-weight:600;">Customer</span></p>
+            <div class="order-ref" id="orderID">REF: LOADING...</div>
+            <h1>Order Receipt</h1>
+            <p style="font-size: 0.9rem; color: #888;">For <span id="custName" style="color: var(--dark-pink); font-weight:600;">Customer</span></p>
         </div>
 
         <div id="methodBadge" class="method-badge">GCash Payment</div>
@@ -153,6 +164,8 @@
             Confirm on Messenger
         </a>
 
+        <button onclick="window.print()" class="btn btn-print">Print / Save as PDF</button>
+
         <a href="index.html" class="btn btn-outline">Return to Homepage</a>
     </div>
 
@@ -161,18 +174,16 @@
         const name = params.get('name') || "Valued Customer";
         const total = params.get('total') || "₱0.00";
         const method = params.get('method') || "GCash";
-
-        // Random Reference ID
-        const randomID = "ZAB-" + Math.floor(10000 + Math.random() * 90000);
-        document.getElementById('orderID').innerText = `REF: ${randomID}`;
+        
+        const actualID = params.get('id') || "ZAB-" + Math.floor(10000 + Math.random() * 90000);
+        document.getElementById('orderID').innerText = `REF: ${actualID}`;
 
         document.getElementById('custName').innerText = decodeURIComponent(name);
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
         document.getElementById('methodBadge').innerText = method;
 
-        // Feature: Pre-filled Messenger Link
-        const messageText = encodeURIComponent(`Hi! I've just settled my payment.\n\nOrder Ref: ${randomID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nMethod: ${method}`);
-        document.getElementById('messengerLink').href = `https://www.facebook.com/messages/t/zabprintsdigital?text=${messageText}`;
+        const messageText = encodeURIComponent(`Hi! I've just settled my payment.\n\nOrder Ref: ${actualID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nMethod: ${method}`);
+        document.getElementById('messengerLink').href = `https://m.me/zabprintsdigital?text=${messageText}`;
 
         const acctBox = document.getElementById('acctInfo');
         const qrImg = document.getElementById('qrImage');
@@ -216,8 +227,7 @@
             }, 2000);
         }
 
-        // Feature: Countdown Timer Logic
-        let time = 1800; // 30 minutes
+        let time = 1800;
         const timerEl = document.getElementById('timer');
         setInterval(() => {
             let mins = Math.floor(time / 60);
