@@ -8,53 +8,43 @@
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        
         .pay-card { background: var(--white); padding: 40px; border-radius: 40px; box-shadow: 0 30px 60px rgba(212, 129, 146, 0.15); text-align: center; max-width: 480px; width: 100%; animation: slideUp 0.6s ease; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
         h1 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 2rem; margin-bottom: 10px; }
         .order-summary { background: var(--bg); padding: 20px; border-radius: 20px; margin: 20px 0; border: 1px dashed var(--pink); }
         .total-amount { font-size: 2.2rem; font-weight: 600; color: var(--dark-pink); }
-
         .method-badge { display: inline-block; padding: 5px 15px; background: var(--dark-pink); color: white; border-radius: 50px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; }
-        
-        .acct-details { text-align: left; background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 20px; border-left: 5px solid var(--pink); }
-        .acct-details b { color: var(--dark-pink); }
-
+        .acct-details { text-align: left; background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 20px; border-left: 5px solid var(--pink); font-size: 0.9rem; }
         .qr-container { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid #eee; margin-bottom: 25px; }
         .qr-container img { width: 220px; height: 220px; object-fit: contain; }
-
         .btn { background: var(--pink); color: var(--white); padding: 15px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; display: block; transition: 0.3s; }
-        .btn:hover { background: var(--dark-pink); transform: scale(1.02); }
+        .btn:hover { background: var(--dark-pink); }
     </style>
 </head>
 <body>
-
     <div class="pay-card">
         <div id="methodBadge" class="method-badge">Payment Selection</div>
-        <h1>Order Confirmed!</h1>
-        <p>Hi <span id="custName" style="font-weight:600;">Customer</span>, please settle your payment below:</p>
+        <h1>Almost Done!</h1>
+        <p>Hi <span id="custName" style="font-weight:600;">Customer</span>, please settle your payment to begin production:</p>
         
         <div class="order-summary">
             <div class="total-amount" id="orderTotal">₱0</div>
         </div>
 
-        <div class="acct-details" id="acctInfo">
-            </div>
+        <div class="acct-details" id="acctInfo"></div>
 
         <div class="qr-container">
-            <img id="qrImage" src="placeholder-qr.png" alt="Payment QR Code">
+            <img id="qrImage" src="placeholder-qr.png">
             <p style="font-size: 0.7rem; color: #999; margin-top: 10px;">Scan to Pay</p>
         </div>
 
-        <div style="text-align: left; font-size: 0.8rem; line-height: 1.6; margin-bottom: 20px; color: #666;">
-            <b>Next Steps:</b><br>
-            1. Take a screenshot of your successful transaction.<br>
-            2. Send it to our <a href="https://m.me/zabprintsdigital" style="color:var(--dark-pink); font-weight:bold;">Facebook Messenger</a>.<br>
-            3. Wait for our staff to confirm your payment.
+        <div style="text-align: left; font-size: 0.8rem; line-height: 1.6; margin-bottom: 20px;">
+            <b>Instructions:</b><br>
+            1. Send the amount shown above.<br>
+            2. Send your receipt to <a href="https://m.me/zabprintsdigital" style="color:var(--dark-pink); font-weight:bold;">Messenger</a>.<br>
         </div>
 
-        <a href="index.html" class="btn">Back to Shop</a>
+        <a href="index.html" class="btn">Return to Shop</a>
     </div>
 
     <script>
@@ -65,12 +55,8 @@
 
         document.getElementById('custName').innerText = decodeURIComponent(name);
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
-        document.getElementById('methodBadge').innerText = method + " Payment";
+        document.getElementById('methodBadge').innerText = method;
 
-        const acctBox = document.getElementById('acctInfo');
-        const qrImg = document.getElementById('qrImage');
-
-        // PAYMENT DATA CONFIGURATION (UPDATE THESE)
         const paymentData = {
             "GCash": {
                 number: "0917-XXX-XXXX",
@@ -78,24 +64,20 @@
                 qr: "gcash-qr.jpg" 
             },
             "BPI": {
-                number: "BPI: 00XXXXXXXXX",
+                number: "Account: XXXX-XXXX-XX",
                 name: "Zab Digital Prints",
                 qr: "bpi-qr.jpg"
             },
-            "Bank Transfer": {
-                number: "BDO: 00XXXXXXXXX",
+            "BDO": {
+                number: "Account: XXXXXXXXXXX",
                 name: "Zab Digital Prints",
                 qr: "bdo-qr.jpg"
             }
         };
 
         const selected = paymentData[method] || paymentData["GCash"];
-
-        acctBox.innerHTML = `
-            <div><b>Account Name:</b><br>${selected.name}</div>
-            <div style="margin-top:10px;"><b>Account Number:</b><br>${selected.number}</div>
-        `;
-        qrImg.src = selected.qr;
+        document.getElementById('acctInfo').innerHTML = `<b>Account Name:</b> ${selected.name}<br><b>Account Details:</b> ${selected.number}`;
+        document.getElementById('qrImage').src = selected.qr;
     </script>
 </body>
 </html>
