@@ -3,73 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Receipt | Zab Digital Prints</title>
+    <title>Secure Payment | Zab Digital Prints</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; --success: #2ecc71; --messenger: #0084ff; }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; --messenger: #0084ff; }
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         
-        .receipt-container { 
-            background: #fff; 
-            width: 100%; 
-            max-width: 420px; 
-            padding: 40px 30px; 
-            position: relative; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        /* PAYMENT UI (Visible on screen) */
+        #paymentUI { 
+            background: var(--white); padding: 40px; border-radius: 40px; 
+            box-shadow: 0 40px 80px rgba(212, 129, 146, 0.12); 
+            text-align: center; max-width: 480px; width: 100%; 
+            position: relative; overflow: hidden;
         }
+        #paymentUI::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--pink), var(--dark-pink)); }
 
-        .receipt-container::after {
-            content: "";
-            position: absolute;
-            bottom: -15px;
-            left: 0;
-            width: 100%;
-            height: 15px;
-            background: linear-gradient(-45deg, var(--bg) 5px, transparent 0), linear-gradient(45deg, var(--bg) 5px, transparent 0);
-            background-size: 10px 15px;
-        }
+        .order-summary { background: var(--bg); padding: 20px; border-radius: 25px; margin: 15px 0 25px 0; border: 1px dashed var(--dark-pink); }
+        .total-amount { font-size: 2.5rem; font-weight: 700; color: var(--dark-pink); margin: 0; }
+        
+        .section-title { font-size: 0.85rem; font-weight: 600; text-align: left; margin-bottom: 10px; color: #888; display: flex; align-items: center; gap: 8px; }
+        .section-title span { background: var(--pink); color: white; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.7rem; }
 
-        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .acct-details { text-align: left; background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #f0f0f0; }
+        .acct-details div.val { font-size: 1rem; font-weight: 600; color: #333; display: flex; justify-content: space-between; align-items: center; }
 
-        .receipt-header { text-align: center; border-bottom: 2px dashed #eee; padding-bottom: 20px; margin-bottom: 20px; }
-        .receipt-header h1 { font-family: 'Playfair Display', serif; color: var(--dark-pink); margin: 0; font-size: 1.8rem; }
-        .receipt-header p { font-size: 0.7rem; color: #999; margin: 5px 0 0 0; text-transform: uppercase; letter-spacing: 1px; }
+        .qr-container { background: #fff; padding: 15px; border-radius: 25px; border: 1px solid #eee; margin-bottom: 30px; display: inline-block; cursor: zoom-in; }
+        .qr-container img { width: 160px; height: 160px; object-fit: contain; }
 
-        .order-meta { font-family: 'Courier Prime', monospace; font-size: 0.85rem; display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .btn-messenger { background: var(--messenger); color: white; display: flex !important; align-items: center; justify-content: center; gap: 12px; padding: 18px; border-radius: 50px; text-decoration: none; font-weight: 600; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+        .btn-small { width: 100%; padding: 12px; border-radius: 50px; border: 1px solid #eee; background: #fff; color: #999; cursor: pointer; font-weight: 600; font-size: 0.8rem; margin-bottom: 10px; }
 
-        .order-summary { text-align: center; padding: 30px 0; border-bottom: 2px dashed #eee; margin-bottom: 20px; }
-        .total-label { font-size: 0.75rem; color: #aaa; text-transform: uppercase; font-weight: 700; }
-        .total-amount { font-size: 3rem; font-weight: 700; color: #333; margin: 5px 0; }
+        /* RECEIPT STYLING (Hidden on screen, Visible on print) */
+        #printableReceipt { display: none; font-family: 'Courier Prime', monospace; color: black; background: white; padding: 20px; width: 350px; margin: 0 auto; }
+        .receipt-line { border-bottom: 1px dashed black; margin: 10px 0; }
+        .receipt-row { display: flex; justify-content: space-between; margin: 5px 0; }
 
-        /* Timeline Tracker Styles */
-        .tracker-section { border-top: 2px dashed #eee; padding-top: 20px; margin-top: 20px; font-family: 'Courier Prime', monospace; }
-        .timeline { list-style: none; padding: 0; margin: 0; }
-        .timeline-item { position: relative; padding-left: 30px; margin-bottom: 15px; font-size: 0.75rem; color: #bbb; }
-        .timeline-item::before { content: ""; position: absolute; left: 0; top: 2px; width: 12px; height: 12px; border: 2px solid #eee; border-radius: 50%; background: white; }
-        .timeline-item.done { color: #333; }
-        .timeline-item.done::before { background: var(--dark-pink); border-color: var(--dark-pink); }
-        .timeline-item.current { color: var(--dark-pink); font-weight: 700; }
-        .timeline-item.current::before { background: white; border-color: var(--dark-pink); border-width: 4px; }
-        .timeline-item:not(:last-child)::after { content: ""; position: absolute; left: 7px; top: 18px; width: 2px; height: 15px; background: #eee; }
-
-        .acct-details { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-family: 'Courier Prime', monospace; }
-        .acct-details .val { font-size: 1.1rem; font-weight: 700; color: #000; display: flex; justify-content: space-between; align-items: center; }
-        .copy-btn { background: var(--pink); color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.6rem; cursor: pointer; }
-
-        .qr-container { background: #fff; padding: 10px; border: 1px solid #eee; display: inline-block; cursor: zoom-in; }
-        .btn-messenger { background: var(--messenger); color: white; display: flex !important; align-items: center; justify-content: center; gap: 10px; padding: 16px; border-radius: 12px; text-decoration: none; font-weight: 700; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
-        .btn-small { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; background: #fff; color: #999; cursor: pointer; font-weight: 600; font-size: 0.8rem; margin-bottom: 10px; }
-
+        /* QR Modal */
         #qrModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
         #qrModal img { width: 80%; max-width: 400px; background: white; padding: 20px; border-radius: 10px; }
-        .timer-tag { font-family: 'Courier Prime', monospace; color: #e74c3c; font-size: 0.75rem; text-align: center; margin-bottom: 15px; display: block; }
 
+        /* PRINT LOGIC */
         @media print {
-            .btn-messenger, .btn-small, .qr-area, .copy-btn, .timer-tag, #qrModal { display: none !important; }
-            .receipt-container { box-shadow: none; max-width: 100%; border: none; padding: 0; }
-            .receipt-container::after { display: none; }
+            #paymentUI, #qrModal, .timer-box { display: none !important; }
+            body { background: white; padding: 0; }
+            #printableReceipt { display: block !important; }
         }
     </style>
 </head>
@@ -79,56 +57,56 @@
         <img id="zoomedImg" src="">
     </div>
 
-    <div class="receipt-container">
-        <span class="timer-tag">** SESSION EXPIRES: <span id="timer">30:00</span> **</span>
-        
-        <div class="receipt-header">
-            <h1>Zab Prints</h1>
-            <p>Keeping memories within view</p>
-            <p style="font-size: 0.6rem;">Calamba City, Laguna, PH</p>
-        </div>
-
-        <div class="order-meta"><span>REF NO:</span><span id="orderID">ZAB-000000</span></div>
-        <div class="order-meta"><span>DATE:</span><span id="currentDate">--/--/----</span></div>
+    <div id="paymentUI">
+        <div style="font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 10px;">Expires in <span id="timer">30:00</span></div>
+        <div style="font-size: 0.75rem; color: #bbb; letter-spacing: 2px;" id="displayID">REF: LOADING...</div>
+        <h1 style="font-family:'Playfair Display'; color: var(--dark-pink); margin: 5px 0 20px 0;">Checkout</h1>
 
         <div class="order-summary">
-            <span class="total-label">Total Amount Due</span>
+            <span style="font-size: 0.75rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase;">Total Due</span>
             <div class="total-amount" id="orderTotal">₱0.00</div>
-            <div id="methodBadge" style="text-transform:uppercase; font-size:0.7rem; font-weight:bold; background:#333; color:white; padding:3px 10px; border-radius:3px; display:inline-block;">GCash</div>
         </div>
 
+        <div class="section-title"><span>1</span> Pay via <b id="displayMethod" style="color:var(--dark-pink); margin-left:4px;">GCash</b></div>
         <div class="acct-details" id="acctInfo"></div>
 
-        <div style="text-align: center; margin-bottom: 25px;">
-            <div class="qr-container" onclick="zoomQR()">
-                <img id="qrImage" src="placeholder-qr.png" alt="QR">
-            </div>
-            <p style="font-size: 0.55rem; color: #aaa; margin-top: 5px;">[ TAP QR TO ENLARGE ]</p>
+        <div class="qr-container" onclick="zoomQR()">
+            <img id="qrImage" src="placeholder-qr.png" alt="QR">
+            <div style="font-size: 0.6rem; color: #ccc; margin-top: 5px;">TAP TO ENLARGE</div>
         </div>
 
-        <div class="tracker-section">
-            <div style="font-size: 0.8rem; font-weight: bold; margin-bottom: 15px;">ORDER TRACKING:</div>
-            <ul class="timeline">
-                <li class="timeline-item done">01 ORDER RECEIVED</li>
-                <li class="timeline-item current">02 AWAITING PAYMENT</li>
-                <li class="timeline-item">03 PROOF VERIFICATION</li>
-                <li class="timeline-item">04 PRODUCTION & PRINT</li>
-                <li class="timeline-item">05 READY FOR SHIPMENT</li>
-            </ul>
-        </div>
+        <div class="section-title"><span>2</span> Verify Payment</div>
+        <p style="font-size: 0.75rem; color: #888; text-align: left; margin-bottom: 20px; padding-left: 5px;">Send your payment screenshot to our Messenger to confirm.</p>
 
-        <a href="#" id="messengerLink" target="_blank" class="btn-messenger" style="margin-top: 20px;">
+        <a href="#" id="messengerLink" target="_blank" class="btn-messenger">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
-            Send Screenshot
+            Send to Messenger
         </a>
 
-        <button onclick="window.print()" class="btn-small">Print Official Receipt</button>
+        <button onclick="window.print()" class="btn-small">Save Official Receipt (PDF)</button>
         <button onclick="location.href='index.html'" class="btn-small" style="border:none; color:#ccc;">Return to Shop</button>
+    </div>
 
-        <div style="text-align: center; margin-top: 30px; opacity: 0.3;">
-            <svg width="120" height="30" viewBox="0 0 100 30"><rect x="0" y="0" width="2" height="30" fill="black"/><rect x="4" y="0" width="1" height="30" fill="black"/><rect x="7" y="0" width="3" height="30" fill="black"/><rect x="12" y="0" width="1" height="30" fill="black"/><rect x="15" y="0" width="6" height="30" fill="black"/><rect x="23" y="0" width="2" height="30" fill="black"/><rect x="27" y="0" width="1" height="30" fill="black"/><rect x="32" y="0" width="4" height="30" fill="black"/><rect x="40" y="0" width="2" height="30" fill="black"/><rect x="44" y="0" width="8" height="30" fill="black"/><rect x="54" y="0" width="1" height="30" fill="black"/><rect x="58" y="0" width="4" height="30" fill="black"/><rect x="65" y="0" width="2" height="30" fill="black"/><rect x="70" y="0" width="1" height="30" fill="black"/><rect x="75" y="0" width="6" height="30" fill="black"/><rect x="85" y="0" width="2" height="30" fill="black"/><rect x="92" y="0" width="8" height="30" fill="black"/></svg>
-            <p style="font-size: 0.5rem; margin-top: 5px; font-family: 'Courier Prime';">ZAB-DIGITAL-PRINTS-CALAMBA</p>
-        </div>
+    <div id="printableReceipt">
+        <center>
+            <h2 style="margin-bottom:0;">ZAB DIGITAL PRINTS</h2>
+            <p style="font-size: 0.7rem; margin-top:5px;">Keeping memories within view<br>Calamba City, Laguna</p>
+        </center>
+        <div class="receipt-line"></div>
+        <div class="receipt-row"><span>REF NO:</span><b id="recID">---</b></div>
+        <div class="receipt-row"><span>DATE:</span><span id="recDate">---</span></div>
+        <div class="receipt-row"><span>METHOD:</span><span id="recMethod">---</span></div>
+        <div class="receipt-line"></div>
+        <center>
+            <p style="margin: 20px 0 5px 0;">TOTAL AMOUNT</p>
+            <h1 id="recTotal">₱0.00</h1>
+        </center>
+        <div class="receipt-line" style="margin-top:20px;"></div>
+        <p style="font-size: 0.7rem; text-align: center;">STATUS: AWAITING VERIFICATION<br>Please present this receipt via Messenger.</p>
+        <center style="margin-top:30px; opacity:0.8;">
+            <svg width="150" height="40" viewBox="0 0 100 30"><rect x="0" width="2" height="30"/><rect x="5" width="4" height="30"/><rect x="12" width="1" height="30"/><rect x="15" width="6" height="30"/><rect x="25" width="2" height="30"/><rect x="35" width="4" height="30"/><rect x="42" width="8" height="30"/><rect x="55" width="2" height="30"/><rect x="62" width="4" height="30"/><rect x="75" width="6" height="30"/></svg>
+            <p style="font-size: 0.5rem; margin-top:5px;">*** THANK YOU ***</p>
+        </center>
     </div>
 
     <script>
@@ -138,46 +116,42 @@
         const method = params.get('method') || "GCash";
         const syncedID = params.get('id') || "ZAB-" + Math.floor(100000 + Math.random() * 900000);
 
-        document.getElementById('orderID').innerText = syncedID;
+        // Update Screen UI
+        document.getElementById('displayID').innerText = `REF: ${syncedID}`;
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
-        document.getElementById('methodBadge').innerText = method;
-        document.getElementById('currentDate').innerText = new Date().toLocaleDateString();
+        document.getElementById('displayMethod').innerText = method;
 
-        const messageText = encodeURIComponent(`Hi! Order Ref: ${syncedID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nAttached is my payment.`);
+        // Update Hidden Receipt
+        document.getElementById('recID').innerText = syncedID;
+        document.getElementById('recTotal').innerText = decodeURIComponent(total);
+        document.getElementById('recMethod').innerText = method.toUpperCase();
+        document.getElementById('recDate').innerText = new Date().toLocaleDateString();
+
+        // Messenger Bridge
+        const messageText = encodeURIComponent(`Hi! Order Ref: ${syncedID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nAttached is my payment screenshot.`);
         document.getElementById('messengerLink').href = `https://m.me/zabprintsdigital?text=${messageText}`;
 
+        // Payment Data
         const paymentData = {
             "GCash": { number: "0917-XXX-XXXX", name: "Zab Digital Prints", qr: "gcash-qr.jpg" },
             "BPI": { number: "XXXX-XXXX-XX", name: "Zab Digital Prints", qr: "BPIQR_ZDP.jpeg" },
             "BDO": { number: "XXXXXXXXXXX", name: "Zab Digital Prints", qr: "BDOQR_ZDP.png" }
         };
-
         const selected = paymentData[method] || paymentData["GCash"];
         document.getElementById('acctInfo').innerHTML = `
             <div style="margin-bottom:10px;"><small>NAME</small><div class="val">${selected.name}</div></div>
-            <div><small>ACCOUNT NO.</small><div class="val"><span>${selected.number}</span> <button class="copy-btn" onclick="copyAcct(event, '${selected.number}')">COPY</button></div></div>
-        `;
+            <div><small>ACCOUNT NO.</small><div class="val"><span>${selected.number}</span> <button style="background:var(--pink); color:white; border:none; padding:4px 10px; border-radius:5px; font-size:0.6rem; cursor:pointer;" onclick="copyNum('${selected.number}', this)">COPY</button></div></div>`;
         document.getElementById('qrImage').src = selected.qr;
 
-        function zoomQR() {
-            document.getElementById('zoomedImg').src = document.getElementById('qrImage').src;
-            document.getElementById('qrModal').style.display = 'flex';
-        }
+        function copyNum(n, btn) { navigator.clipboard.writeText(n); btn.innerText="COPIED"; setTimeout(()=> btn.innerText="COPY", 2000); }
+        function zoomQR() { document.getElementById('zoomedImg').src = document.getElementById('qrImage').src; document.getElementById('qrModal').style.display = 'flex'; }
         function closeZoom() { document.getElementById('qrModal').style.display = 'none'; }
 
-        function copyAcct(e, num) {
-            e.stopPropagation();
-            navigator.clipboard.writeText(num);
-            e.target.innerText = "COPIED!";
-            setTimeout(() => { e.target.innerText = "COPY"; }, 2000);
-        }
-
+        // Timer
         let time = 1800;
-        const timerEl = document.getElementById('timer');
         setInterval(() => {
-            let mins = Math.floor(time / 60);
-            let secs = time % 60;
-            if (timerEl) timerEl.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            let m = Math.floor(time / 60), s = time % 60;
+            document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
             if (time > 0) time--;
         }, 1000);
     </script>
