@@ -74,7 +74,6 @@
         .btn-msg { background: #0084ff; font-size: 0.75rem; width: auto; margin: 0; padding: 5px 12px; }
         .btn-export { background: var(--text); margin-bottom: 20px; font-size: 0.8rem; }
         
-        /* Order ID styling */
         .order-id-badge { font-family: monospace; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: #555; margin-left: 10px; border: 1px solid #ddd; }
         .btn-danger { background: #ff7675 !important; margin-top: 20px; font-size: 0.75rem; width: auto; padding: 8px 15px; }
 
@@ -98,7 +97,7 @@
     <div class="sidebar-menu">
         <div class="menu-item active" onclick="switchTab('inventory', this)">Inventory</div>
         <div class="menu-item" onclick="switchTab('orders-tab', this)">Orders</div>
-        <div class="menu-item" onclick="switchTab('settings', this)">Settings</div>
+        <div id="settings-menu-item" class="menu-item" onclick="switchTab('settings', this)" style="display:none;">Settings</div>
         <div class="menu-item" onclick="logout()" style="margin-top: 20px; color: #999;">Logout</div>
     </div>
 </aside>
@@ -267,7 +266,16 @@
         });
 
         // Check owner password
-        if(pass === ownerPass) { valid = true; adminName = "Owner"; role = "Owner"; }
+        if(pass === ownerPass) { 
+            valid = true; 
+            adminName = "Owner"; 
+            role = "Owner"; 
+            // Feature: Show settings menu item for Super Admin
+            document.getElementById('settings-menu-item').style.display = 'flex';
+        } else {
+            // Ensure settings are hidden if logging in as staff
+            document.getElementById('settings-menu-item').style.display = 'none';
+        }
 
         if(valid) {
             await addDoc(collection(db, "security_logs"), { 
@@ -276,6 +284,7 @@
                 action: `Login: ${role}` 
             });
             sessionStorage.setItem("zabAuth", "true");
+            sessionStorage.setItem("zabAdminRole", role); // Save role to session
             sessionStorage.setItem("zabAdminName", adminName);
             document.getElementById('login-gate').style.display = "none";
             initApp();
@@ -361,6 +370,11 @@
             filterInventoryList();
         });
         initOrders();
+        
+        // Handle persistence of Settings menu visibility after page refresh
+        if(sessionStorage.getItem("zabAdminRole") === "Owner") {
+            document.getElementById('settings-menu-item').style.display = 'flex';
+        }
     }
 
     function initOrders() {
