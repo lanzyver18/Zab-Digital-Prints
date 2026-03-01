@@ -73,6 +73,9 @@
         .stat-card h2 { margin: 5px 0 0 0; color: var(--dark-pink); font-family: 'Playfair Display'; }
         .btn-msg { background: #0084ff; font-size: 0.75rem; width: auto; margin: 0; padding: 5px 12px; }
         .btn-export { background: var(--text); margin-bottom: 20px; font-size: 0.8rem; }
+        
+        /* Order ID styling */
+        .order-id-badge { font-family: monospace; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: #555; margin-left: 10px; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
@@ -80,7 +83,8 @@
 <div id="login-gate">
     <div style="width: 320px; text-align: center;">
         <h2 style="color: var(--dark-pink); font-family: 'Playfair Display';">Zab Admin</h2>
-        <input type="password" id="entryPass" placeholder="Admin Password">
+        <input type="text" id="entryName" placeholder="Admin Name (e.g. Juan)">
+        <input type="password" id="entryPass" placeholder="Access Password">
         <button onclick="login()">Open Workspace</button>
     </div>
 </div>
@@ -102,7 +106,10 @@
                 <div class="panel">
                     <h3 id="formHeader" style="margin-top:0;">Product Editor</h3>
                     <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
-                    <input type="number" id="pPrice" placeholder="Base Price (Optional)" oninput="updateLiveView()">
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="pPrice" placeholder="Base Price (Optional)" oninput="updateLiveView()">
+                        <input type="number" id="pStock" placeholder="Stock Count" oninput="updateLiveView()">
+                    </div>
                     <input type="text" id="pMoq" placeholder="Minimum Quantity (e.g. 12pcs)" oninput="updateLiveView()">
                     <textarea id="pDesc" placeholder="Product Description (Optional)" oninput="updateLiveView()"></textarea>
                     
@@ -139,10 +146,9 @@
                 <div style="padding: 25px; text-align: center;">
                     <h3 id="pre-name" style="font-family:'Playfair Display'; margin:0;">Product Name</h3>
                     <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">Contact us for price</div>
+                    <div id="pre-stock" style="font-size:0.8rem; color:#e67e22; font-weight:600; margin-bottom:10px; display:none;">🔥 Only 0 left in stock!</div>
                     <div id="pre-moq" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
-                    
                     <div class="choice-list" id="pre-choices"></div>
-
                     <div id="pre-desc" style="font-size:0.85rem; color:#666; margin:15px 0; line-height: 1.4;"></div>
                     <div id="pre-btn" style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">Inquire Now</div>
                 </div>
@@ -156,9 +162,7 @@
             <div class="stat-card"><small>Active Orders</small><h2 id="stat-active">0</h2></div>
             <div class="stat-card"><small>Total Processed</small><h2 id="stat-total">0</h2></div>
         </div>
-
         <button class="btn btn-export" onclick="exportOrdersToCSV()">Export Paid Orders to CSV</button>
-
         <div class="panel">
             <h2 style="margin-top:0;">Website Orders</h2>
             <p style="font-size: 0.85rem; color: #666;">Manage payment status and order progress below.</p>
@@ -188,10 +192,10 @@
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
 
                 <div style="margin-top: 20px;">
-                    <h4>Security & Login History</h4>
-                    <p style="font-size: 0.8rem; color: #666;">View all recent authorized entries (Admin & Master).</p>
+                    <h4>Audit Log (Security History)</h4>
+                    <p style="font-size: 0.8rem; color: #666;">Shows who logged in and when.</p>
                     <table class="log-table">
-                        <thead><tr><th>Time</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Time</th><th>Admin Name</th><th>Action</th></tr></thead>
                         <tbody id="security-logs"></tbody>
                     </table>
                 </div>
@@ -199,10 +203,10 @@
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
 
                 <div style="margin-top: 20px;">
-                    <h4>Staff Access (Multiple Admins)</h4>
-                    <p style="font-size:0.8rem; color:#666;">Add passwords that staff can use to login. They cannot access these settings.</p>
+                    <h4>Authorized Admin Passwords</h4>
+                    <p style="font-size:0.8rem; color:#666;">Created passwords for staff use.</p>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="newAdminPassInput" placeholder="Create Admin Password">
+                        <input type="text" id="newAdminPassInput" placeholder="New Password">
                         <button onclick="addAdminPass()" style="width:100px; margin:0; background:#2d3436;">Add</button>
                     </div>
                     <div id="admin-pass-list" style="margin-top:10px;"></div>
@@ -211,7 +215,7 @@
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
 
                 <div>
-                    <h4>Change Owner Master Password</h4>
+                    <h4>Change Master Key</h4>
                     <input type="text" id="newOwnerPass" placeholder="New Master Key">
                     <button onclick="updateOwnerPass()" style="background: var(--owner-gold);">Update Master Key</button>
                 </div>
@@ -235,31 +239,36 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    let editID = null;
-    let localItems = [];
-    let currentOptions = []; 
-    let orderCountCache = 0; // For notifications
+    let editID = null, localItems = [], currentOptions = [], orderCountCache = 0; 
 
-    // --- SECURITY & LOGGING ---
+    // --- UPDATED LOGIN LOGIC ---
     window.login = async () => {
+        const adminName = document.getElementById('entryName').value.trim();
         const pass = document.getElementById('entryPass').value;
+        
+        if(!adminName) return alert("Please enter your name.");
+
         const staffSnap = await getDocs(collection(db, "admin_passwords"));
         let valid = false;
-        let role = "Staff Admin";
+        let role = "Staff";
 
         staffSnap.forEach(d => { if(d.id === pass) valid = true; });
         const ownerSnap = await getDoc(doc(db, "config", "security"));
         const ownerPass = ownerSnap.data()?.owner || "master789";
-        if(pass === ownerPass) { valid = true; role = "Owner Admin"; }
+        
+        if(pass === ownerPass) { valid = true; role = "Owner"; }
 
         if(valid) {
-            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), action: `Authorized Login: ${role}` });
+            // Log exactly who logged in
+            await addDoc(collection(db, "security_logs"), { 
+                timestamp: new Date().toLocaleString(), 
+                admin: adminName,
+                action: `Login: ${role}` 
+            });
             sessionStorage.setItem("zabAuth", "true");
+            sessionStorage.setItem("zabAdminName", adminName);
             document.getElementById('login-gate').style.display = "none";
             initApp();
-            
-            // Request Notification Permission
-            if (Notification.permission !== "granted") Notification.requestPermission();
         } else { alert("Invalid Password"); }
     };
 
@@ -267,7 +276,6 @@
         const passDoc = await getDoc(doc(db, "config", "security"));
         const ownerPass = passDoc.exists() ? passDoc.data().owner : "master789";
         if(document.getElementById('ownerPassInput').value === ownerPass) {
-            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), action: "Master Settings Unlocked" });
             document.getElementById('ownerGate').style.display = "none";
             document.getElementById('protectedSettings').style.display = "block";
             loadAdminPasses(); loadLogs();
@@ -275,21 +283,22 @@
     };
 
     function loadLogs() {
-        onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(10)), (snap) => {
+        onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
             const l = document.getElementById('security-logs'); l.innerHTML = "";
-            snap.forEach(d => { l.innerHTML += `<tr><td>${d.data().timestamp}</td><td>${d.data().action}</td></tr>`; });
+            snap.forEach(d => { 
+                const data = d.data();
+                l.innerHTML += `<tr><td>${data.timestamp}</td><td><b>${data.admin || 'Unknown'}</b></td><td>${data.action}</td></tr>`; 
+            });
         });
     }
 
-    // --- STAFF MANAGEMENT ---
+    // --- STAFF ---
     window.addAdminPass = async () => {
         const pass = document.getElementById('newAdminPassInput').value.trim();
         if(pass) await setDoc(doc(db, "admin_passwords", pass), {});
         document.getElementById('newAdminPassInput').value = "";
     };
-
-    window.deleteAdminPass = async (id) => { if(confirm("Remove this admin access?")) await deleteDoc(doc(db, "admin_passwords", id)); };
-
+    window.deleteAdminPass = async (id) => { if(confirm("Remove access?")) await deleteDoc(doc(db, "admin_passwords", id)); };
     function loadAdminPasses() {
         onSnapshot(collection(db, "admin_passwords"), (snap) => {
             const list = document.getElementById('admin-pass-list'); list.innerHTML = "";
@@ -300,19 +309,16 @@
     window.updateOwnerPass = async () => {
         const owner = document.getElementById('newOwnerPass').value || "master789";
         await setDoc(doc(db, "config", "security"), { owner });
-        alert("Owner Password Updated. Logging out."); logout();
+        logout();
     };
 
-    // --- INVENTORY LOGIC ---
+    // --- APP ---
     function initApp() {
         onSnapshot(collection(db, "categories"), (snap) => {
-            const catList = document.getElementById('category-list');
-            const catSelect = document.getElementById('pCat');
-            const catFilter = document.getElementById('inventoryFilter');
-            catList.innerHTML = ""; catSelect.innerHTML = ""; 
-            catFilter.innerHTML = '<option value="All">All Categories</option>';
+            const catList = document.getElementById('category-list'), catSelect = document.getElementById('pCat'), catFilter = document.getElementById('inventoryFilter');
+            catList.innerHTML = ""; catSelect.innerHTML = ""; catFilter.innerHTML = '<option value="All">All Categories</option>';
             snap.forEach(d => {
-                catList.innerHTML += `<div class="cat-tag">${d.id} <span style="margin-left:8px; cursor:pointer;" onclick="deleteCat('${d.id}')">×</span></div>`;
+                catList.innerHTML += `<div class="cat-tag">${d.id} <span onclick="deleteCat('${d.id}')">×</span></div>`;
                 catSelect.innerHTML += `<option value="${d.id}">${d.id}</option>`;
                 catFilter.innerHTML += `<option value="${d.id}">${d.id}</option>`;
             });
@@ -327,23 +333,19 @@
         initOrders();
     }
 
-    // --- ORDERS & ANALYTICS LOGIC ---
+    // --- ORDERS & ANALYTICS ---
     function initOrders() {
         onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
             const list = document.getElementById('admin-orders-list');
-            list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders found yet.</p>" : "";
+            list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders found.</p>" : "";
             
-            let revenue = 0;
-            let active = 0;
-            let total = 0;
+            let revenue = 0, active = 0, total = 0;
             const ordersArray = [];
 
             snap.forEach(d => {
                 const order = d.data();
                 ordersArray.push({id: d.id, ...order});
                 total++;
-                
-                // Analytics Calc
                 const numericTotal = parseFloat(order.total.replace(/[₱,]/g, '')) || 0;
                 if(order.paid) revenue += numericTotal;
                 if(order.status !== "Cancelled" && order.status !== "Shipped") active++;
@@ -351,18 +353,16 @@
                 const date = new Date(order.createdAt).toLocaleString();
                 const isPaid = order.paid === true;
                 const currentStatus = order.status || "Pending";
-                const method = order.method || "Messenger";
                 
                 let itemsHtml = "";
-                order.items.forEach(i => {
-                    itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`;
-                });
+                order.items.forEach(i => { itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`; });
 
                 list.innerHTML += `
                     <div class="order-card">
                         <div class="order-header">
                             <div>
                                 <span class="order-customer">${order.customerName}</span>
+                                <span class="order-id-badge">${order.orderID || 'ZAB-Legacy'}</span>
                                 <span class="badge-status ${isPaid ? 'paid-yes' : 'paid-no'}" onclick="togglePaidStatus('${d.id}', ${isPaid})">
                                     ${isPaid ? 'PAID' : 'UNPAID'}
                                 </span>
@@ -370,19 +370,17 @@
                             <span class="order-date">${date}</span>
                         </div>
                         <div class="order-items">${itemsHtml}</div>
-                        
                         <div style="font-size:0.8rem; color:#444; background:#f9f9f9; padding:12px; border-radius:12px; margin-bottom:12px; border-left: 4px solid var(--pink);">
-                            <div style="margin-bottom:4px;">📧 <b>Email:</b> ${order.customerEmail || 'N/A'}</div>
-                            <div style="margin-bottom:4px;">📞 <b>Phone:</b> ${order.customerPhone || 'N/A'}</div>
-                            <div style="margin-bottom:4px;">📍 <b>Address:</b> ${order.address}</div>
+                            <div>📧 <b>Email:</b> ${order.customerEmail || 'N/A'}</div>
+                            <div>📞 <b>Phone:</b> ${order.customerPhone || 'N/A'}</div>
+                            <div>📍 <b>Address:</b> ${order.address}</div>
                             <div style="font-size:0.7rem; color:#999; margin-top:6px; border-top:1px solid #eee; padding-top:4px;">
-                                Method: <b>${method}</b> | Payment: <b>${order.paymentChoice || 'N/A'}</b>
+                                Method: <b>${order.method || 'N/A'}</b> | Payment: <b>${order.paymentChoice || 'N/A'}</b>
                             </div>
                         </div>
-                        
                         <div style="margin-top:15px; display:flex; gap:10px; align-items:center; justify-content: space-between;">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <label style="font-size:0.75rem; color:#999; margin:0;">Progress:</label>
+                                <label style="font-size:0.75rem; color:#999;">Progress:</label>
                                 <select onchange="updateOrderStatus('${d.id}', this.value)" style="margin:0; width:auto; padding:5px; font-size:0.75rem;">
                                     <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
                                     <option value="Processing" ${currentStatus === 'Processing' ? 'selected' : ''}>Processing</option>
@@ -391,9 +389,8 @@
                                     <option value="Cancelled" ${currentStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                                 </select>
                             </div>
-                            <button class="btn btn-small btn-msg" onclick="copyMessengerReply('${order.customerName}', '${order.total}')">Message Customer</button>
+                            <button class="btn btn-small btn-msg" onclick="copyMessengerReply('${order.customerName}', '${order.total}', '${order.orderID || ''}')">Message Customer</button>
                         </div>
-
                         <div class="order-footer">
                             <span class="order-total">Total: ${order.total}</span>
                             <button class="btn-small btn-clear" onclick="deleteOrderRecord('${d.id}')">Clear Record</button>
@@ -401,195 +398,124 @@
                     </div>`;
             });
 
-            // Update UI Stats
             document.getElementById('stat-revenue').innerText = "₱" + revenue.toLocaleString();
             document.getElementById('stat-active').innerText = active;
             document.getElementById('stat-total').innerText = total;
 
-            // Browser Notification Logic
             if (orderCountCache > 0 && total > orderCountCache) {
-                new Notification("New Order Received!", { body: "A customer just checked out from your shop." });
+                new Notification("New Order Received!", { body: "A customer just checked out." });
             }
             orderCountCache = total;
-            window.latestOrders = ordersArray; // Store for CSV export
+            window.latestOrders = ordersArray;
         });
     }
 
-    // --- QUICK MESSENGER REPLY ---
-    window.copyMessengerReply = (name, total) => {
-        const text = `Hi ${name}! We received your order from Zab Digital Prints amounting to ${total}. Kindly send your payment screenshot here so we can start production. Thank you!`;
+    window.copyMessengerReply = (name, total, id) => {
+        const text = `Hi ${name}! We received your order ${id} amounting to ${total}. Kindly send your payment screenshot here to start production. Thank you!`;
         navigator.clipboard.writeText(text).then(() => {
-            alert("Reply message copied! Opening Messenger...");
-            window.open("https://m.me/zabprintsdigital", "_blank");
+            alert("Reply copied!"); window.open("https://m.me/zabprintsdigital", "_blank");
         });
     };
 
-    // --- EXPORT TO CSV ---
     window.exportOrdersToCSV = () => {
-        if(!window.latestOrders || window.latestOrders.length === 0) return alert("No orders to export.");
-        
-        let csv = "Date,Customer,Email,Phone,Total,Method,Paid,Status\n";
+        if(!window.latestOrders) return;
+        let csv = "Date,Order ID,Customer,Email,Total,Paid,Status\n";
         window.latestOrders.forEach(o => {
-            if(o.paid) {
-                const date = new Date(o.createdAt).toLocaleDateString();
-                csv += `${date},"${o.customerName}",${o.customerEmail},${o.customerPhone},"${o.total}",${o.method},${o.paid},${o.status}\n`;
-            }
+            if(o.paid) csv += `${new Date(o.createdAt).toLocaleDateString()},${o.orderID || ''},"${o.customerName}",${o.customerEmail},"${o.total}",${o.paid},${o.status}\n`;
         });
-
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.setAttribute('hidden', '');
-        a.setAttribute('href', url);
-        a.setAttribute('download', `zab_paid_orders_${new Date().toLocaleDateString()}.csv`);
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        const a = document.createElement('a'); a.href = url; a.download = `zab_sales.csv`; a.click();
     };
 
-    // --- TOGGLE PAID ---
-    window.togglePaidStatus = async (id, currentStatus) => {
-        const orderRef = doc(db, "orders", id);
-        await updateDoc(orderRef, { paid: !currentStatus });
-    };
-
-    // --- ORDER PROGRESS ---
-    window.updateOrderStatus = async (id, newStatus) => {
-        const orderRef = doc(db, "orders", id);
-        await updateDoc(orderRef, { status: newStatus });
-    };
-
-    window.deleteOrderRecord = async (id) => {
-        if(confirm("Permanently remove this order record?")) {
-            await deleteDoc(doc(db, "orders", id));
-        }
-    };
+    window.togglePaidStatus = async (id, s) => await updateDoc(doc(db, "orders", id), { paid: !s });
+    window.updateOrderStatus = async (id, s) => await updateDoc(doc(db, "orders", id), { status: s });
+    window.deleteOrderRecord = async (id) => { if(confirm("Delete record?")) await deleteDoc(doc(db, "orders", id)); };
 
     window.filterInventoryList = () => {
-        const categoryVal = document.getElementById('inventoryFilter').value;
-        const searchVal = document.getElementById('inventorySearch').value.toLowerCase();
-        const list = document.getElementById('admin-list');
+        const cat = document.getElementById('inventoryFilter').value, term = document.getElementById('inventorySearch').value.toLowerCase(), list = document.getElementById('admin-list');
         list.innerHTML = "";
         localItems.forEach(item => {
-            if ((categoryVal === "All" || item.category === categoryVal) && item.name.toLowerCase().includes(searchVal)) {
-                const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : 'IMG_1218.jpeg';
-                list.innerHTML += `<div class="product-row"><img src="${displayImg}" onerror="this.src='https://via.placeholder.com/50'"><div style="flex-grow:1"><b>${item.name}</b><br><small>${item.category}</small></div><div class="action-btns"><button class="btn-small" onclick="startEdit('${item.id}')">Edit</button><button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button></div></div>`;
+            if ((cat === "All" || item.category === cat) && item.name.toLowerCase().includes(term)) {
+                list.innerHTML += `<div class="product-row"><img src="${item.imgUrl || 'IMG_1218.jpeg'}"><div style="flex-grow:1"><b>${item.name}</b><br><small>Stock: ${item.stock || 0}</small></div><div class="action-btns"><button class="btn-small" onclick="startEdit('${item.id}')">Edit</button><button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button></div></div>`;
             }
         });
     };
 
-    // --- Options Logic ---
     window.addOption = () => {
-        const nameInput = document.getElementById('optName');
-        const priceInput = document.getElementById('optPrice');
-        const name = nameInput.value.trim();
-        const price = parseFloat(priceInput.value) || 0;
-
-        if(name) {
-            currentOptions.push({ name, price });
-            nameInput.value = ""; priceInput.value = "";
-            renderOptions(); updateLiveView();
-        }
+        const n = document.getElementById('optName').value, p = document.getElementById('optPrice').value;
+        if(n) { currentOptions.push({ name: n, price: p }); document.getElementById('optName').value = ""; document.getElementById('optPrice').value = ""; renderOptions(); updateLiveView(); }
     };
-
     window.removeOption = (idx) => { currentOptions.splice(idx, 1); renderOptions(); updateLiveView(); };
-
     function renderOptions() {
-        const list = document.getElementById('current-options-list');
-        list.innerHTML = "";
-        currentOptions.forEach((opt, idx) => {
-            list.innerHTML += `<div class="opt-tag">${opt.name} (₱${opt.price}) <span style="margin-left:8px; cursor:pointer; color:red;" onclick="removeOption(${idx})">×</span></div>`;
-        });
+        const list = document.getElementById('current-options-list'); list.innerHTML = "";
+        currentOptions.forEach((o, i) => { list.innerHTML += `<div class="opt-tag">${o.name} (₱${o.price}) <span onclick="removeOption(${i})">×</span></div>`; });
     }
 
-    window.deleteItem = async (id) => { if(confirm("Permanently delete item?")) await deleteDoc(doc(db, "products", id)); };
-    window.addCategory = async () => {
-        const name = document.getElementById('newCatInput').value;
-        if(name) await setDoc(doc(db, "categories", name), {});
-        document.getElementById('newCatInput').value = "";
-    };
-    window.deleteCat = async (id) => { if(confirm("Delete category?")) await deleteDoc(doc(db, "categories", id)); };
-    
     window.updateLiveView = () => {
-        const name = document.getElementById('pName').value || "Product Name";
-        const basePrice = document.getElementById('pPrice').value;
-        const moq = document.getElementById('pMoq').value;
-        const desc = document.getElementById('pDesc').value;
-        const img = document.getElementById('pImg').value || "IMG_1218.jpeg";
-
-        document.getElementById('pre-name').innerText = name;
-        
+        const n = document.getElementById('pName').value || "Product Name", s = document.getElementById('pStock').value || 0, img = document.getElementById('pImg').value || "IMG_1218.jpeg";
+        document.getElementById('pre-name').innerText = n; document.getElementById('pre-img').src = img;
+        document.getElementById('pre-stock').innerText = `🔥 Only ${s} left in stock!`;
+        document.getElementById('pre-stock').style.display = (s > 0 && s <= 10) ? "block" : "none";
         if (currentOptions.length > 0) {
-            const prices = currentOptions.map(o => parseFloat(o.price));
-            const min = Math.min(...prices);
-            const max = Math.max(...prices);
-            document.getElementById('pre-price').innerText = min === max ? `₱${min}` : `₱${min} - ₱${max}`;
-        } else {
-            document.getElementById('pre-price').innerText = (basePrice && basePrice > 0) ? "₱" + basePrice : "Contact us for price";
-        }
-
-        document.getElementById('pre-moq').innerText = moq ? "Minimum Order: " + moq : "";
-        document.getElementById('pre-desc').innerText = desc || "";
-        document.getElementById('pre-img').src = img;
-        document.getElementById('pre-btn').innerText = (basePrice > 0 || currentOptions.length > 0) ? "Order Now" : "Inquire Now";
-
-        const choicesDiv = document.getElementById('pre-choices');
-        choicesDiv.innerHTML = "";
-        currentOptions.forEach(opt => {
-            choicesDiv.innerHTML += `<div style="display:flex; justify-content:space-between; font-size:0.85rem; padding:4px 0; border-bottom:1px dotted #eee;"><span>${opt.name}</span><b>₱${opt.price}</b></div>`;
-        });
+            const pr = currentOptions.map(o => parseFloat(o.price));
+            document.getElementById('pre-price').innerText = `₱${Math.min(...pr)} - ₱${Math.max(...pr)}`;
+        } else { document.getElementById('pre-price').innerText = `₱${document.getElementById('pPrice').value || 0}`; }
     };
 
     window.saveProduct = async () => {
+        const adminName = sessionStorage.getItem("zabAdminName");
         const data = {
             name: document.getElementById('pName').value,
             price: document.getElementById('pPrice').value || 0,
+            stock: Number(document.getElementById('pStock').value) || 0,
             moq: document.getElementById('pMoq').value || "",
             description: document.getElementById('pDesc').value || "",
             options: currentOptions, 
             category: document.getElementById('pCat').value,
             status: document.getElementById('pStatus').value,
             imgUrl: document.getElementById('pImg').value || "",
+            updatedBy: adminName,
             createdAt: editID ? localItems.find(i => i.id === editID).createdAt : Date.now()
         };
-        if(!data.name) return alert("Product Name is required!");
+        if(!data.name) return alert("Name required!");
+        
         if(editID) await updateDoc(doc(db, "products", editID), data);
         else await addDoc(collection(db, "products"), data);
-        
-        // Reset Form
-        editID = null;
-        document.getElementById('formHeader').innerText = "Product Editor";
-        document.getElementById('pName').value = "";
-        document.getElementById('pPrice').value = "";
-        document.getElementById('pMoq').value = "";
-        document.getElementById('pDesc').value = "";
-        document.getElementById('pImg').value = "";
-        currentOptions = [];
-        renderOptions(); updateLiveView();
+
+        // Audit the change
+        await addDoc(collection(db, "security_logs"), { 
+            timestamp: new Date().toLocaleString(), 
+            admin: adminName, 
+            action: `Product ${editID ? 'Updated' : 'Created'}: ${data.name}` 
+        });
+
+        location.reload();
     };
     
     document.getElementById('saveBtn').onclick = window.saveProduct;
 
     window.startEdit = (id) => {
-        const item = localItems.find(i => i.id === id);
+        const i = localItems.find(x => x.id === id);
         editID = id;
-        document.getElementById('formHeader').innerText = "Editing: " + item.name;
-        document.getElementById('pName').value = item.name;
-        document.getElementById('pPrice').value = item.price || "";
-        document.getElementById('pMoq').value = item.moq || "";
-        document.getElementById('pDesc').value = item.description || "";
-        currentOptions = item.options || []; 
-        document.getElementById('pCat').value = item.category;
-        document.getElementById('pStatus').value = item.status;
-        document.getElementById('pImg').value = item.imgUrl || "";
+        document.getElementById('formHeader').innerText = "Editing: " + i.name;
+        document.getElementById('pName').value = i.name;
+        document.getElementById('pPrice').value = i.price || "";
+        document.getElementById('pStock').value = i.stock || 0;
+        document.getElementById('pMoq').value = i.moq || "";
+        document.getElementById('pDesc').value = i.description || "";
+        currentOptions = i.options || []; 
+        document.getElementById('pCat').value = i.category;
+        document.getElementById('pStatus').value = i.status;
+        document.getElementById('pImg').value = i.imgUrl || "";
         renderOptions(); updateLiveView();
         window.scrollTo({top:0, behavior:'smooth'});
     };
 
-    window.switchTab = (tabId, el) => {
+    window.switchTab = (id, el) => {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
+        document.getElementById(id).classList.add('active');
         el.classList.add('active');
     };
     
