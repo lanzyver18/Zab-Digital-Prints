@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Your Order | Zab Digital Prints</title>
+    <title>Secure Payment | Zab Digital Prints</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #ffffff; --success: #2ecc71; --messenger: #0084ff; }
@@ -19,42 +19,48 @@
         }
         #paymentUI::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--pink), var(--dark-pink)); }
 
-        .order-summary { background: var(--bg); padding: 25px; border-radius: 25px; margin: 20px 0; border: 1px solid rgba(212, 129, 146, 0.2); }
-        .total-amount { font-size: 2.5rem; font-weight: 600; color: var(--dark-pink); margin: 0; }
+        .timer-tag { font-size: 0.7rem; color: #e74c3c; font-weight: 700; background: #fff1f0; padding: 4px 12px; border-radius: 50px; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; border: 1px solid #ffecec; }
 
-        .acct-details { text-align: left; background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #f0f0f0; box-shadow: 0 10px 20px rgba(0,0,0,0.02); }
-        .acct-details .row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
-        .acct-details small { font-size: 0.7rem; color: #999; text-transform: uppercase; font-weight: 600; }
-        .acct-details div.val { font-size: 1rem; font-weight: 600; color: #333; }
+        .order-summary { background: var(--bg); padding: 20px; border-radius: 25px; margin-bottom: 25px; border: 1px dashed var(--dark-pink); }
+        .total-amount { font-size: 2.8rem; font-weight: 700; color: var(--dark-pink); margin: 0; }
+
+        .acct-details { text-align: left; background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #f0f0f0; box-shadow: 0 10px 20px rgba(0,0,0,0.02); }
+        .acct-details small { font-size: 0.65rem; color: #999; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 2px; }
+        .acct-details div.val { font-size: 1.1rem; font-weight: 600; color: #333; display: flex; justify-content: space-between; align-items: center; }
         
-        .copy-btn { background: var(--bg); color: var(--dark-pink); border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .copy-btn { background: var(--bg); color: var(--dark-pink); border: none; padding: 6px 15px; border-radius: 8px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .copy-btn:hover { background: var(--pink); color: white; }
 
-        /* Restored QR Look */
-        .qr-container { background: #fff; padding: 20px; border-radius: 25px; border: 1px solid #eee; margin-bottom: 30px; display: inline-block; cursor: zoom-in; }
-        .qr-container img { width: 200px; height: 200px; object-fit: contain; }
-        .qr-label { font-size: 0.7rem; color: #aaa; margin-top: 10px; font-weight: 500; }
+        .qr-container { background: #fff; padding: 20px; border-radius: 25px; border: 1px solid #eee; margin-bottom: 30px; display: inline-block; cursor: zoom-in; transition: 0.3s; }
+        .qr-container:hover { transform: scale(1.02); border-color: var(--pink); }
+        .qr-container img { width: 180px; height: 180px; object-fit: contain; }
 
-        .verification-area { background: var(--bg); padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1.5px solid var(--pink); text-align: left; }
-        .verification-area input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin-top: 10px; outline: none; font-weight: bold; text-align: center; }
+        /* Fixed Reference No Area */
+        .verification-card { background: #fcfcfc; padding: 25px; border-radius: 25px; border: 2px solid #eee; margin-bottom: 25px; text-align: left; }
+        .verification-card label { font-size: 0.75rem; font-weight: 700; color: #333; text-transform: uppercase; display: flex; justify-content: space-between; }
+        .verification-card input { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; margin-top: 10px; outline: none; font-weight: 700; text-align: center; font-size: 1.2rem; font-family: 'Courier Prime', monospace; transition: 0.3s; }
+        .verification-card input:focus { border-color: var(--pink); background: #fff; }
 
-        .btn { padding: 18px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; display: block; transition: 0.4s; margin-bottom: 10px; border: none; cursor: pointer; width: 100%; box-sizing: border-box; }
-        .btn-messenger { background: var(--messenger); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; opacity: 0.5; pointer-events: none; }
-        .btn-messenger.active { opacity: 1; pointer-events: auto; box-shadow: 0 10px 20px rgba(0, 132, 255, 0.3); }
-        .btn-outline { background: transparent; color: var(--dark-pink); border: 2px solid var(--pink); font-size: 0.9rem; }
+        .guide-link { color: var(--messenger); font-size: 0.7rem; cursor: pointer; text-decoration: underline; font-weight: 600; }
+
+        .btn { padding: 18px; border-radius: 50px; text-decoration: none; font-weight: 700; display: block; transition: 0.4s; margin-bottom: 12px; border: none; cursor: pointer; width: 100%; box-sizing: border-box; font-size: 0.95rem; }
+        .btn-messenger { background: var(--messenger); color: white; display: flex !important; align-items: center; justify-content: center; gap: 10px; opacity: 0.4; pointer-events: none; }
+        .btn-messenger.active { opacity: 1; pointer-events: auto; box-shadow: 0 10px 25px rgba(0, 132, 255, 0.3); }
         
-        #printBtn { background: #555; color: white; font-size: 0.8rem; opacity: 0.5; pointer-events: none; }
-        #printBtn.active { opacity: 1; pointer-events: auto; }
+        #printBtn { background: #f1f2f6; color: #bbb; pointer-events: none; }
+        #printBtn.active { background: #333; color: white; pointer-events: auto; }
 
         /* Hidden Receipt styling for PDF */
         #printableReceipt { display: none; font-family: 'Courier Prime', monospace; padding: 30px; width: 380px; margin: 0 auto; color: black; }
         .receipt-line { border-bottom: 1px dashed black; margin: 15px 0; }
 
-        #qrModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
-        #qrModal img { width: 85%; max-width: 450px; background: white; padding: 20px; border-radius: 20px; }
+        /* Modals */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; padding: 25px; border-radius: 30px; max-width: 400px; text-align: center; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; color: #999; }
 
         @media print {
-            #paymentUI, #qrModal { display: none !important; }
+            #paymentUI, .modal, .timer-tag { display: none !important; }
             #printableReceipt { display: block !important; }
             body { background: white; padding: 0; }
         }
@@ -62,34 +68,49 @@
 </head>
 <body>
 
-    <div id="qrModal" onclick="closeZoom()">
-        <img id="zoomedImg" src="">
+    <div id="qrModal" class="modal" onclick="this.style.display='none'">
+        <img id="zoomedImg" style="width: 100%; max-width: 400px; background: white; padding: 20px; border-radius: 20px;" src="">
+    </div>
+
+    <div id="guideModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('guideModal').style.display='none'">&times;</span>
+            <h3 style="margin-top:0; color: var(--dark-pink);">Reference Guide</h3>
+            <p style="font-size: 0.8rem; color: #666;">Look for the "Ref No." or "Instapay Trace No." on your payment slip.</p>
+            <div style="background: #eee; height: 200px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #999;">
+                [ Sample Receipt Guide Image Here ]
+            </div>
+            <button class="btn" style="margin-top:20px; background:var(--pink); color:white;" onclick="document.getElementById('guideModal').style.display='none'">I Understand</button>
+        </div>
     </div>
 
     <div id="paymentUI">
-        <div style="font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 15px;">Expires in <span id="timer">30:00</span></div>
+        <div class="timer-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Void in <span id="timer">30:00</span>
+        </div>
         
-        <div class="order-ref" id="orderID">REF: LOADING...</div>
-        <h1 style="font-family:'Playfair Display'; color: var(--dark-pink); margin: 5px 0;">Payment Details</h1>
+        <div style="font-size: 0.7rem; color: #bbb; letter-spacing: 2px; font-weight: bold;" id="orderRef">REF: LOADING...</div>
+        <h1 style="font-family:'Playfair Display'; color: var(--dark-pink); margin: 5px 0 20px 0;">Payment</h1>
         
         <div class="order-summary">
-            <span style="font-size: 0.8rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase;">Amount Due</span>
+            <span style="font-size: 0.75rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Amount to Settle</span>
             <div class="total-amount" id="orderTotal">₱0.00</div>
         </div>
-
-        <div id="methodBadge" style="display:inline-block; padding: 6px 18px; background: #333; color: white; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;">GCash</div>
 
         <div class="acct-details" id="acctInfo"></div>
 
         <div class="qr-container" onclick="zoomQR()">
             <img id="qrImage" src="placeholder-qr.png" alt="Payment QR">
-            <div class="qr-label">Tap to Enlarge QR</div>
+            <div style="font-size: 0.6rem; color: #ccc; margin-top: 10px; font-weight: 600;">TAP TO ENLARGE</div>
         </div>
 
-        <div class="verification-area">
-            <small style="font-weight: 700; color: var(--dark-pink);">STEP 2: VERIFY TRANSACTION</small>
-            <input type="text" id="transNum" placeholder="Enter Ref / Transaction No." oninput="validateForm()">
-            <p style="font-size: 0.65rem; color: #888; margin-top: 8px;">Submit your reference number to unlock the PDF receipt and Messenger confirmation.</p>
+        <div class="verification-card">
+            <label>
+                Reference Number
+                <span class="guide-link" onclick="document.getElementById('guideModal').style.display='flex'">Where to find?</span>
+            </label>
+            <input type="text" id="transNum" placeholder="0000 000 0000" oninput="validateForm()">
         </div>
 
         <a href="#" id="messengerLink" target="_blank" class="btn btn-messenger">
@@ -97,8 +118,8 @@
             Confirm on Messenger
         </a>
 
-        <button id="printBtn" onclick="window.print()" class="btn">Download Receipt (Locked)</button>
-        <a href="index.html" class="btn btn-outline" style="border:none; color:#bbb;">Return to Shop</a>
+        <button id="printBtn" onclick="window.print()" class="btn">Download Official Receipt</button>
+        <a href="index.html" style="font-size: 0.8rem; color: #bbb; text-decoration: none; display: block; margin-top: 10px;">Cancel and Return</a>
     </div>
 
     <div id="printableReceipt">
@@ -107,13 +128,13 @@
             <p style="font-size: 0.7rem; margin-top:5px;">Keeping memories within view<br>Calamba City, Laguna</p>
         </center>
         <div class="receipt-line"></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.8rem; margin: 5px 0;"><span>REF NO:</span><b id="recID">---</b></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.8rem; margin: 5px 0;"><span>TRANS NO:</span><b id="recTrans">---</b></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.8rem; margin: 5px 0;"><span>DATE:</span><span id="recDate">---</span></div>
+        <div class="receipt-row"><span>REF NO:</span><b id="recID">---</b></div>
+        <div class="receipt-row"><span>TRANS NO:</span><b id="recTrans">---</b></div>
+        <div class="receipt-row"><span>DATE:</span><span id="recDate">---</span></div>
         <div class="receipt-line"></div>
         <div id="receiptItems"></div>
         <div class="receipt-line"></div>
-        <div style="display:flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;"><span>TOTAL</span><span id="recTotal">₱0.00</span></div>
+        <div class="receipt-row" style="font-weight: bold; font-size: 1.1rem;"><span>TOTAL</span><span id="recTotal">₱0.00</span></div>
         <p style="font-size: 0.7rem; text-align: center; margin-top: 20px;">Present this receipt via Messenger for verification.</p>
     </div>
 
@@ -124,22 +145,18 @@
         const method = params.get('method') || "GCash";
         const syncedID = params.get('id') || "ZAB-" + Math.floor(100000 + Math.random() * 900000);
 
-        document.getElementById('orderID').innerText = `REF: ${syncedID}`;
+        document.getElementById('orderRef').innerText = `REF: ${syncedID}`;
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
-        document.getElementById('methodBadge').innerText = method;
-
         document.getElementById('recID').innerText = syncedID;
         document.getElementById('recTotal').innerText = decodeURIComponent(total);
         document.getElementById('recDate').innerText = new Date().toLocaleDateString();
 
-        // Load Items into printable receipt
+        // Load Items
         try {
             const items = JSON.parse(decodeURIComponent(params.get('items') || "[]"));
             const itemsDiv = document.getElementById('receiptItems');
             items.forEach(i => {
-                itemsDiv.innerHTML += `<div style="display:flex; justify-content:space-between; font-size:0.75rem; margin:3px 0;">
-                    <span>${i.qty}x ${i.name.toUpperCase()}</span><span>₱${i.price * i.qty}</span>
-                </div>`;
+                itemsDiv.innerHTML += `<div class="receipt-row"><span>${i.qty}x ${i.name.toUpperCase()}</span><span>₱${i.price * i.qty}</span></div>`;
             });
         } catch(e) {}
 
@@ -149,13 +166,11 @@
             const pBtn = document.getElementById('printBtn');
             if(val.length >= 6) {
                 mBtn.classList.add('active'); pBtn.classList.add('active');
-                pBtn.innerText = "Download Official Receipt (PDF)";
                 document.getElementById('recTrans').innerText = val;
                 const text = encodeURIComponent(`Hi! Paid for Order: ${syncedID}\nTrans No: ${val}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}`);
                 mBtn.href = `https://m.me/zabprintsdigital?text=${text}`;
             } else {
                 mBtn.classList.remove('active'); pBtn.classList.remove('active');
-                pBtn.innerText = "Download Receipt (Locked)";
             }
         }
 
@@ -166,13 +181,12 @@
         };
         const selected = paymentData[method] || paymentData["GCash"];
         document.getElementById('acctInfo').innerHTML = `
-            <div class="row"><div><small>Account Name</small><div class="val">${selected.name}</div></div></div>
-            <div class="row" style="margin-bottom:0;"><div><small>Account Number</small><div class="val" id="acctNum">${selected.number}</div></div><button class="copy-btn" onclick="copyAcct(event)">Copy</button></div>`;
+            <small>NAME</small><div class="val" style="margin-bottom:10px;">${selected.name}</div>
+            <small>ACCOUNT NUMBER</small><div class="val"><span>${selected.number}</span> <button class="copy-btn" onclick="copyAcct(event)">COPY</button></div>`;
         document.getElementById('qrImage').src = selected.qr;
 
         function zoomQR() { document.getElementById('zoomedImg').src = document.getElementById('qrImage').src; document.getElementById('qrModal').style.display = 'flex'; }
-        function closeZoom() { document.getElementById('qrModal').style.display = 'none'; }
-        function copyAcct(e) { e.stopPropagation(); navigator.clipboard.writeText(document.getElementById('acctNum').innerText); e.target.innerText="Copied!"; setTimeout(()=>e.target.innerText="Copy", 2000); }
+        function copyAcct(e) { e.stopPropagation(); navigator.clipboard.writeText(selected.number); e.target.innerText="COPIED"; setTimeout(()=>e.target.innerText="COPY", 2000); }
 
         let time = 1800;
         setInterval(() => {
