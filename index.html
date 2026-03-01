@@ -113,6 +113,7 @@
         .catalog-section { padding: 40px 5% 40px 5%; background: var(--white); display: flex; flex-direction: column; align-items: center; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; width: 100%; }
         .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; cursor: pointer; animation: fadeIn 0.6s ease forwards; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(212, 129, 146, 0.1); }
         .card img { width: 100%; height: 320px; object-fit: cover; background: #fafafa; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -294,6 +295,19 @@
     let currentCategory = "All";
     let isExpanded = false;
 
+    // HELPER: Determine the price text to show
+    const getPriceText = (item) => {
+        if (item.options && item.options.length > 0) {
+            const prices = item.options.map(o => parseFloat(o.price)).filter(p => !isNaN(p));
+            if (prices.length > 0) {
+                const min = Math.min(...prices);
+                const max = Math.max(...prices);
+                return min === max ? `₱${min}` : `₱${min} - ₱${max}`;
+            }
+        }
+        return (item.price && item.price > 0) ? `₱${item.price}` : "Inquire";
+    };
+
     onSnapshot(collection(db, "categories"), (snap) => {
         const filterBar = document.getElementById('dynamic-filter-bar');
         filterBar.innerHTML = `<button class="filter-btn active" id="btn-all">All Items</button>`;
@@ -333,7 +347,7 @@
         grid.innerHTML = filtered.length ? "" : "<p style='text-align:center; width:100%; grid-column: 1/-1;'>No items found.</p>";
         filtered.forEach(item => {
             const isSoldOut = item.status === "Sold Out";
-            const displayPrice = (item.price && item.price > 0) ? `₱${item.price}` : "Inquire";
+            const displayPrice = getPriceText(item);
             const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : "IMG_1218.jpeg";
             const card = document.createElement('div');
             card.className = "card";
@@ -360,7 +374,6 @@
         document.getElementById('m-moq').innerText = item.moq ? "MOQ: " + item.moq : "";
         document.getElementById('m-desc').innerText = item.description || "No description provided.";
         
-        // Base setup for order message
         const updateOrderInfo = (selectedOption = null) => {
             let finalPriceText = "";
             let currentMsg = "";
@@ -369,7 +382,8 @@
                 finalPriceText = selectedOption.price > 0 ? `₱${selectedOption.price}` : "Inquire";
                 currentMsg = `Hi Zab! I would like to order: ${item.name} (${selectedOption.name} - ${finalPriceText})`;
             } else {
-                finalPriceText = (item.price && item.price > 0) ? `₱${item.price}` : "Contact for price";
+                // Show the range initially in the modal
+                finalPriceText = getPriceText(item);
                 currentMsg = (item.price && item.price > 0) ? `Hi Zab! I would like to order: ${item.name} (₱${item.price})` : `Hi Zab! Price quote for ${item.name}?`;
             }
 
@@ -377,7 +391,6 @@
             link.href = `https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(currentMsg)}`;
         };
 
-        // Render Choices
         const choicesDiv = document.getElementById('m-choices');
         choicesDiv.innerHTML = "";
         
@@ -393,7 +406,6 @@
                 };
                 choicesDiv.appendChild(pill);
             });
-            // Show default/base price first
             updateOrderInfo();
         } else {
             updateOrderInfo();
