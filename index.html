@@ -8,56 +8,71 @@
     <style>
         :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #4a4a4a; --white: #fff; }
         * { box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; }
-        nav { background: rgba(255, 255, 255, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; overflow-x: hidden; }
+        nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
         section { padding: 40px 5%; }
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
-        .btn { background: var(--pink); color: #fff; padding: 12px 25px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: var(--white); border-radius: 20px; overflow: hidden; border: 1px solid #eee; text-align: center; padding-bottom: 20px; }
-        .card img { width: 100%; height: 250px; object-fit: cover; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .modal-content { background: #fff; width: 90%; max-width: 800px; border-radius: 20px; display: flex; overflow: hidden; }
-        #cartDrawer { position: fixed; top: 0; right: -400px; width: 350px; height: 100vh; background: #fff; z-index: 3000; transition: 0.4s; padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+        .btn { background: var(--pink); color: #fff; padding: 12px 25px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.3s; text-align: center; }
+        .btn:hover { background: var(--dark-pink); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: var(--white); border-radius: 25px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; cursor: pointer; position: relative; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 280px; object-fit: cover; }
+        .card-body { padding: 20px; text-align: center; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #fff; width: 100%; max-width: 800px; border-radius: 30px; display: flex; overflow: hidden; position: relative; max-height: 90vh; }
+        #cartDrawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100vh; background: #fff; z-index: 3000; transition: 0.4s; padding: 25px; box-shadow: -10px 0 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         #cartDrawer.active { right: 0; }
-        input, textarea { padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; width: 100%; }
+        input, textarea { padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; width: 100%; font-family: inherit; }
+        .filter-btn { background: #fff; border: 1px solid var(--pink); padding: 8px 20px; border-radius: 50px; cursor: pointer; margin: 5px; }
+        .filter-btn.active { background: var(--pink); color: white; }
+        @media (max-width: 768px) { .modal-content { flex-direction: column; overflow-y: auto; } .modal-content img { width: 100%; height: 200px; } }
     </style>
 </head>
 <body>
 
 <nav>
     <a href="#"><img src="IMG_1218.jpeg" style="height:50px;"></a>
-    <button onclick="toggleCart()" style="background:none; border:none; cursor:pointer;">🛒 <span id="cartCount">0</span></button>
+    <button onclick="toggleCart()" style="background:none; border:none; cursor:pointer; font-size: 1.5rem; position: relative;">
+        🛒 <span id="cartCount" style="position:absolute; top:-5px; right:-10px; background:red; color:white; font-size:10px; padding:2px 6px; border-radius:50%;">0</span>
+    </button>
 </nav>
 
-<section id="catalog">
-    <div id="catalog-grid" class="grid">Loading products...</div>
+<section>
+    <div id="filterBar" class="flex-center" style="justify-content:center; display:flex; margin-bottom:30px;"></div>
+    <div id="catalog-grid" class="grid">Loading collection...</div>
 </section>
 
 <div id="productModal" class="overlay" onclick="closeModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation()" id="m-content">
-        <img id="m-img" style="width:40%; object-fit:cover;">
-        <div style="padding:30px; flex:1;">
-            <h2 id="m-name" style="margin:0"></h2>
-            <div id="m-price" style="font-size:1.5rem; color:var(--dark-pink); font-weight:bold;"></div>
-            <div id="m-choices" style="margin:15px 0;"></div>
-            <p id="m-desc"></p>
-            <button class="btn" onclick="addToCart()">Add to Bag</button>
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <img id="m-img" style="width:45%; object-fit:cover; background:#fafafa;">
+        <div style="padding:40px; flex:1; overflow-y:auto;">
+            <h2 id="m-name" class="serif" style="margin:0"></h2>
+            <p id="m-moq" style="font-size:0.8rem; color:#999; margin: 5px 0 15px 0;"></p>
+            <div id="m-choices" style="margin-bottom:20px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+            <div id="m-price" style="font-size:1.5rem; color:var(--dark-pink); font-weight:bold; margin-bottom:20px;"></div>
+            <p id="m-desc" style="font-size:0.85rem; line-height:1.6; color:#666;"></p>
+            <button class="btn" style="width:100%;" onclick="addToCart()">Add to Bag</button>
         </div>
     </div>
 </div>
 
 <div id="cartDrawer">
-    <h3>Your Bag</h3>
-    <div id="cartItems" style="flex:1; overflow-y:auto;"></div>
-    <div style="border-top:1px solid #eee; padding-top:10px;">
-        <b>Total: <span id="cartTotal">₱0</span></b>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 class="serif" style="margin:0">Your Bag</h2>
+        <button onclick="toggleCart()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+    </div>
+    <div id="cartItems" style="flex:1; overflow-y:auto; margin-bottom:20px;"></div>
+    <div style="border-top:1px solid #eee; padding-top:15px;">
+        <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:15px;">
+            <span>Total:</span><span id="cartTotal">₱0</span>
+        </div>
         <input type="text" id="c-name" placeholder="Full Name">
-        <input type="email" id="c-email" placeholder="Email">
+        <input type="email" id="c-email" placeholder="Email Address">
         <input type="tel" id="c-phone" placeholder="Phone Number">
-        <textarea id="c-addr" placeholder="Address"></textarea>
-        <button class="btn" style="width:100%; margin-top:10px;" onclick="processCheckout('messenger')">Messenger</button>
-        <button class="btn" style="width:100%; margin-top:5px; background:var(--dark-pink)" onclick="processCheckout('website')">Checkout Web</button>
+        <textarea id="c-addr" placeholder="Shipping Address" rows="2"></textarea>
+        <button class="btn" style="width:100%; margin-top:10px; background:#0084ff;" onclick="processCheckout('messenger')">Order via Messenger</button>
+        <button class="btn" style="width:100%; margin-top:8px; background:var(--dark-pink);" onclick="processCheckout('website')">Checkout Web</button>
     </div>
 </div>
 
@@ -67,66 +82,109 @@
 
     const db = getFirestore(initializeApp({ apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0", projectId: "zab-digital-prints" }));
 
-    let state = { products: [], cart: [], selected: null, opt: null };
+    let state = { products: [], cart: [], curCat: "All", selected: null, opt: null };
 
     onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), snap => {
         state.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
         render();
     });
 
+    onSnapshot(collection(db, "categories"), snap => {
+        const bar = document.getElementById('filterBar');
+        bar.innerHTML = `<button class="filter-btn ${state.curCat === 'All' ? 'active' : ''}" onclick="window.setCat('All')">All</button>`;
+        snap.forEach(d => {
+            bar.innerHTML += `<button class="filter-btn ${state.curCat === d.id ? 'active' : ''}" onclick="window.setCat('${d.id}')">${d.id}</button>`;
+        });
+    });
+
+    window.setCat = (c) => { state.curCat = c; render(); };
+
     function render() {
-        document.getElementById('catalog-grid').innerHTML = state.products.map(p => `
+        const grid = document.getElementById('catalog-grid');
+        const filtered = state.products.filter(p => state.curCat === "All" || p.category === state.curCat);
+        grid.innerHTML = filtered.map(p => `
             <div class="card" onclick="openModal('${p.id}')">
                 <img src="${p.imgUrl || 'IMG_1218.jpeg'}">
-                <h3>${p.name}</h3>
-                <button class="btn">View Product</button>
+                <div class="card-body">
+                    <h3 style="margin:0">${p.name}</h3>
+                    <p style="color:var(--dark-pink); font-weight:bold; margin:5px 0;">₱${p.price || 'Inquire'}</p>
+                    <button class="btn" style="padding:8px 20px; font-size:0.8rem;">View</button>
+                </div>
             </div>
         `).join('');
     }
 
     window.openModal = id => {
         const p = state.products.find(x => x.id === id);
-        state.selected = p;
+        state.selected = p; state.opt = null;
         document.getElementById('m-name').innerText = p.name;
         document.getElementById('m-img').src = p.imgUrl || 'IMG_1218.jpeg';
-        document.getElementById('m-price').innerText = `₱${p.price}`;
-        document.getElementById('m-choices').innerHTML = (p.options || []).map(o => `<button onclick="state.opt='${o.name}'">${o.name}</button>`).join(' ');
+        document.getElementById('m-price').innerText = `₱${p.price || 'Inquire'}`;
+        document.getElementById('m-moq').innerText = p.moq ? `Minimum Order: ${p.moq}` : "";
+        document.getElementById('m-desc').innerText = p.description || "";
+        document.getElementById('m-choices').innerHTML = (p.options || []).map(o => `<button class="filter-btn" onclick="window.selectOpt('${o.name}', ${o.price}, this)">${o.name}</button>`).join('');
         document.getElementById('productModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.selectOpt = (n, p, btn) => {
+        state.opt = { name: n, price: p };
+        document.querySelectorAll('#m-choices .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('m-price').innerText = `₱${p}`;
     };
 
     window.addToCart = () => {
-        state.cart.push({ ...state.selected, variant: state.opt || 'Standard', qty: 1 });
+        if(state.selected.options?.length && !state.opt) return alert("Select a variant");
+        const item = { 
+            name: state.selected.name, 
+            variant: state.opt?.name || 'Standard', 
+            price: Number(state.opt?.price || state.selected.price || 0), 
+            qty: 1 
+        };
+        state.cart.push(item);
         updateCartUI();
         closeModal();
+        toggleCart();
     };
 
     function updateCartUI() {
         document.getElementById('cartCount').innerText = state.cart.length;
-        document.getElementById('cartItems').innerHTML = state.cart.map(i => `<div>${i.name} (${i.variant}) - ₱${i.price}</div>`).join('');
-        const total = state.cart.reduce((a, b) => a + Number(b.price), 0);
+        document.getElementById('cartItems').innerHTML = state.cart.map((i, idx) => `
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:10px;">
+                <span>${i.name} (${i.variant})</span>
+                <b>₱${i.price} <span onclick="window.removeItem(${idx})" style="color:red; cursor:pointer; margin-left:10px;">&times;</span></b>
+            </div>
+        `).join('');
+        const total = state.cart.reduce((a, b) => a + b.price, 0);
         document.getElementById('cartTotal').innerText = `₱${total}`;
     }
 
+    window.removeItem = i => { state.cart.splice(i, 1); updateCartUI(); };
+
     window.processCheckout = async (method) => {
         const n = document.getElementById('c-name').value, e = document.getElementById('c-email').value, p = document.getElementById('c-phone').value, a = document.getElementById('c-addr').value;
-        if(!n || !e || !p || !a) return alert("Fill all details");
+        if(!n || !e || !p || !a || !state.cart.length) return alert("Fill all details and add items to bag.");
         
         const total = document.getElementById('cartTotal').innerText;
-        await addDoc(collection(db, "orders"), {
-            customerName: n, email: e, phone: p, address: a,
-            items: state.cart, total: total, method: method,
-            createdAt: Date.now(), status: "Pending", paid: false
-        });
+        try {
+            await addDoc(collection(db, "orders"), {
+                customerName: n, email: e, phone: p, address: a,
+                items: state.cart, total: total, method: method,
+                createdAt: Date.now(), status: "Pending", paid: false
+            });
 
-        if(method === 'messenger') {
-            window.open(`https://m.me/zabprintsdigital?text=New Order: ${total}`);
-        } else {
-            window.location.href = `payment.html?name=${n}&total=${total}`;
-        }
+            if(method === 'messenger') {
+                window.open(`https://m.me/zabprintsdigital?text=Order for ${n}: ${total}`);
+                state.cart = []; updateCartUI(); toggleCart();
+            } else {
+                window.location.href = `payment.html?name=${encodeURIComponent(n)}&total=${encodeURIComponent(total)}`;
+            }
+        } catch(err) { alert("Error saving order."); }
     };
 
     window.toggleCart = () => document.getElementById('cartDrawer').classList.toggle('active');
-    window.closeModal = () => document.getElementById('productModal').style.display = 'none';
+    window.closeModal = () => { document.getElementById('productModal').style.display = 'none'; document.body.style.overflow = 'auto'; };
 </script>
 </body>
 </html>
