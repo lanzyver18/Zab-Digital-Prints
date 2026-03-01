@@ -35,17 +35,16 @@
         .btn-small { width: 100%; padding: 12px; border-radius: 50px; border: 1px solid #eee; background: #fff; color: #999; cursor: pointer; font-weight: 600; font-size: 0.8rem; margin-bottom: 10px; }
 
         /* RECEIPT STYLING (Hidden on screen, Visible on print) */
-        #printableReceipt { display: none; font-family: 'Courier Prime', monospace; color: black; background: white; padding: 20px; width: 350px; margin: 0 auto; }
+        #printableReceipt { display: none; font-family: 'Courier Prime', monospace; color: black; background: white; padding: 20px; width: 380px; margin: 0 auto; }
         .receipt-line { border-bottom: 1px dashed black; margin: 10px 0; }
-        .receipt-row { display: flex; justify-content: space-between; margin: 5px 0; }
+        .receipt-row { display: flex; justify-content: space-between; margin: 5px 0; font-size: 0.85rem; }
+        .item-row { font-size: 0.8rem; margin: 5px 0; }
 
-        /* QR Modal */
         #qrModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
         #qrModal img { width: 80%; max-width: 400px; background: white; padding: 20px; border-radius: 10px; }
 
-        /* PRINT LOGIC */
         @media print {
-            #paymentUI, #qrModal, .timer-box { display: none !important; }
+            #paymentUI, #qrModal { display: none !important; }
             body { background: white; padding: 0; }
             #printableReceipt { display: block !important; }
         }
@@ -95,12 +94,19 @@
         <div class="receipt-line"></div>
         <div class="receipt-row"><span>REF NO:</span><b id="recID">---</b></div>
         <div class="receipt-row"><span>DATE:</span><span id="recDate">---</span></div>
-        <div class="receipt-row"><span>METHOD:</span><span id="recMethod">---</span></div>
+        <div class="receipt-row"><span>CUST:</span><span id="recName">---</span></div>
         <div class="receipt-line"></div>
-        <center>
-            <p style="margin: 20px 0 5px 0;">TOTAL AMOUNT</p>
-            <h1 id="recTotal">₱0.00</h1>
-        </center>
+        
+        <div style="font-weight: bold; margin-bottom: 10px;">ORDER DETAILS:</div>
+        <div id="receiptItems">
+            </div>
+
+        <div class="receipt-line"></div>
+        <div class="receipt-row" style="font-weight: bold; font-size: 1.2rem;">
+            <span>TOTAL</span>
+            <span id="recTotal">₱0.00</span>
+        </div>
+        <div class="receipt-row"><span>PAY METHOD:</span><span id="recMethod">---</span></div>
         <div class="receipt-line" style="margin-top:20px;"></div>
         <p style="font-size: 0.7rem; text-align: center;">STATUS: AWAITING VERIFICATION<br>Please present this receipt via Messenger.</p>
         <center style="margin-top:30px; opacity:0.8;">
@@ -115,6 +121,13 @@
         const total = params.get('total') || "₱0.00";
         const method = params.get('method') || "GCash";
         const syncedID = params.get('id') || "ZAB-" + Math.floor(100000 + Math.random() * 900000);
+        
+        // Parse Items from URL
+        let items = [];
+        try {
+            const itemsRaw = params.get('items');
+            if(itemsRaw) items = JSON.parse(decodeURIComponent(itemsRaw));
+        } catch(e) { console.error("Error parsing items", e); }
 
         // Update Screen UI
         document.getElementById('displayID').innerText = `REF: ${syncedID}`;
@@ -123,11 +136,29 @@
 
         // Update Hidden Receipt
         document.getElementById('recID').innerText = syncedID;
+        document.getElementById('recName').innerText = decodeURIComponent(name).toUpperCase();
         document.getElementById('recTotal').innerText = decodeURIComponent(total);
         document.getElementById('recMethod').innerText = method.toUpperCase();
         document.getElementById('recDate').innerText = new Date().toLocaleDateString();
 
-        // Messenger Bridge
+        // Inject Items into Receipt
+        const receiptItemsDiv = document.getElementById('receiptItems');
+        if(items.length > 0) {
+            items.forEach(item => {
+                receiptItemsDiv.innerHTML += `
+                    <div class="item-row">
+                        <div>${item.qty}x ${item.name.toUpperCase()}</div>
+                        <div style="display:flex; justify-content:space-between; color:#666;">
+                            <span>  [${item.variant}]</span>
+                            <span>₱${item.price * item.qty}</span>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            receiptItemsDiv.innerHTML = "Refer to Messenger for item details.";
+        }
+
+        // Messenger Link
         const messageText = encodeURIComponent(`Hi! Order Ref: ${syncedID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nAttached is my payment screenshot.`);
         document.getElementById('messengerLink').href = `https://m.me/zabprintsdigital?text=${messageText}`;
 
