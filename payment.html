@@ -27,7 +27,7 @@
         .total-amount { font-size: 2.2rem; font-weight: 600; color: var(--dark-pink); }
 
         .method-badge { display: inline-block; padding: 5px 15px; background: var(--dark-pink); color: white; border-radius: 50px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; }
-        .acct-details { text-align: left; background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 20px; border-left: 5px solid var(--pink); font-size: 0.9rem; }
+        .acct-details { text-align: left; background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 20px; border-left: 5px solid var(--pink); font-size: 0.9rem; line-height: 1.6; }
         
         .qr-container { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid #eee; margin-bottom: 25px; }
         .qr-container img { width: 100%; max-width: 220px; height: auto; object-fit: contain; }
@@ -56,14 +56,15 @@
         <div class="acct-details" id="acctInfo"></div>
 
         <div class="qr-container">
-            <img id="qrImage" src="placeholder-qr.png">
-            <p style="font-size: 0.7rem; color: #999; margin-top: 10px;">Scan to Pay</p>
+            <img id="qrImage" src="placeholder-qr.png" alt="Scan to Pay">
+            <p style="font-size: 0.7rem; color: #999; margin-top: 10px;">Scan QR to Pay</p>
         </div>
 
         <div style="text-align: left; font-size: 0.8rem; line-height: 1.6; margin-bottom: 20px;">
             <b>Instructions:</b><br>
-            1. Send the amount shown above.<br>
-            2. Send your receipt to our <a href="https://m.me/zabprintsdigital" style="color:var(--dark-pink); font-weight:bold;">Facebook Messenger</a>.<br>
+            1. Send the exact amount shown above.<br>
+            2. Send your receipt to our <a href="https://m.me/zabprintsdigital" style="color:var(--dark-pink); font-weight:bold;">Messenger</a>.<br>
+            3. Order will be processed once payment is verified.
         </div>
 
         <a href="index.html" class="btn">Return to Shop</a>
@@ -77,28 +78,28 @@
 
         document.getElementById('custName').innerText = decodeURIComponent(name);
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
-        document.getElementById('methodBadge').innerText = method;
+        document.getElementById('methodBadge').innerText = method + " Payment";
 
         const paymentData = {
-            "GCash": {
-                number: "0917-XXX-XXXX",
-                name: "Zab Digital Prints",
+            "GCash": { 
+                number: "0917-XXX-XXXX", 
+                name: "Zab Digital Prints", 
                 qr: "gcash-qr.jpg" 
             },
-            "BPI": {
-                number: "Account: XXXX-XXXX-XX",
-                name: "Zab Digital Prints",
-                qr: "bpi-qr.jpg"
+            "BPI": { 
+                number: "Account: XXXX-XXXX-XX", 
+                name: "Zab Digital Prints", 
+                qr: "bpi-qr.jpg" 
             },
-            "BDO": {
-                number: "Account: XXXXXXXXXXX",
-                name: "Zab Digital Prints",
-                qr: "bdo-qr.jpg"
+            "BDO": { 
+                number: "Account: XXXXXXXXXXX", 
+                name: "Zab Digital Prints", 
+                qr: "bdo-qr.jpg" 
             }
         };
 
         const selected = paymentData[method] || paymentData["GCash"];
-        document.getElementById('acctInfo').innerHTML = `<b>Account Name:</b> ${selected.name}<br><b>Account Details:</b> ${selected.number}`;
+        document.getElementById('acctInfo').innerHTML = `<b>Account Name:</b><br>${selected.name}<br><b>Account Details:</b><br>${selected.number}`;
         document.getElementById('qrImage').src = selected.qr;
     </script>
 </body>
