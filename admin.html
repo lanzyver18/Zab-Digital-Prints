@@ -76,6 +76,9 @@
         
         /* Order ID styling */
         .order-id-badge { font-family: monospace; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: #555; margin-left: 10px; border: 1px solid #ddd; }
+        
+        /* New Danger Button for Owner */
+        .btn-danger { background: #ff7675; margin-top: 15px; font-size: 0.75rem; width: auto; padding: 10px 20px; }
     </style>
 </head>
 <body>
@@ -193,11 +196,12 @@
 
                 <div style="margin-top: 20px;">
                     <h4>Audit Log (Security History)</h4>
-                    <p style="font-size: 0.8rem; color: #666;">Shows who logged in and when.</p>
+                    <p style="font-size: 0.8rem; color: #666;">Shows login activity and changes.</p>
                     <table class="log-table">
                         <thead><tr><th>Time</th><th>Admin Name</th><th>Action</th></tr></thead>
                         <tbody id="security-logs"></tbody>
                     </table>
+                    <button class="btn btn-danger" onclick="clearAuditHistory()">Clear Audit History</button>
                 </div>
 
                 <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
@@ -226,7 +230,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, getDocs, limit, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
@@ -241,35 +245,23 @@
     const db = getFirestore(app);
     let editID = null, localItems = [], currentOptions = [], orderCountCache = 0; 
 
-    // --- UPDATED LOGIN LOGIC ---
+    // --- LOGIN ---
     window.login = async () => {
         const adminName = document.getElementById('entryName').value.trim();
         const pass = document.getElementById('entryPass').value;
-        
-        if(!adminName) return alert("Please enter your name.");
-
+        if(!adminName) return alert("Enter name.");
         const staffSnap = await getDocs(collection(db, "admin_passwords"));
-        let valid = false;
-        let role = "Staff";
-
+        let valid = false; let role = "Staff";
         staffSnap.forEach(d => { if(d.id === pass) valid = true; });
         const ownerSnap = await getDoc(doc(db, "config", "security"));
         const ownerPass = ownerSnap.data()?.owner || "master789";
-        
         if(pass === ownerPass) { valid = true; role = "Owner"; }
-
         if(valid) {
-            // Log exactly who logged in
-            await addDoc(collection(db, "security_logs"), { 
-                timestamp: new Date().toLocaleString(), 
-                admin: adminName,
-                action: `Login: ${role}` 
-            });
-            sessionStorage.setItem("zabAuth", "true");
-            sessionStorage.setItem("zabAdminName", adminName);
-            document.getElementById('login-gate').style.display = "none";
-            initApp();
-        } else { alert("Invalid Password"); }
+            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Login: ${role}` });
+            sessionStorage.setItem("zabAuth", "true"); sessionStorage.setItem("zabAdminName", adminName);
+            document.getElementById('login-gate').style.display = "none"; initApp();
+            if (Notification.permission !== "granted") Notification.requestPermission();
+        } else { alert("Wrong Password"); }
     };
 
     window.unlockSettings = async () => {
@@ -292,17 +284,34 @@
         });
     }
 
+    // --- FEATURE: Clear Audit History ---
+    window.clearAuditHistory = async () => {
+        if(!confirm("Permanently delete all logs? This cannot be undone.")) return;
+        try {
+            const logsSnap = await getDocs(collection(db, "security_logs"));
+            const batch = writeBatch(db);
+            logsSnap.forEach((doc) => batch.delete(doc.ref));
+            await batch.commit();
+            await addDoc(collection(db, "security_logs"), { 
+                timestamp: new Date().toLocaleString(), 
+                admin: sessionStorage.getItem("zabAdminName"), 
+                action: "Audit History Cleared" 
+            });
+            alert("History cleared.");
+        } catch (e) { alert("Error clearing history."); }
+    };
+
     // --- STAFF ---
     window.addAdminPass = async () => {
         const pass = document.getElementById('newAdminPassInput').value.trim();
         if(pass) await setDoc(doc(db, "admin_passwords", pass), {});
         document.getElementById('newAdminPassInput').value = "";
     };
-    window.deleteAdminPass = async (id) => { if(confirm("Remove access?")) await deleteDoc(doc(db, "admin_passwords", id)); };
+    window.deleteAdminPass = async (id) => { if(confirm("Remove?")) await deleteDoc(doc(db, "admin_passwords", id)); };
     function loadAdminPasses() {
         onSnapshot(collection(db, "admin_passwords"), (snap) => {
             const list = document.getElementById('admin-pass-list'); list.innerHTML = "";
-            snap.forEach(d => { list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span style="margin-left:8px; cursor:pointer; color:red;" onclick="deleteAdminPass('${d.id}')">×</span></div>`; });
+            snap.forEach(d => { list.innerHTML += `<div class="staff-tag">🔑 ${d.id} <span onclick="deleteAdminPass('${d.id}')" style="cursor:pointer; color:red; margin-left:10px;">×</span></div>`; });
         });
     }
 
@@ -318,65 +327,40 @@
             const catList = document.getElementById('category-list'), catSelect = document.getElementById('pCat'), catFilter = document.getElementById('inventoryFilter');
             catList.innerHTML = ""; catSelect.innerHTML = ""; catFilter.innerHTML = '<option value="All">All Categories</option>';
             snap.forEach(d => {
-                catList.innerHTML += `<div class="cat-tag">${d.id} <span onclick="deleteCat('${d.id}')">×</span></div>`;
+                catList.innerHTML += `<div class="cat-tag">${d.id} <span onclick="deleteCat('${d.id}')" style="cursor:pointer; margin-left:8px;">×</span></div>`;
                 catSelect.innerHTML += `<option value="${d.id}">${d.id}</option>`;
                 catFilter.innerHTML += `<option value="${d.id}">${d.id}</option>`;
             });
         });
-
         onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
-            localItems = [];
-            snap.forEach(d => { localItems.push({ id: d.id, ...d.data() }); });
+            localItems = []; snap.forEach(d => { localItems.push({ id: d.id, ...d.data() }); });
             filterInventoryList();
         });
-
         initOrders();
     }
 
-    // --- ORDERS & ANALYTICS ---
+    // --- ORDERS ---
     function initOrders() {
         onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
             const list = document.getElementById('admin-orders-list');
-            list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders found.</p>" : "";
-            
-            let revenue = 0, active = 0, total = 0;
-            const ordersArray = [];
-
+            list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders.</p>" : "";
+            let revenue = 0, active = 0, total = 0; const ordersArray = [];
             snap.forEach(d => {
-                const order = d.data();
-                ordersArray.push({id: d.id, ...order});
-                total++;
+                const order = d.data(); ordersArray.push({id: d.id, ...order}); total++;
                 const numericTotal = parseFloat(order.total.replace(/[₱,]/g, '')) || 0;
                 if(order.paid) revenue += numericTotal;
                 if(order.status !== "Cancelled" && order.status !== "Shipped") active++;
-
                 const date = new Date(order.createdAt).toLocaleString();
-                const isPaid = order.paid === true;
-                const currentStatus = order.status || "Pending";
-                
-                let itemsHtml = "";
-                order.items.forEach(i => { itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`; });
-
+                const isPaid = order.paid === true; const currentStatus = order.status || "Pending";
+                let itemsHtml = ""; order.items.forEach(i => { itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`; });
                 list.innerHTML += `
                     <div class="order-card">
-                        <div class="order-header">
-                            <div>
-                                <span class="order-customer">${order.customerName}</span>
-                                <span class="order-id-badge">${order.orderID || 'ZAB-Legacy'}</span>
-                                <span class="badge-status ${isPaid ? 'paid-yes' : 'paid-no'}" onclick="togglePaidStatus('${d.id}', ${isPaid})">
-                                    ${isPaid ? 'PAID' : 'UNPAID'}
-                                </span>
-                            </div>
-                            <span class="order-date">${date}</span>
-                        </div>
+                        <div class="order-header"><div><span class="order-customer">${order.customerName}</span><span class="order-id-badge">${order.orderID || 'Legacy'}</span><span class="badge-status ${isPaid ? 'paid-yes' : 'paid-no'}" onclick="togglePaidStatus('${d.id}', ${isPaid})">${isPaid ? 'PAID' : 'UNPAID'}</span></div><span class="order-date">${date}</span></div>
                         <div class="order-items">${itemsHtml}</div>
                         <div style="font-size:0.8rem; color:#444; background:#f9f9f9; padding:12px; border-radius:12px; margin-bottom:12px; border-left: 4px solid var(--pink);">
                             <div>📧 <b>Email:</b> ${order.customerEmail || 'N/A'}</div>
                             <div>📞 <b>Phone:</b> ${order.customerPhone || 'N/A'}</div>
                             <div>📍 <b>Address:</b> ${order.address}</div>
-                            <div style="font-size:0.7rem; color:#999; margin-top:6px; border-top:1px solid #eee; padding-top:4px;">
-                                Method: <b>${order.method || 'N/A'}</b> | Payment: <b>${order.paymentChoice || 'N/A'}</b>
-                            </div>
                         </div>
                         <div style="margin-top:15px; display:flex; gap:10px; align-items:center; justify-content: space-between;">
                             <div style="display:flex; align-items:center; gap:10px;">
@@ -384,53 +368,37 @@
                                 <select onchange="updateOrderStatus('${d.id}', this.value)" style="margin:0; width:auto; padding:5px; font-size:0.75rem;">
                                     <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
                                     <option value="Processing" ${currentStatus === 'Processing' ? 'selected' : ''}>Processing</option>
-                                    <option value="Ready" ${currentStatus === 'Ready' ? 'selected' : ''}>Ready for Pickup</option>
+                                    <option value="Ready" ${currentStatus === 'Ready' ? 'selected' : ''}>Ready</option>
                                     <option value="Shipped" ${currentStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                                    <option value="Cancelled" ${currentStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                                 </select>
                             </div>
-                            <button class="btn btn-small btn-msg" onclick="copyMessengerReply('${order.customerName}', '${order.total}', '${order.orderID || ''}')">Message Customer</button>
+                            <button class="btn btn-small btn-msg" onclick="copyMessengerReply('${order.customerName}', '${order.total}', '${order.orderID || ''}')">Message</button>
                         </div>
-                        <div class="order-footer">
-                            <span class="order-total">Total: ${order.total}</span>
-                            <button class="btn-small btn-clear" onclick="deleteOrderRecord('${d.id}')">Clear Record</button>
-                        </div>
+                        <div class="order-footer"><span class="order-total">Total: ${order.total}</span><button class="btn-small btn-clear" onclick="deleteOrderRecord('${d.id}')">Clear Record</button></div>
                     </div>`;
             });
-
             document.getElementById('stat-revenue').innerText = "₱" + revenue.toLocaleString();
-            document.getElementById('stat-active').innerText = active;
-            document.getElementById('stat-total').innerText = total;
-
-            if (orderCountCache > 0 && total > orderCountCache) {
-                new Notification("New Order Received!", { body: "A customer just checked out." });
-            }
-            orderCountCache = total;
-            window.latestOrders = ordersArray;
+            document.getElementById('stat-active').innerText = active; document.getElementById('stat-total').innerText = total;
+            if (orderCountCache > 0 && total > orderCountCache) { new Notification("New Order Received!"); }
+            orderCountCache = total; window.latestOrders = ordersArray;
         });
     }
 
     window.copyMessengerReply = (name, total, id) => {
-        const text = `Hi ${name}! We received your order ${id} amounting to ${total}. Kindly send your payment screenshot here to start production. Thank you!`;
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Reply copied!"); window.open("https://m.me/zabprintsdigital", "_blank");
-        });
+        const text = `Hi ${name}! We received your order ${id} for ${total}. Send screenshot here to start production. Thanks!`;
+        navigator.clipboard.writeText(text).then(() => { alert("Copied!"); window.open("https://m.me/zabprintsdigital", "_blank"); });
     };
 
     window.exportOrdersToCSV = () => {
         if(!window.latestOrders) return;
-        let csv = "Date,Order ID,Customer,Email,Total,Paid,Status\n";
-        window.latestOrders.forEach(o => {
-            if(o.paid) csv += `${new Date(o.createdAt).toLocaleDateString()},${o.orderID || ''},"${o.customerName}",${o.customerEmail},"${o.total}",${o.paid},${o.status}\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `zab_sales.csv`; a.click();
+        let csv = "Date,Order ID,Customer,Total,Status\n";
+        window.latestOrders.forEach(o => { if(o.paid) csv += `${new Date(o.createdAt).toLocaleDateString()},${o.orderID || ''},"${o.customerName}","${o.total}",${o.status}\n`; });
+        const blob = new Blob([csv], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `sales.csv`; a.click();
     };
 
     window.togglePaidStatus = async (id, s) => await updateDoc(doc(db, "orders", id), { paid: !s });
     window.updateOrderStatus = async (id, s) => await updateDoc(doc(db, "orders", id), { status: s });
-    window.deleteOrderRecord = async (id) => { if(confirm("Delete record?")) await deleteDoc(doc(db, "orders", id)); };
+    window.deleteOrderRecord = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "orders", id)); };
 
     window.filterInventoryList = () => {
         const cat = document.getElementById('inventoryFilter').value, term = document.getElementById('inventorySearch').value.toLowerCase(), list = document.getElementById('admin-list');
@@ -479,17 +447,9 @@
             createdAt: editID ? localItems.find(i => i.id === editID).createdAt : Date.now()
         };
         if(!data.name) return alert("Name required!");
-        
         if(editID) await updateDoc(doc(db, "products", editID), data);
         else await addDoc(collection(db, "products"), data);
-
-        // Audit the change
-        await addDoc(collection(db, "security_logs"), { 
-            timestamp: new Date().toLocaleString(), 
-            admin: adminName, 
-            action: `Product ${editID ? 'Updated' : 'Created'}: ${data.name}` 
-        });
-
+        await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Product ${editID ? 'Updated' : 'Created'}: ${data.name}` });
         location.reload();
     };
     
@@ -497,26 +457,18 @@
 
     window.startEdit = (id) => {
         const i = localItems.find(x => x.id === id);
-        editID = id;
-        document.getElementById('formHeader').innerText = "Editing: " + i.name;
-        document.getElementById('pName').value = i.name;
-        document.getElementById('pPrice').value = i.price || "";
-        document.getElementById('pStock').value = i.stock || 0;
-        document.getElementById('pMoq').value = i.moq || "";
-        document.getElementById('pDesc').value = i.description || "";
-        currentOptions = i.options || []; 
-        document.getElementById('pCat').value = i.category;
-        document.getElementById('pStatus').value = i.status;
-        document.getElementById('pImg').value = i.imgUrl || "";
-        renderOptions(); updateLiveView();
-        window.scrollTo({top:0, behavior:'smooth'});
+        editID = id; document.getElementById('formHeader').innerText = "Editing: " + i.name;
+        document.getElementById('pName').value = i.name; document.getElementById('pPrice').value = i.price || "";
+        document.getElementById('pStock').value = i.stock || 0; document.getElementById('pMoq').value = i.moq || "";
+        document.getElementById('pDesc').value = i.description || ""; currentOptions = i.options || []; 
+        document.getElementById('pCat').value = i.category; document.getElementById('pStatus').value = i.status;
+        document.getElementById('pImg').value = i.imgUrl || ""; renderOptions(); updateLiveView();
     };
 
     window.switchTab = (id, el) => {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        el.classList.add('active');
+        document.getElementById(id).classList.add('active'); el.classList.add('active');
     };
     
     window.logout = () => { sessionStorage.clear(); location.reload(); };
