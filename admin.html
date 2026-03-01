@@ -6,7 +6,7 @@
     <title>Zab Admin | Control Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; --owner-gold: #d4af37; }
+        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; --owner-gold: #d4af37; --success: #2ecc71; --warning: #f1c40f; }
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f8f9fa; color: var(--text); display: flex; min-height: 100vh; }
         
@@ -45,15 +45,6 @@
         .cat-tag, .staff-tag, .opt-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.85rem; border: 1px solid var(--pink); }
         .opt-tag { border-color: #74b9ff; background: #ebf5ff; color: #0984e3; }
 
-        /* Security Log Table */
-        .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
-        .log-table th { text-align: left; padding: 10px; border-bottom: 2px solid var(--owner-gold); color: var(--owner-gold); }
-        .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
-
-        /* Live Choice UI */
-        .choice-list { width: 100%; margin-top: 10px; border-top: 1px dashed #eee; padding-top: 10px; }
-        .choice-item { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--pink); padding: 5px 0; font-size: 0.85rem; color: #555; }
-
         /* Order Management Styles */
         .order-card { border: 1.5px solid #eee; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: white; transition: 0.3s; }
         .order-card:hover { border-color: var(--pink); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -65,6 +56,15 @@
         .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f9f9f9; }
         .order-total { font-weight: bold; color: var(--text); }
         .btn-clear { background: #ff7675; width: auto; margin: 0; padding: 5px 15px; font-size: 0.75rem; }
+
+        /* Status Toggles */
+        .badge-status { padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; cursor: pointer; border: 1px solid transparent; }
+        .paid-yes { background: #e6fffa; color: #234e52; border-color: #b2f5ea; }
+        .paid-no { background: #fff5f5; color: #822727; border-color: #feb2b2; }
+
+        .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+        .log-table th { text-align: left; padding: 10px; border-bottom: 2px solid var(--owner-gold); color: var(--owner-gold); }
+        .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -145,7 +145,7 @@
     <div id="orders-tab" class="tab-content">
         <div class="panel">
             <h2 style="margin-top:0;">Website Orders</h2>
-            <p style="font-size: 0.85rem; color: #666;">View and manage orders submitted through the site form.</p>
+            <p style="font-size: 0.85rem; color: #666;">Manage payment status and order progress below.</p>
             <div id="admin-orders-list">Loading orders...</div>
         </div>
     </div>
@@ -316,6 +316,8 @@
             snap.forEach(d => {
                 const order = d.data();
                 const date = new Date(order.createdAt).toLocaleString();
+                const isPaid = order.paid === true;
+                const currentStatus = order.status || "Pending";
                 let itemsHtml = "";
                 order.items.forEach(i => {
                     itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`;
@@ -324,11 +326,28 @@
                 list.innerHTML += `
                     <div class="order-card">
                         <div class="order-header">
-                            <span class="order-customer">${order.customerName}</span>
+                            <div>
+                                <span class="order-customer">${order.customerName}</span>
+                                <span class="badge-status ${isPaid ? 'paid-yes' : 'paid-no'}" onclick="togglePaidStatus('${d.id}', ${isPaid})">
+                                    ${isPaid ? 'PAID' : 'UNPAID'}
+                                </span>
+                            </div>
                             <span class="order-date">${date}</span>
                         </div>
                         <div class="order-items">${itemsHtml}</div>
                         <div style="font-size:0.8rem; color:#666;"><b>Shipping Address:</b><br>${order.address}</div>
+                        
+                        <div style="margin-top:15px; display:flex; gap:10px; align-items:center;">
+                            <label style="font-size:0.75rem; color:#999; margin:0;">Progress:</label>
+                            <select onchange="updateOrderStatus('${d.id}', this.value)" style="margin:0; width:auto; padding:5px; font-size:0.75rem;">
+                                <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Processing" ${currentStatus === 'Processing' ? 'selected' : ''}>Processing</option>
+                                <option value="Ready" ${currentStatus === 'Ready' ? 'selected' : ''}>Ready for Pickup</option>
+                                <option value="Shipped" ${currentStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="Cancelled" ${currentStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </div>
+
                         <div class="order-footer">
                             <span class="order-total">Total: ${order.total}</span>
                             <button class="btn-small btn-clear" onclick="deleteOrderRecord('${d.id}')">Clear Record</button>
@@ -337,6 +356,18 @@
             });
         });
     }
+
+    // --- NEW TOGGLE PAID FEATURE ---
+    window.togglePaidStatus = async (id, currentStatus) => {
+        const orderRef = doc(db, "orders", id);
+        await updateDoc(orderRef, { paid: !currentStatus });
+    };
+
+    // --- NEW ORDER PROGRESS FEATURE ---
+    window.updateOrderStatus = async (id, newStatus) => {
+        const orderRef = doc(db, "orders", id);
+        await updateDoc(orderRef, { status: newStatus });
+    };
 
     window.deleteOrderRecord = async (id) => {
         if(confirm("Permanently remove this order record?")) {
