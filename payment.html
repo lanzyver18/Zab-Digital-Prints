@@ -73,7 +73,7 @@
             margin-bottom: 30px;
             display: inline-block;
         }
-        .qr-container img { width: 200px; height: 200px; object-fit: contain; }
+        .qr-container img { width: 200px; height: 200px; object-fit: contain; cursor: zoom-in; }
         .qr-label { font-size: 0.7rem; color: #aaa; margin-top: 10px; font-weight: 500; }
 
         .instructions { 
@@ -96,8 +96,15 @@
             display: block; 
             transition: 0.4s; 
             box-shadow: 0 10px 20px rgba(212, 129, 146, 0.2);
+            margin-bottom: 10px;
         }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 129, 146, 0.3); }
+        
+        .btn-messenger { background: #0084ff; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-outline { background: transparent; color: var(--dark-pink); border: 2px solid var(--pink); box-shadow: none; }
+
+        /* Timer Style */
+        .timer-box { font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 5px; }
 
         @media (max-width: 600px) {
             .pay-card { padding: 30px 20px; border-radius: 30px; }
@@ -109,6 +116,11 @@
 <body>
 
     <div class="pay-card">
+        <div class="timer-box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Settle within <span id="timer">30:00</span>
+        </div>
+
         <div class="header-section">
             <div class="order-ref" id="orderID">REF: ZAB-88219</div>
             <h1>Payment Details</h1>
@@ -122,8 +134,7 @@
             <div class="total-amount" id="orderTotal">₱0.00</div>
         </div>
 
-        <div class="acct-details" id="acctInfo">
-            </div>
+        <div class="acct-details" id="acctInfo"></div>
 
         <div class="qr-container">
             <img id="qrImage" src="placeholder-qr.png" alt="Payment QR Code">
@@ -133,11 +144,16 @@
         <div class="instructions">
             <b>Final Steps:</b><br>
             1. Settle the amount via the method shown above.<br>
-            2. Take a <b>screenshot</b> of your successful transaction.<br>
-            3. Send it to <a href="https://m.me/zabprintsdigital" style="color:var(--dark-pink); font-weight:bold; text-decoration:none;">Messenger</a> for verification.
+            2. Open Messenger using the button below.<br>
+            3. Send the <b>screenshot</b> of your receipt to verify.
         </div>
 
-        <a href="index.html" class="btn">Return to Homepage</a>
+        <a href="#" id="messengerLink" target="_blank" class="btn btn-messenger">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
+            Confirm on Messenger
+        </a>
+
+        <a href="index.html" class="btn btn-outline">Return to Homepage</a>
     </div>
 
     <script>
@@ -146,7 +162,7 @@
         const total = params.get('total') || "₱0.00";
         const method = params.get('method') || "GCash";
 
-        // Random Reference ID for a professional touch
+        // Random Reference ID
         const randomID = "ZAB-" + Math.floor(10000 + Math.random() * 90000);
         document.getElementById('orderID').innerText = `REF: ${randomID}`;
 
@@ -154,25 +170,17 @@
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
         document.getElementById('methodBadge').innerText = method;
 
+        // Feature: Pre-filled Messenger Link
+        const messageText = encodeURIComponent(`Hi! I've just settled my payment.\n\nOrder Ref: ${randomID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nMethod: ${method}`);
+        document.getElementById('messengerLink').href = `https://m.me/zabprintsdigital?text=${messageText}`;
+
         const acctBox = document.getElementById('acctInfo');
         const qrImg = document.getElementById('qrImage');
 
         const paymentData = {
-            "GCash": { 
-                number: "0917-XXX-XXXX", 
-                name: "Zab Digital Prints", 
-                qr: "gcash-qr.jpg" 
-            },
-            "BPI": { 
-                number: "XXXX-XXXX-XX", 
-                name: "Zab Digital Prints", 
-                qr: "bpi-qr.jpg" 
-            },
-            "BDO": { 
-                number: "XXXXXXXXXXX", 
-                name: "Zab Digital Prints", 
-                qr: "bdo-qr.jpg" 
-            }
+            "GCash": { number: "0917-XXX-XXXX", name: "Zab Digital Prints", qr: "gcash-qr.jpg" },
+            "BPI": { number: "XXXX-XXXX-XX", name: "Zab Digital Prints", qr: "bpi-qr.jpg" },
+            "BDO": { number: "XXXXXXXXXXX", name: "Zab Digital Prints", qr: "bdo-qr.jpg" }
         };
 
         const selected = paymentData[method] || paymentData["GCash"];
@@ -207,6 +215,16 @@
                 btn.style.color = "var(--dark-pink)";
             }, 2000);
         }
+
+        // Feature: Countdown Timer Logic
+        let time = 1800; // 30 minutes
+        const timerEl = document.getElementById('timer');
+        setInterval(() => {
+            let mins = Math.floor(time / 60);
+            let secs = time % 60;
+            timerEl.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (time > 0) time--;
+        }, 1000);
     </script>
 </body>
 </html>
