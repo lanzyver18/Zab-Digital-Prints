@@ -27,23 +27,29 @@
 
         @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .header-section { margin-bottom: 30px; }
-        h1 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 2.2rem; margin: 10px 0 5px 0; }
-        .order-ref { font-size: 0.75rem; color: #bbb; text-transform: uppercase; letter-spacing: 2px; }
+        .header-section { margin-bottom: 25px; }
+        h1 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 2rem; margin: 10px 0 5px 0; }
+        .order-ref { font-size: 0.75rem; color: #bbb; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+
+        .step-indicator { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .step-dot { width: 8px; height: 8px; border-radius: 50%; background: #eee; }
+        .step-dot.active { background: var(--pink); width: 24px; border-radius: 10px; }
 
         .order-summary { 
             background: var(--bg); 
-            padding: 25px; 
+            padding: 20px; 
             border-radius: 25px; 
-            margin: 20px 0; 
-            border: 1px solid rgba(212, 129, 146, 0.2);
-            position: relative;
+            margin: 10px 0 25px 0; 
+            border: 1px dashed var(--dark-pink);
         }
-        .total-label { font-size: 0.8rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .total-amount { font-size: 2.5rem; font-weight: 600; color: var(--dark-pink); margin: 0; }
+        .total-label { font-size: 0.75rem; color: var(--dark-pink); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .total-amount { font-size: 2.8rem; font-weight: 700; color: var(--dark-pink); margin: 0; }
 
-        .method-badge { display: inline-block; padding: 6px 18px; background: var(--dark-pink); color: white; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(212, 129, 146, 0.3); }
+        .method-badge { display: inline-block; padding: 6px 18px; background: var(--dark-pink); color: white; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
         
+        .section-title { font-size: 0.85rem; font-weight: 600; text-align: left; margin-bottom: 10px; color: #888; display: flex; align-items: center; gap: 8px; }
+        .section-title span { background: var(--pink); color: white; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.7rem; }
+
         .acct-details { 
             text-align: left; 
             background: #fff; 
@@ -52,42 +58,30 @@
             margin-bottom: 25px; 
             border: 1px solid #f0f0f0; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-            position: relative;
         }
-        .acct-details .row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
-        .acct-details small { font-size: 0.7rem; color: #999; text-transform: uppercase; font-weight: 600; }
+        .acct-details .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .acct-details small { font-size: 0.65rem; color: #aaa; text-transform: uppercase; font-weight: 600; }
         .acct-details div.val { font-size: 1rem; font-weight: 600; color: #333; }
         
         .copy-btn { 
-            background: var(--bg); color: var(--dark-pink); border: none; padding: 4px 10px; 
-            border-radius: 6px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+            background: var(--bg); color: var(--dark-pink); border: none; padding: 6px 12px; 
+            border-radius: 8px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.3s;
         }
         .copy-btn:hover { background: var(--pink); color: white; }
 
         .qr-container { 
             background: #fff; 
-            padding: 20px; 
+            padding: 15px; 
             border-radius: 25px; 
             border: 1px solid #eee; 
             margin-bottom: 30px;
             display: inline-block;
+            transition: 0.3s;
         }
-        .qr-container img { width: 200px; height: 200px; object-fit: contain; cursor: zoom-in; }
-        .qr-label { font-size: 0.7rem; color: #aaa; margin-top: 10px; font-weight: 500; }
-
-        .instructions { 
-            text-align: left; 
-            font-size: 0.85rem; 
-            line-height: 1.6; 
-            margin-bottom: 30px; 
-            padding: 0 10px;
-            color: #777;
-        }
-        .instructions b { color: #444; }
+        .qr-container:hover { transform: scale(1.02); }
+        .qr-container img { width: 180px; height: 180px; object-fit: contain; cursor: zoom-in; }
 
         .btn { 
-            background: var(--dark-pink); 
-            color: var(--white); 
             padding: 18px 35px; 
             border-radius: 50px; 
             text-decoration: none; 
@@ -95,7 +89,7 @@
             display: block; 
             transition: 0.4s; 
             box-shadow: 0 10px 20px rgba(212, 129, 146, 0.2);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             border: none;
             cursor: pointer;
             width: 100%;
@@ -103,70 +97,67 @@
         }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 129, 146, 0.3); }
         
-        .btn-messenger { background: #0084ff; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-outline { background: transparent; color: var(--dark-pink); border: 2px solid var(--pink); box-shadow: none; }
-        .btn-print { background: #555; font-size: 0.8rem; padding: 10px 20px; margin-top: 10px; }
+        .btn-messenger { background: #0084ff; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-outline { background: transparent; color: #bbb; border: 1px solid #eee; box-shadow: none; font-size: 0.8rem; padding: 12px; }
+        .btn-print { background: #f9f9f9; color: #888; font-size: 0.75rem; padding: 10px; box-shadow: none; border: 1px solid #eee; }
 
-        .timer-box { font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .timer-box { font-size: 0.75rem; color: #e74c3c; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 5px; background: #fff1f0; padding: 5px 15px; border-radius: 50px; display: inline-flex; }
 
         @media (max-width: 600px) {
             .pay-card { padding: 30px 20px; border-radius: 30px; }
-            h1 { font-size: 1.8rem; }
-            .total-amount { font-size: 2.1rem; }
+            h1 { font-size: 1.7rem; }
+            .total-amount { font-size: 2.3rem; }
         }
 
-        /* PRINT STYLES */
         @media print {
             body { background: white; }
-            .btn, .timer-box, .instructions, .qr-container, .pay-card::before { display: none !important; }
-            .pay-card { box-shadow: none; border: 1px solid #eee; margin: 0; padding: 20px; }
-            .order-summary { border: 1px solid #000; background: white; }
+            .btn, .timer-box, .section-title, .copy-btn, .qr-container, .pay-card::before { display: none !important; }
+            .pay-card { box-shadow: none; border: 1px solid #eee; width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="pay-card" id="receiptCard">
+    <div class="pay-card">
         <div class="timer-box">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            Settle within <span id="timer">30:00</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Expires in <span id="timer">30:00</span>
         </div>
 
         <div class="header-section">
             <div class="order-ref" id="orderID">REF: LOADING...</div>
-            <h1>Order Receipt</h1>
-            <p style="font-size: 0.9rem; color: #888;">For <span id="custName" style="color: var(--dark-pink); font-weight:600;">Customer</span></p>
+            <h1>Order Summary</h1>
+            <p style="font-size: 0.85rem; color: #999;">Almost done, <span id="custName" style="color: var(--dark-pink); font-weight:600;">Customer</span>!</p>
         </div>
 
-        <div id="methodBadge" class="method-badge">GCash Payment</div>
-        
         <div class="order-summary">
-            <span class="total-label">Amount Due</span>
+            <span class="total-label">Total to Settle</span>
             <div class="total-amount" id="orderTotal">₱0.00</div>
         </div>
 
+        <div class="section-title"><span>1</span> Choose Payment Method</div>
+        <div id="methodBadge" class="method-badge">GCash Payment</div>
+
+        <div class="section-title"><span>2</span> Transfer Funds</div>
         <div class="acct-details" id="acctInfo"></div>
 
         <div class="qr-container">
             <img id="qrImage" src="placeholder-qr.png" alt="Payment QR Code">
-            <div class="qr-label">Scan QR with your banking app</div>
+            <div class="qr-label">Scan to pay instantly</div>
         </div>
 
-        <div class="instructions">
-            <b>Final Steps:</b><br>
-            1. Settle the amount via the method shown above.<br>
-            2. Open Messenger using the button below.<br>
-            3. Send the <b>screenshot</b> of your receipt to verify.
-        </div>
+        <div class="section-title"><span>3</span> Confirm Your Payment</div>
+        <p style="text-align: left; font-size: 0.75rem; color: #888; margin-top: 0; padding: 0 5px;">Take a screenshot of your receipt and click the blue button below to send it to us.</p>
 
         <a href="#" id="messengerLink" target="_blank" class="btn btn-messenger">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.453 5.518 3.733 7.243V22l3.35-1.84c.883.245 1.82.378 2.917.378 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm1.268 12.53l-2.618-2.803-5.11 2.803 5.618-5.973 2.618 2.803 5.11-2.803-5.618 5.973z"/></svg>
-            Confirm on Messenger
+            Send Receipt to Messenger
         </a>
 
-        <button onclick="window.print()" class="btn btn-print">Print / Save as PDF</button>
-
-        <a href="index.html" class="btn btn-outline">Return to Homepage</a>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="window.print()" class="btn btn-print" style="flex: 1;">Save as PDF</button>
+            <a href="index.html" class="btn btn-outline" style="flex: 1;">Back to Shop</a>
+        </div>
     </div>
 
     <script>
@@ -177,12 +168,11 @@
         
         const actualID = params.get('id') || "ZAB-" + Math.floor(10000 + Math.random() * 90000);
         document.getElementById('orderID').innerText = `REF: ${actualID}`;
-
         document.getElementById('custName').innerText = decodeURIComponent(name);
         document.getElementById('orderTotal').innerText = decodeURIComponent(total);
         document.getElementById('methodBadge').innerText = method;
 
-        const messageText = encodeURIComponent(`Hi! I've just settled my payment.\n\nOrder Ref: ${actualID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nMethod: ${method}`);
+        const messageText = encodeURIComponent(`Hi! I've settled my payment.\n\nOrder Ref: ${actualID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nMethod: ${method}`);
         document.getElementById('messengerLink').href = `https://m.me/zabprintsdigital?text=${messageText}`;
 
         const acctBox = document.getElementById('acctInfo');
@@ -199,13 +189,13 @@
         acctBox.innerHTML = `
             <div class="row">
                 <div>
-                    <small>Account Name</small>
+                    <small>Name</small>
                     <div class="val">${selected.name}</div>
                 </div>
             </div>
             <div class="row" style="margin-bottom:0;">
                 <div>
-                    <small>Account Number</small>
+                    <small>Number</small>
                     <div class="val" id="acctNum">${selected.number}</div>
                 </div>
                 <button class="copy-btn" onclick="copyAcct()">Copy</button>
@@ -232,7 +222,7 @@
         setInterval(() => {
             let mins = Math.floor(time / 60);
             let secs = time % 60;
-            timerEl.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timerEl) timerEl.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
             if (time > 0) time--;
         }, 1000);
     </script>
