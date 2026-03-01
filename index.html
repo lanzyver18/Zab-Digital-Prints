@@ -25,6 +25,10 @@
         }
         .logo-img { height: 50px; width: auto; transition: 0.3s; }
 
+        /* Cart Icon */
+        .cart-icon-btn { position: relative; background: none; border: none; cursor: pointer; padding: 10px; color: var(--dark-pink); display: flex; align-items: center; }
+        .cart-count { position: absolute; top: 0; right: 0; background: #ff4757; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
+
         /* Split Hero Section */
         .hero { 
             background-color: var(--white);
@@ -83,7 +87,7 @@
 
         /* Controls & Filter Slider */
         .controls { background: var(--white); padding: 60px 5% 40px 5%; display: flex; flex-direction: column; align-items: center; width: 100%; box-sizing: border-box;}
-        .search-box { padding: 18px 35px; width: 100%; max-width: 700px; border: 2px solid var(--pink); border-radius: 50px; outline: none; transition: 0.3s; font-size: 1rem; box-shadow: 0 5px 20px rgba(255, 183, 197, 0.1); }
+        .search-box { padding: 18px 35px; width: 100%; max-width: 700px; border: 2px solid var(--pink); border-radius: 50px; outline: none; transition: 0.3s; font-size: 1rem; }
         .search-box:focus { border-color: var(--dark-pink); box-shadow: 0 5px 25px rgba(212, 129, 146, 0.2); }
         
         #dynamic-filter-bar { 
@@ -132,12 +136,11 @@
         .m-choice-pill { padding: 6px 16px; border: 1px solid var(--pink); border-radius: 50px; font-size: 0.8rem; color: var(--dark-pink); background: var(--bg); font-weight: 500; cursor: pointer; transition: 0.3s; }
         .m-choice-pill:hover, .m-choice-pill.selected { background: var(--pink); color: white; border-color: var(--pink); }
 
-        /* Order Form Fields */
-        .checkout-box { margin-top: 25px; padding-top: 20px; border-top: 2px dashed #eee; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: #999; text-transform: uppercase; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px; font-family: inherit; box-sizing: border-box; background: #fcfcfc; font-size: 0.9rem; }
-        .form-row { display: flex; gap: 10px; }
+        /* Qty Selector & MOQ */
+        .qty-input-group { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid var(--pink); background: white; color: var(--dark-pink); font-weight: bold; cursor: pointer; }
+        .qty-num { font-weight: 600; min-width: 30px; text-align: center; }
+        #moqWarning { font-size: 0.75rem; color: #ff4757; margin-bottom: 20px; display: none; }
 
         /* Description Modal */
         #productModal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2001; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -147,7 +150,18 @@
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; cursor: pointer; color: #999; z-index: 10; }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Footer */
+        /* CART DRAWER */
+        #cartDrawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: white; z-index: 3000; box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: 0.4s; display: flex; flex-direction: column; }
+        #cartDrawer.active { right: 0; }
+        .cart-header { padding: 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; position: relative; }
+        .cart-item img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
+        .cart-footer { padding: 25px; border-top: 1px solid #eee; background: #fffcfd; }
+
+        /* Checkout Box Styles */
+        .checkout-box input, .checkout-box textarea { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box; }
+
         footer { background: white; color: var(--text); padding: 60px 5% 30px 5%; border-top: 1px solid #f0f0f0; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 50px; }
         .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 1.2rem; margin-bottom: 20px; }
@@ -179,6 +193,7 @@
             .modal-content { flex-direction: column; border-radius: 20px; overflow-y: auto; }
             .modal-img { width: 100%; height: 200px; min-height: auto; }
             .modal-info { width: 100%; padding: 20px; }
+            #cartDrawer { max-width: 100%; }
         }
     </style>
 </head>
@@ -186,7 +201,10 @@
 
 <nav>
     <a href="#"><img src="IMG_1218.jpeg" alt="Zab Logo" class="logo-img"></a>
-    <div class="nav-links"><a href="#catalog" class="filter-btn" style="text-decoration:none;">Shop Now</a></div>
+    <button class="cart-icon-btn" onclick="toggleCart()">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
 </nav>
 
 <header class="hero">
@@ -233,33 +251,47 @@
         <img src="" class="modal-img" id="m-img">
         <div class="modal-info">
             <h2 id="m-name" style="font-family:'Playfair Display'; margin-bottom: 5px;"></h2>
-            <div id="m-moq" style="font-size: 0.8rem; color: #999; margin-bottom: 10px;"></div>
+            <div id="m-moq-label" style="font-size: 0.8rem; color: #999; margin: 5px 0 15px 0;"></div>
+            
             <div class="m-choices-container" id="m-choices"></div>
+
             <div id="m-price" class="price" style="margin: 0 0 20px 0;"></div>
             <p id="m-desc" style="white-space: pre-wrap; line-height: 1.6; color: #666; margin-bottom: 20px; font-size: 0.85rem;"></p>
             
-            <div class="checkout-box">
-                <h4 style="margin: 0 0 15px 0; color: var(--dark-pink);">Complete Your Order</h4>
-                <div class="form-row">
-                    <div class="form-group" style="flex: 2;">
-                        <label>Full Name</label>
-                        <input type="text" id="custName" placeholder="Juan Dela Cruz">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Quantity</label>
-                        <input type="number" id="custQty" value="1" min="1">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Shipping Address</label>
-                    <textarea id="custAddr" rows="2" placeholder="Full address (Street, Brgy, City)"></textarea>
-                </div>
-                <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="saveInfo" style="width: auto; margin: 0;">
-                    <label style="margin: 0; text-transform: none;">Remember my details for next time</label>
-                </div>
-                <button class="btn" style="width: 100%;" onclick="confirmOrder()">Confirm & Order via Messenger</button>
+            <div class="qty-input-group">
+                <button class="qty-btn" onclick="updateQty(-1)">-</button>
+                <span class="qty-num" id="m-qty">1</span>
+                <button class="qty-btn" onclick="updateQty(1)">+</button>
             </div>
+            <div id="moqWarning">⚠️ Cannot go below minimum requirement.</div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" style="flex: 1; background: var(--dark-pink);" onclick="addToCart()">Add to Bag</button>
+                <button class="btn" style="flex: 1;" onclick="quickOrder()">Buy Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cartDrawer">
+    <div class="cart-header">
+        <h2 style="font-family:'Playfair Display'; margin:0;">Shopping Bag</h2>
+        <span style="cursor:pointer; font-size: 1.5rem;" onclick="toggleCart()">&times;</span>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+        <div style="display:flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
+            <span>Total:</span>
+            <span id="cartTotal">₱0</span>
+        </div>
+        <button onclick="clearCart()" style="background: none; border: none; color: #ff4757; font-size: 0.75rem; cursor: pointer; padding: 0; margin-bottom: 15px;">Clear Bag</button>
+        <div class="checkout-box">
+            <input type="text" id="custName" placeholder="Full Name">
+            <textarea id="custAddr" rows="2" placeholder="Shipping Address"></textarea>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
+                <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem;">Remember my details</label>
+            </div>
+            <button class="btn" style="width:100%;" onclick="checkoutCart()">Complete Order via Messenger</button>
         </div>
     </div>
 </div>
@@ -271,12 +303,24 @@
         <div class="footer-col">
             <img src="IMG_1218.jpeg" alt="Zab Logo" style="height: 40px; margin-bottom: 20px;">
             <p>Zab Digital Prints creates high-quality customized souvenirs that keep your precious memories within view.</p>
+            <div class="social-links">
+                <a href="https://www.facebook.com/zabprintsdigital" class="social-icon" target="_blank">FB</a>
+                <a href="#" class="social-icon">IG</a>
+            </div>
         </div>
         <div class="footer-col">
             <h4>Shop</h4>
             <ul class="footer-links">
                 <li><a href="#catalog" onclick="setCategory('All', document.getElementById('btn-all'))">All Items</a></li>
-                <li><a href="https://www.facebook.com/messages/t/zabprintsdigital" target="_blank">Inquire Now</a></li>
+                <li><a href="#catalog">Custom Mugs</a></li>
+                <li><a href="#catalog">Special Offers</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Support</h4>
+            <ul class="footer-links">
+                <li><a href="https://www.facebook.com/messages/t/zabprintsdigital" target="_blank">Contact Us</a></li>
+                <li><a href="#">FAQ</a></li>
             </ul>
         </div>
         <div class="footer-col">
@@ -311,7 +355,115 @@
     let isExpanded = false;
     let selectedItem = null;
     let selectedOption = null;
+    let currentQty = 1;
+    let itemMOQ = 1;
+    let cart = JSON.parse(localStorage.getItem('zabCart')) || [];
 
+    // --- CART SYSTEM ---
+    window.toggleCart = () => document.getElementById('cartDrawer').classList.toggle('active');
+    
+    window.updateQty = (val) => {
+        const warning = document.getElementById('moqWarning');
+        if (currentQty + val < itemMOQ) { 
+            warning.style.display = "block"; 
+            return; 
+        }
+        warning.style.display = "none";
+        currentQty += val;
+        document.getElementById('m-qty').innerText = currentQty;
+    };
+
+    window.addToCart = () => {
+        if(selectedItem.options && selectedItem.options.length > 0 && !selectedOption) return alert("Please select a variant!");
+        
+        const cartItem = {
+            id: selectedItem.id + (selectedOption ? selectedOption.name : ""),
+            name: selectedItem.name,
+            variant: selectedOption ? selectedOption.name : "Standard",
+            price: selectedOption ? selectedOption.price : (selectedItem.price || 0),
+            qty: currentQty,
+            img: selectedItem.imgUrl || "IMG_1218.jpeg"
+        };
+
+        const existing = cart.find(i => i.id === cartItem.id);
+        if(existing) {
+            existing.qty += currentQty;
+        } else {
+            cart.push(cartItem);
+        }
+
+        saveCart();
+        closeModal();
+        toggleCart();
+    };
+
+    function saveCart() {
+        localStorage.setItem('zabCart', JSON.stringify(cart));
+        renderCart();
+    }
+
+    function renderCart() {
+        const container = document.getElementById('cartItems');
+        const countBadge = document.getElementById('cartCount');
+        const totalSpan = document.getElementById('cartTotal');
+        
+        container.innerHTML = cart.length ? "" : "<p style='text-align:center; color:#999; padding-top:20px;'>Bag is empty.</p>";
+        let total = 0;
+        
+        cart.forEach(item => {
+            total += (item.price * item.qty);
+            container.innerHTML += `
+                <div class="cart-item">
+                    <img src="${item.img}">
+                    <div style="flex-grow:1">
+                        <div style="font-weight:600; font-size:0.85rem;">${item.name}</div>
+                        <div style="font-size:0.7rem; color:#888;">${item.variant} x ${item.qty}</div>
+                        <div style="color:var(--dark-pink); font-weight:600; font-size:0.85rem;">₱${item.price * item.qty}</div>
+                    </div>
+                    <span style="color:#ddd; cursor:pointer;" onclick="removeFromCart('${item.id}')">×</span>
+                </div>`;
+        });
+
+        countBadge.innerText = cart.length;
+        totalSpan.innerText = "₱" + total;
+    }
+
+    window.removeFromCart = (id) => {
+        cart = cart.filter(i => i.id !== id);
+        saveCart();
+    };
+
+    window.clearCart = () => { if(confirm("Clear your shopping bag?")) { cart = []; saveCart(); } };
+
+    window.checkoutCart = () => {
+        const name = document.getElementById('custName').value.trim();
+        const addr = document.getElementById('custAddr').value.trim();
+        const save = document.getElementById('saveInfo').checked;
+
+        if(!cart.length) return alert("Your bag is empty!");
+        if(!name || !addr) return alert("Please fill in your shipping details!");
+
+        if(save) {
+            localStorage.setItem('custName', name);
+            localStorage.setItem('custAddr', addr);
+        } else {
+            localStorage.removeItem('custName');
+            localStorage.removeItem('custAddr');
+        }
+
+        let summary = `NEW ORDER FORM:%0A---%0A`;
+        cart.forEach(i => {
+            summary += `• ${i.name} (${i.variant}) x${i.qty} - ₱${i.price * i.qty}%0A`;
+        });
+        summary += `---%0ATotal: ${document.getElementById('cartTotal').innerText}%0A%0AName: ${name}%0AAddress: ${addr}`;
+
+        window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${summary}`, '_blank');
+        cart = [];
+        saveCart();
+        toggleCart();
+    };
+
+    // --- CATALOG LOGIC ---
     const getPriceText = (item) => {
         if (item.options && item.options.length > 0) {
             const prices = item.options.map(o => parseFloat(o.price)).filter(p => !isNaN(p));
@@ -326,8 +478,7 @@
 
     onSnapshot(collection(db, "categories"), (snap) => {
         const filterBar = document.getElementById('dynamic-filter-bar');
-        filterBar.innerHTML = `<button class="filter-btn active" id="btn-all">All Items</button>`;
-        document.getElementById('btn-all').onclick = function() { setCategory('All', this); };
+        filterBar.innerHTML = `<button class="filter-btn active" id="btn-all" onclick="setCategory('All', this)">All Items</button>`;
         snap.forEach(d => {
             const btn = document.createElement('button');
             btn.className = `filter-btn`;
@@ -358,7 +509,8 @@
         const loadMoreBtn = document.getElementById('loadMoreContainer');
         let filtered = allProducts.filter(p => (currentCategory === "All" || p.category === currentCategory) && p.name.toLowerCase().includes(term));
         const shouldLimit = !isExpanded && currentCategory === "All" && term === "";
-        if (shouldLimit && filtered.length > 9) { loadMoreBtn.style.display = "block"; filtered = filtered.slice(0, 9); } else { loadMoreBtn.style.display = "none"; }
+        if (shouldLimit && filtered.length > 9) { loadMoreBtn.style.display = "block"; filtered = filtered.slice(0, 9); } 
+        else { loadMoreBtn.style.display = "none"; }
 
         grid.innerHTML = filtered.length ? "" : "<p style='text-align:center; width:100%; grid-column: 1/-1;'>No items found.</p>";
         filtered.forEach(item => {
@@ -383,18 +535,26 @@
     window.showModal = (item) => {
         selectedItem = item;
         selectedOption = null;
+        
+        // Extract MOQ number
+        const match = item.moq ? item.moq.match(/\d+/) : null;
+        itemMOQ = match ? parseInt(match[0]) : 1;
+        currentQty = itemMOQ;
+
         const modal = document.getElementById('productModal');
         const priceDiv = document.getElementById('m-price');
         
+        document.getElementById('m-qty').innerText = currentQty;
+        document.getElementById('moqWarning').style.display = "none";
         document.getElementById('m-img').src = (item.imgUrl && item.imgUrl.trim() !== "") ? item.imgUrl : "IMG_1218.jpeg";
         document.getElementById('m-name').innerText = item.name;
-        document.getElementById('m-moq').innerText = item.moq ? "MOQ: " + item.moq : "";
+        document.getElementById('m-moq-label').innerText = item.moq ? "Minimum: " + item.moq : "";
         document.getElementById('m-desc').innerText = item.description || "No description provided.";
         
         // Auto-fill remembered info
         if(localStorage.getItem('custName')) document.getElementById('custName').value = localStorage.getItem('custName');
         if(localStorage.getItem('custAddr')) document.getElementById('custAddr').value = localStorage.getItem('custAddr');
-        if(localStorage.getItem('custName') || localStorage.getItem('custAddr')) document.getElementById('saveInfo').checked = true;
+        if(localStorage.getItem('custName')) document.getElementById('saveInfo').checked = true;
 
         const choicesDiv = document.getElementById('m-choices');
         choicesDiv.innerHTML = "";
@@ -421,30 +581,7 @@
         document.body.style.overflow = "hidden";
     };
 
-    window.confirmOrder = () => {
-        const name = document.getElementById('custName').value.trim();
-        const qty = document.getElementById('custQty').value;
-        const addr = document.getElementById('custAddr').value.trim();
-        const save = document.getElementById('saveInfo').checked;
-
-        if(!name || !addr) return alert("Please fill out your name and address!");
-        if(selectedItem.options && selectedItem.options.length > 0 && !selectedOption) return alert("Please select an option/size first!");
-
-        if(save) {
-            localStorage.setItem('custName', name);
-            localStorage.setItem('custAddr', addr);
-        } else {
-            localStorage.removeItem('custName');
-            localStorage.removeItem('custAddr');
-        }
-
-        const optionText = selectedOption ? `${selectedOption.name} (₱${selectedOption.price})` : `(₱${selectedItem.price || '0'})`;
-        const orderSummary = `ORDER FORM:%0AProduct: ${selectedItem.name}%0AVariant: ${optionText}%0AQuantity: ${qty}%0A---%0AName: ${name}%0AAddress: ${addr}`;
-
-        window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${orderSummary}`, '_blank');
-        closeModal();
-    };
-
+    window.quickOrder = () => { addToCart(); toggleCart(); };
     window.closeModal = (e) => { 
         if(!e || e.target.id === 'productModal' || e.target.className === 'close-modal') {
             document.getElementById('productModal').style.display = "none"; 
@@ -454,6 +591,9 @@
 
     window.scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); };
     window.onscroll = function() { const b = document.getElementById("backToTop"); b.style.display = (window.scrollY > 500) ? "flex" : "none"; };
+
+    // Initial Load
+    renderCart();
 </script>
 </body>
 </html>
