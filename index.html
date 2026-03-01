@@ -132,12 +132,19 @@
         .m-choice-pill { padding: 6px 16px; border: 1px solid var(--pink); border-radius: 50px; font-size: 0.8rem; color: var(--dark-pink); background: var(--bg); font-weight: 500; cursor: pointer; transition: 0.3s; }
         .m-choice-pill:hover, .m-choice-pill.selected { background: var(--pink); color: white; border-color: var(--pink); }
 
+        /* Order Form Fields */
+        .checkout-box { margin-top: 25px; padding-top: 20px; border-top: 2px dashed #eee; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: #999; text-transform: uppercase; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px; font-family: inherit; box-sizing: border-box; background: #fcfcfc; font-size: 0.9rem; }
+        .form-row { display: flex; gap: 10px; }
+
         /* Description Modal */
         #productModal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2001; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--white); max-width: 800px; width: 100%; border-radius: 40px; overflow: hidden; display: flex; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.2); animation: slideUp 0.4s ease; }
-        .modal-img { width: 50%; object-fit: cover; min-height: 400px; background: #fafafa; }
-        .modal-info { width: 50%; padding: 40px; overflow-y: auto; max-height: 80vh; }
-        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; cursor: pointer; color: #999; }
+        .modal-content { background: var(--white); max-width: 900px; width: 100%; border-radius: 40px; overflow: hidden; display: flex; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.2); animation: slideUp 0.4s ease; max-height: 90vh; }
+        .modal-img { width: 45%; object-fit: cover; background: #fafafa; }
+        .modal-info { width: 55%; padding: 40px; overflow-y: auto; }
+        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; cursor: pointer; color: #999; z-index: 10; }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* Footer */
@@ -169,7 +176,7 @@
             .price { font-size: 1rem; }
             .footer-grid { grid-template-columns: 1fr; text-align: center; }
             .social-links { justify-content: center; }
-            .modal-content { flex-direction: column; border-radius: 20px; }
+            .modal-content { flex-direction: column; border-radius: 20px; overflow-y: auto; }
             .modal-img { width: 100%; height: 200px; min-height: auto; }
             .modal-info { width: 100%; padding: 20px; }
         }
@@ -227,12 +234,32 @@
         <div class="modal-info">
             <h2 id="m-name" style="font-family:'Playfair Display'; margin-bottom: 5px;"></h2>
             <div id="m-moq" style="font-size: 0.8rem; color: #999; margin-bottom: 10px;"></div>
-            
             <div class="m-choices-container" id="m-choices"></div>
-
             <div id="m-price" class="price" style="margin: 0 0 20px 0;"></div>
-            <p id="m-desc" style="white-space: pre-wrap; line-height: 1.6; color: #666; margin-bottom: 30px;"></p>
-            <a href="" id="m-link" target="_blank" class="btn">Order via Messenger</a>
+            <p id="m-desc" style="white-space: pre-wrap; line-height: 1.6; color: #666; margin-bottom: 20px; font-size: 0.85rem;"></p>
+            
+            <div class="checkout-box">
+                <h4 style="margin: 0 0 15px 0; color: var(--dark-pink);">Complete Your Order</h4>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Full Name</label>
+                        <input type="text" id="custName" placeholder="Juan Dela Cruz">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Quantity</label>
+                        <input type="number" id="custQty" value="1" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Shipping Address</label>
+                    <textarea id="custAddr" rows="2" placeholder="Full address (Street, Brgy, City)"></textarea>
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="saveInfo" style="width: auto; margin: 0;">
+                    <label style="margin: 0; text-transform: none;">Remember my details for next time</label>
+                </div>
+                <button class="btn" style="width: 100%;" onclick="confirmOrder()">Confirm & Order via Messenger</button>
+            </div>
         </div>
     </div>
 </div>
@@ -244,24 +271,12 @@
         <div class="footer-col">
             <img src="IMG_1218.jpeg" alt="Zab Logo" style="height: 40px; margin-bottom: 20px;">
             <p>Zab Digital Prints creates high-quality customized souvenirs that keep your precious memories within view.</p>
-            <div class="social-links">
-                <a href="https://www.facebook.com/zabprintsdigital" class="social-icon" target="_blank">FB</a>
-                <a href="#" class="social-icon">IG</a>
-            </div>
         </div>
         <div class="footer-col">
             <h4>Shop</h4>
             <ul class="footer-links">
                 <li><a href="#catalog" onclick="setCategory('All', document.getElementById('btn-all'))">All Items</a></li>
-                <li><a href="#catalog">Custom Mugs</a></li>
-                <li><a href="#catalog">Special Offers</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4>Support</h4>
-            <ul class="footer-links">
-                <li><a href="https://www.facebook.com/messages/t/zabprintsdigital" target="_blank">Contact Us</a></li>
-                <li><a href="#">FAQ</a></li>
+                <li><a href="https://www.facebook.com/messages/t/zabprintsdigital" target="_blank">Inquire Now</a></li>
             </ul>
         </div>
         <div class="footer-col">
@@ -294,8 +309,9 @@
     let allProducts = [];
     let currentCategory = "All";
     let isExpanded = false;
+    let selectedItem = null;
+    let selectedOption = null;
 
-    // HELPER: Determine the price text to show
     const getPriceText = (item) => {
         if (item.options && item.options.length > 0) {
             const prices = item.options.map(o => parseFloat(o.price)).filter(p => !isNaN(p));
@@ -365,31 +381,20 @@
     };
 
     window.showModal = (item) => {
+        selectedItem = item;
+        selectedOption = null;
         const modal = document.getElementById('productModal');
         const priceDiv = document.getElementById('m-price');
-        const link = document.getElementById('m-link');
         
         document.getElementById('m-img').src = (item.imgUrl && item.imgUrl.trim() !== "") ? item.imgUrl : "IMG_1218.jpeg";
         document.getElementById('m-name').innerText = item.name;
         document.getElementById('m-moq').innerText = item.moq ? "MOQ: " + item.moq : "";
         document.getElementById('m-desc').innerText = item.description || "No description provided.";
         
-        const updateOrderInfo = (selectedOption = null) => {
-            let finalPriceText = "";
-            let currentMsg = "";
-
-            if (selectedOption) {
-                finalPriceText = selectedOption.price > 0 ? `₱${selectedOption.price}` : "Inquire";
-                currentMsg = `Hi Zab! I would like to order: ${item.name} (${selectedOption.name} - ${finalPriceText})`;
-            } else {
-                // Show the range initially in the modal
-                finalPriceText = getPriceText(item);
-                currentMsg = (item.price && item.price > 0) ? `Hi Zab! I would like to order: ${item.name} (₱${item.price})` : `Hi Zab! Price quote for ${item.name}?`;
-            }
-
-            priceDiv.innerText = finalPriceText;
-            link.href = `https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(currentMsg)}`;
-        };
+        // Auto-fill remembered info
+        if(localStorage.getItem('custName')) document.getElementById('custName').value = localStorage.getItem('custName');
+        if(localStorage.getItem('custAddr')) document.getElementById('custAddr').value = localStorage.getItem('custAddr');
+        if(localStorage.getItem('custName') || localStorage.getItem('custAddr')) document.getElementById('saveInfo').checked = true;
 
         const choicesDiv = document.getElementById('m-choices');
         choicesDiv.innerHTML = "";
@@ -402,22 +407,49 @@
                 pill.onclick = (e) => {
                     document.querySelectorAll('.m-choice-pill').forEach(p => p.classList.remove('selected'));
                     pill.classList.add('selected');
-                    updateOrderInfo(opt);
+                    selectedOption = opt;
+                    priceDiv.innerText = opt.price > 0 ? `₱${opt.price}` : "Inquire";
                 };
                 choicesDiv.appendChild(pill);
             });
-            updateOrderInfo();
+            priceDiv.innerText = getPriceText(item);
         } else {
-            updateOrderInfo();
+            priceDiv.innerText = item.price > 0 ? `₱${item.price}` : "Inquire";
         }
 
         modal.style.display = "flex";
         document.body.style.overflow = "hidden";
     };
 
-    window.closeModal = () => { 
-        document.getElementById('productModal').style.display = "none"; 
-        document.body.style.overflow = "auto"; 
+    window.confirmOrder = () => {
+        const name = document.getElementById('custName').value.trim();
+        const qty = document.getElementById('custQty').value;
+        const addr = document.getElementById('custAddr').value.trim();
+        const save = document.getElementById('saveInfo').checked;
+
+        if(!name || !addr) return alert("Please fill out your name and address!");
+        if(selectedItem.options && selectedItem.options.length > 0 && !selectedOption) return alert("Please select an option/size first!");
+
+        if(save) {
+            localStorage.setItem('custName', name);
+            localStorage.setItem('custAddr', addr);
+        } else {
+            localStorage.removeItem('custName');
+            localStorage.removeItem('custAddr');
+        }
+
+        const optionText = selectedOption ? `${selectedOption.name} (₱${selectedOption.price})` : `(₱${selectedItem.price || '0'})`;
+        const orderSummary = `ORDER FORM:%0AProduct: ${selectedItem.name}%0AVariant: ${optionText}%0AQuantity: ${qty}%0A---%0AName: ${name}%0AAddress: ${addr}`;
+
+        window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${orderSummary}`, '_blank');
+        closeModal();
+    };
+
+    window.closeModal = (e) => { 
+        if(!e || e.target.id === 'productModal' || e.target.className === 'close-modal') {
+            document.getElementById('productModal').style.display = "none"; 
+            document.body.style.overflow = "auto"; 
+        }
     };
 
     window.scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); };
