@@ -172,7 +172,7 @@
 
         // Feature: Pre-filled Messenger Link
         const messageText = encodeURIComponent(`Hi! I've just settled my payment.\n\nOrder Ref: ${randomID}\nCustomer: ${decodeURIComponent(name)}\nAmount: ${decodeURIComponent(total)}\nMethod: ${method}`);
-        document.getElementById('messengerLink').href = `https://m.me/zabprintsdigital?text=${messageText}`;
+        document.getElementById('messengerLink').href = `https://www.facebook.com/messages/t/zabprintsdigital?text=${messageText}`;
 
         const acctBox = document.getElementById('acctInfo');
         const qrImg = document.getElementById('qrImage');
