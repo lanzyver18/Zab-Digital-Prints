@@ -149,6 +149,15 @@
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; cursor: pointer; color: #999; z-index: 10; }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+        /* Success Toast Notification */
+        #successToast { 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); 
+            background: #2ecc71; color: white; padding: 15px 30px; border-radius: 50px; 
+            font-weight: 600; z-index: 5000; transition: 0.5s; box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);
+            display: flex; align-items: center; gap: 10px; opacity: 0;
+        }
+        #successToast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
         /* CART DRAWER */
         #cartDrawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: white; z-index: 3000; box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: 0.4s; display: flex; flex-direction: column; }
         #cartDrawer.active { right: 0; }
@@ -198,6 +207,8 @@
     </style>
 </head>
 <body>
+
+<div id="successToast">✅ Order Saved Successfully!</div>
 
 <nav>
     <a href="#"><img src="IMG_1218.jpeg" alt="Zab Logo" class="logo-img"></a>
@@ -299,8 +310,8 @@
             <select id="paymentMethod">
                 <option value="" disabled selected>Select Payment Method</option>
                 <option value="GCash">GCash</option>
-                <option value="Maya">Maya</option>
-                <option value="Bank Transfer">Bank Transfer (BDO)</option>
+                <option value="BPI">BPI Bank Transfer</option>
+                <option value="BDO">BDO Bank Transfer</option>
             </select>
 
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
@@ -470,7 +481,6 @@
         return summary;
     }
 
-    // UPDATED: Dual Checkout Function
     window.processCheckout = async (method) => {
         const name = document.getElementById('custName').value.trim();
         const email = document.getElementById('custEmail').value.trim();
@@ -479,12 +489,11 @@
         const payMeth = document.getElementById('paymentMethod').value;
         
         if(!cart.length || !name || !addr || !email || !phone || (method === 'website' && !payMeth)) {
-            return alert("Please fill in all details and select a payment method.");
+            return alert("Please fill in all customer details and select a payment method.");
         }
 
         const totalStr = document.getElementById('cartTotal').innerText;
 
-        // Remember details logic
         if(document.getElementById('saveInfo').checked) {
             localStorage.setItem('custName', name);
             localStorage.setItem('custEmail', email);
@@ -507,16 +516,21 @@
                 createdAt: Date.now()
             });
 
-            if (method === 'messenger') {
-                const text = generateOrderSummaryText();
-                window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(text)}`, '_blank');
-            } else {
-                window.location.href = `payment.html?name=${encodeURIComponent(name)}&total=${encodeURIComponent(totalStr)}&method=${encodeURIComponent(payMeth)}`;
-            }
+            const toast = document.getElementById('successToast');
+            toast.classList.add('show');
 
-            cart = [];
-            saveCart();
-            toggleCart();
+            setTimeout(() => {
+                if (method === 'messenger') {
+                    const text = generateOrderSummaryText();
+                    window.open(`https://www.facebook.com/messages/t/zabprintsdigital?text=${encodeURIComponent(text)}`, '_blank');
+                } else {
+                    window.location.href = `payment.html?name=${encodeURIComponent(name)}&total=${encodeURIComponent(totalStr)}&method=${encodeURIComponent(payMeth)}`;
+                }
+                cart = [];
+                saveCart();
+                toggleCart();
+                toast.classList.remove('show');
+            }, 2000);
         } catch (e) {
             alert("Order failed. Please check your connection.");
         }
@@ -584,7 +598,7 @@
             const displayImg = item.imgUrl && item.imgUrl.trim() !== "" ? item.imgUrl : "IMG_1218.jpeg";
             const card = document.createElement('div');
             card.className = "card";
-            card.onclick = () => showModal(item);
+            card.onclick = () => showModal(item.id);
             card.innerHTML = `
                 <div class="badge ${isSoldOut ? 'badge-soldout' : 'badge-available'}">${item.status || 'Available'}</div>
                 <img src="${displayImg}" alt="${item.name}">
@@ -597,7 +611,8 @@
         });
     };
 
-    window.showModal = (item) => {
+    window.showModal = (id) => {
+        const item = allProducts.find(p => p.id === id);
         selectedItem = item;
         selectedOption = null;
         
@@ -638,9 +653,6 @@
                 };
                 choicesDiv.appendChild(pill);
             });
-            priceDiv.innerText = getPriceText(item);
-        } else {
-            priceDiv.innerText = item.price > 0 ? `₱${item.price}` : "Inquire";
         }
 
         modal.style.display = "flex";
