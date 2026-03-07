@@ -119,11 +119,11 @@
         }
         .filter-btn.active, .filter-btn:hover { background: var(--pink); color: var(--white); transform: translateY(-3px); }
 
-        /* Grid */
+        /* Grid - UPDATED TO 5 ITEMS PER ROW */
         .catalog-section { padding: 40px 5% 40px 5%; background: var(--white); display: flex; flex-direction: column; align-items: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; width: 100%; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; width: 100%; }
         .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; cursor: pointer; animation: fadeIn 0.6s ease forwards; }
-        .card img { width: 100%; height: 320px; object-fit: cover; background: #fafafa; }
+        .card img { width: 100%; height: 260px; object-fit: cover; background: #fafafa; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -131,9 +131,10 @@
         .badge-available { background: #8ecae6; }
         .badge-soldout { background: #e07a5f; }
 
-        .card-body { padding: 20px; text-align: center; }
-        .price { color: var(--dark-pink); font-size: 1.3rem; font-weight: 600; margin: 10px 0; }
-        .btn { background: var(--pink); color: var(--white); padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; font-size: 0.9rem; }
+        .card-body { padding: 15px; text-align: center; }
+        .card-body h3 { font-size: 0.95rem; margin: 5px 0; }
+        .price { color: var(--dark-pink); font-size: 1.1rem; font-weight: 600; margin: 8px 0; }
+        .btn { background: var(--pink); color: var(--white); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; font-size: 0.85rem; }
         .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
 
         /* Modal Choices UI */
@@ -204,6 +205,9 @@
         .messenger-fab { position: fixed; bottom: 30px; right: 20px; background: #0084ff; color: var(--white); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,132,255,0.3); z-index: 2000; transition: 0.3s; }
 
         /* MOBILE OPTIMIZATION ADDITIONS */
+        @media (max-width: 1024px) {
+            .grid { grid-template-columns: repeat(3, 1fr); }
+        }
         @media (max-width: 768px) {
             .hero { flex-direction: column-reverse; padding: 40px 5%; text-align: center; gap: 30px; min-height: auto; }
             .hero-content h1 { font-size: 2.2rem; }
