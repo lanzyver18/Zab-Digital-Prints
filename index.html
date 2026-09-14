@@ -11,119 +11,35 @@
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; overflow-x: hidden; }
         
         /* --- HEADER & NAV --- */
-        .site-header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            width: 100%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(10px);
-        }
-        .announcement-bar {
-            background: var(--dark-pink);
-            color: var(--white);
-            text-align: center;
-            padding: 8px 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        nav { 
-            padding: 12px 5%; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
+        .site-header { position: sticky; top: 0; z-index: 1000; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.04); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .announcement-bar { background: var(--dark-pink); color: var(--white); text-align: center; padding: 8px 15px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; }
+        nav { padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; }
         .logo-img { height: 45px; width: auto; transition: 0.3s; }
 
-        /* Navigation Links */
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 35px;
-            margin: 0;
-            padding: 0;
-            align-items: center;
-        }
-        .nav-links li a {
-            text-decoration: none;
-            color: var(--text);
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: 0.3s;
-        }
-        .nav-links li a:hover {
-            color: var(--dark-pink);
-        }
+        .nav-links { list-style: none; display: flex; gap: 35px; margin: 0; padding: 0; align-items: center; }
+        .nav-links li a { text-decoration: none; color: var(--text); font-weight: 500; font-size: 0.95rem; transition: 0.3s; }
+        .nav-links li a:hover { color: var(--dark-pink); }
         
-        /* Nav Right Side (Cart & Hamburger) */
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            color: var(--dark-pink);
-            cursor: pointer;
-            padding: 0;
-        }
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.8rem; color: var(--dark-pink); cursor: pointer; padding: 0; }
         .mobile-close-btn { display: none; }
 
-        /* Cart Icon */
         .cart-icon-btn { position: relative; background: none; border: none; cursor: pointer; padding: 5px; color: var(--dark-pink); display: flex; align-items: center; }
         .cart-count { position: absolute; top: -5px; right: -5px; background: #ff4757; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
 
         /* Split Hero Section */
-        .hero { 
-            background-color: var(--white);
-            min-height: 85vh; 
-            display: flex; 
-            align-items: center; 
-            padding: 0 8%;
-            gap: 60px;
-        }
-
+        .hero { background-color: var(--white); min-height: 85vh; display: flex; align-items: center; padding: 0 8%; gap: 60px; }
         .hero-content { flex: 1; text-align: left; }
-        .hero-content h1 { 
-            font-family: 'Playfair Display', serif; 
-            font-size: clamp(2.5rem, 6vw, 4rem); 
-            color: var(--dark-pink); 
-            line-height: 1.1;
-            margin: 0 0 20px 0;
-        }
+        .hero-content h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 6vw, 4rem); color: var(--dark-pink); line-height: 1.1; margin: 0 0 20px 0; }
         .hero-content p { font-size: 1.1rem; color: #666; margin-bottom: 35px; max-width: 500px; line-height: 1.7; }
-
         .hero-image-area { flex: 1; display: flex; justify-content: center; position: relative; }
-        .hero-img-card {
-            width: 100%;
-            max-width: 400px;
-            height: 550px;
-            background: var(--bg);
-            border-radius: 200px 200px 30px 30px; 
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(212, 129, 146, 0.15);
-            animation: float 6s ease-in-out infinite;
-        }
+        .hero-img-card { width: 100%; max-width: 400px; height: 550px; background: var(--bg); border-radius: 200px 200px 30px 30px; overflow: hidden; box-shadow: 0 25px 50px rgba(212, 129, 146, 0.15); animation: float 6s ease-in-out infinite; }
         .hero-img-card img { width: 100%; height: 100%; object-fit: cover; }
 
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
 
         /* Trust Bar */
-        .trust-bar {
-            background: var(--white);
-            display: flex;
-            justify-content: space-around;
-            padding: 40px 5%;
-            border-top: 1px solid #f0f0f0;
-            text-align: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+        .trust-bar { background: var(--white); display: flex; justify-content: space-around; padding: 40px 5%; border-top: 1px solid #f0f0f0; text-align: center; flex-wrap: wrap; gap: 20px; }
         .trust-item b { display: block; color: var(--dark-pink); font-size: 1.1rem; }
         .trust-item span { font-size: 0.9rem; color: #888; }
 
@@ -145,27 +61,8 @@
         .search-box { padding: 18px 35px; width: 100%; max-width: 700px; border: 2px solid var(--pink); border-radius: 50px; outline: none; transition: 0.3s; font-size: 1rem; }
         .search-box:focus { border-color: var(--dark-pink); box-shadow: 0 5px 25px rgba(212, 129, 146, 0.2); }
         
-        #dynamic-filter-bar { 
-            display: flex; 
-            justify-content: center; 
-            gap: 12px; 
-            margin-top: 30px; 
-            max-width: 100%;
-            padding: 5px;
-        }
-
-        .filter-btn { 
-            background: var(--white); 
-            border: 2px solid var(--pink); 
-            color: var(--dark-pink); 
-            padding: 10px 25px; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            transition: 0.3s; 
-            text-transform: capitalize; 
-            white-space: nowrap; 
-        }
+        #dynamic-filter-bar { display: flex; justify-content: center; gap: 12px; margin-top: 30px; max-width: 100%; padding: 5px; }
+        .filter-btn { background: var(--white); border: 2px solid var(--pink); color: var(--dark-pink); padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; text-transform: capitalize; white-space: nowrap; }
         .filter-btn.active, .filter-btn:hover { background: var(--pink); color: var(--white); transform: translateY(-3px); }
 
         /* Grid */
@@ -183,7 +80,7 @@
         .card-body { padding: 15px; text-align: center; }
         .card-body h3 { font-size: 0.95rem; margin: 5px 0; }
         .price { color: var(--dark-pink); font-size: 1.1rem; font-weight: 600; margin: 8px 0; }
-        .btn { background: var(--pink); color: var(--white); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; font-size: 0.85rem; }
+        .btn { background: var(--pink); color: var(--white); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; border: none; cursor: pointer; font-size: 0.85rem; text-align: center; }
         .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
 
         /* Modal Choices UI */
@@ -196,7 +93,6 @@
         .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid var(--pink); background: white; color: var(--dark-pink); font-weight: bold; cursor: pointer; }
         .qty-num { font-weight: 600; min-width: 30px; text-align: center; }
         #moqWarning { font-size: 0.75rem; color: #ff4757; margin-bottom: 20px; display: none; }
-        
         #stock-badge { display: none; font-size: 0.75rem; font-weight: 600; color: #e67e22; background: #fff3e0; padding: 4px 12px; border-radius: 50px; margin-bottom: 15px; border: 1px solid #ffe0b2; }
 
         /* Description Modal */
@@ -207,37 +103,35 @@
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; cursor: pointer; color: #999; z-index: 10; }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Success Toast Notification */
-        #successToast { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); 
-            background: #2ecc71; color: white; padding: 15px 30px; border-radius: 50px; 
-            font-weight: 600; z-index: 5000; transition: 0.5s; box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);
-            display: flex; align-items: center; gap: 10px; opacity: 0; visibility: hidden;
-        }
+        #successToast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #2ecc71; color: white; padding: 15px 30px; border-radius: 50px; font-weight: 600; z-index: 5000; transition: 0.5s; box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3); display: flex; align-items: center; gap: 10px; opacity: 0; visibility: hidden; }
         #successToast.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
 
-        /* CART DRAWER */
-        #cartDrawer { 
-            position: fixed; top: 0; right: -110%; 
-            width: 100%; max-width: 400px; height: 100vh; background: white; z-index: 3000; 
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: 0.4s ease-in-out; 
-            display: flex; flex-direction: column; visibility: hidden;
-        }
+        /* --- UPDATED CART & CHECKOUT DRAWER --- */
+        #cartDrawer { position: fixed; top: 0; right: -110%; width: 100%; max-width: 480px; height: 100vh; background: white; z-index: 3000; box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: 0.4s ease-in-out; display: flex; flex-direction: column; visibility: hidden; }
         #cartDrawer.active { right: 0; visibility: visible; }
         .cart-header { padding: 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
-        
-        .cart-item { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; position: relative; }
+        .cart-items { flex-shrink: 0; max-height: 35vh; overflow-y: auto; padding: 20px; border-bottom: 5px solid var(--bg); }
+        .cart-item { display: flex; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; position: relative; }
         .cart-item img { width: 60px !important; height: 60px !important; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
         
-        .cart-footer { padding: 25px; border-top: 1px solid #eee; background: #fffcfd; overflow-y: auto; }
+        .cart-footer { padding: 20px 25px 40px 25px; overflow-y: auto; flex-grow: 1; background: #fffcfd; }
+        
+        /* Realistic Checkout Form Styles */
+        .checkout-section-title { font-size: 0.85rem; font-weight: 700; color: var(--dark-pink); text-transform: uppercase; margin: 20px 0 10px 0; letter-spacing: 0.5px; }
+        .checkout-box input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box; font-size: 0.9rem; transition: 0.2s; }
+        .checkout-box input:focus { outline: none; border-color: var(--dark-pink); box-shadow: 0 0 0 3px rgba(212, 129, 146, 0.1); }
+        .row-inputs { display: flex; gap: 10px; }
+        
+        /* Payment Methods Grid */
+        .payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .pay-method-card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; background: white; font-size: 0.85rem; font-weight: 500; }
+        .pay-method-card:hover { border-color: var(--pink); background: var(--bg); }
+        .pay-method-card input[type="radio"] { margin: 0; cursor: pointer; accent-color: var(--dark-pink); width: auto; }
+        .pay-method-card.selected { border-color: var(--dark-pink); background: var(--bg); border-width: 2px; }
 
-        /* Checkout Box Styles */
-        .checkout-box input, .checkout-box textarea, .checkout-box select { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box; }
-        .checkout-box input:focus, .checkout-box textarea:focus, .checkout-box select:focus { outline: none; border-color: var(--dark-pink); }
-        .info-callout { background: #fff1f2; border-left: 4px solid var(--pink); padding: 10px; font-size: 0.75rem; color: var(--dark-pink); margin-bottom: 15px; border-radius: 0 10px 10px 0; }
+        .order-summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #555; margin-bottom: 8px; }
+        .order-summary-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; color: var(--text); border-top: 1px solid #ddd; padding-top: 15px; margin-top: 10px; margin-bottom: 20px;}
 
-        /* --- FOOTER UPGRADES --- */
         footer { background: white; color: var(--text); padding: 70px 5% 30px 5%; border-top: 1px solid #f0f0f0; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.5fr; gap: 40px; margin-bottom: 50px; }
         .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 1.2rem; margin-bottom: 20px; }
@@ -247,7 +141,6 @@
         .footer-links a { text-decoration: none; color: #777; font-size: 0.85rem; transition: 0.3s; }
         .footer-links a:hover { color: var(--dark-pink); padding-left: 5px; }
         
-        /* Social & Newsletter */
         .social-links { display: flex; gap: 15px; margin-top: 20px; }
         .social-icon { width: 35px; height: 35px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; color: var(--dark-pink); text-decoration: none; font-size: 0.8rem; border: 1px solid var(--pink); }
         .social-icon:hover { background: var(--dark-pink); color: white; }
@@ -263,41 +156,15 @@
         #backToTop { position: fixed; bottom: 110px; right: 20px; background: var(--white); color: var(--dark-pink); width: 45px; height: 45px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid var(--pink); cursor: pointer; z-index: 1999; font-weight: bold; }
         .messenger-fab { position: fixed; bottom: 30px; right: 20px; background: #0084ff; color: var(--white); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,132,255,0.3); z-index: 2000; transition: 0.3s; }
 
-        /* MOBILE OPTIMIZATION ADDITIONS */
         @media (max-width: 1024px) {
             .grid { grid-template-columns: repeat(3, 1fr); }
             .footer-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 768px) {
-            .nav-links {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                height: 100vh;
-                width: 250px;
-                background: white;
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 80px 30px;
-                box-shadow: -5px 0 20px rgba(0,0,0,0.05);
-                transition: 0.3s;
-                z-index: 1001; 
-            }
-            .nav-links.active {
-                right: 0;
-            }
+            .nav-links { position: fixed; top: 0; right: -100%; height: 100vh; width: 250px; background: white; flex-direction: column; align-items: flex-start; padding: 80px 30px; box-shadow: -5px 0 20px rgba(0,0,0,0.05); transition: 0.3s; z-index: 1001; }
+            .nav-links.active { right: 0; }
             .mobile-menu-btn { display: block; }
-            .mobile-close-btn { 
-                display: block; 
-                position: absolute; 
-                top: 20px; 
-                right: 25px; 
-                font-size: 2rem; 
-                background: none; 
-                border: none; 
-                color: var(--text); 
-                cursor: pointer; 
-            }
+            .mobile-close-btn { display: block; position: absolute; top: 20px; right: 25px; font-size: 2rem; background: none; border: none; color: var(--text); cursor: pointer; }
 
             .hero { flex-direction: column-reverse; padding: 40px 5%; text-align: center; gap: 30px; min-height: auto; }
             .hero-content h1 { font-size: 2.2rem; }
@@ -328,17 +195,12 @@
 </head>
 <body>
 
-<div id="successToast">✅ Order Saved Successfully!</div>
+<div id="successToast">✅ Redirecting to secure checkout...</div>
 
-<!-- UPGRADED HEADER WITH FULL NAVIGATION -->
 <header class="site-header">
-    <div class="announcement-bar">
-        🔥 Free Nationwide Shipping on orders over ₱1,500! 🔥
-    </div>
+    <div class="announcement-bar">🔥 Free Nationwide Shipping on orders over ₱1,500! 🔥</div>
     <nav>
         <a href="#" class="logo-link"><img src="IMG_1218.jpeg" alt="Zab Logo" class="logo-img"></a>
-        
-        <!-- Desktop Nav / Mobile Drawer -->
         <ul class="nav-links" id="navLinks">
             <button class="mobile-close-btn" onclick="closeMobileNav()">&times;</button>
             <li><a href="#" onclick="closeMobileNav()">Home</a></li>
@@ -346,7 +208,6 @@
             <li><a href="#tracker" onclick="closeMobileNav()">Track Order</a></li>
             <li><a href="#footer" onclick="closeMobileNav()">Contact Us</a></li>
         </ul>
-
         <div class="nav-actions">
             <button class="cart-icon-btn" onclick="toggleCart()">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
@@ -402,11 +263,8 @@
         <div class="modal-info">
             <h2 id="m-name" style="font-family:'Playfair Display'; margin-bottom: 5px;"></h2>
             <div id="m-moq-label" style="font-size: 0.8rem; color: #999; margin: 5px 0 10px 0;"></div>
-            
             <div id="stock-badge">🔥 Only 5 left in stock!</div>
-
             <div class="m-choices-container" id="m-choices"></div>
-
             <div id="m-price" class="price" style="margin: 0 0 20px 0;"></div>
             <p id="m-desc" style="white-space: pre-wrap; line-height: 1.6; color: #666; margin-bottom: 20px; font-size: 0.85rem;"></p>
             
@@ -425,6 +283,7 @@
     </div>
 </div>
 
+<!-- UPGRADED CHECKOUT DRAWER FOR PAYMONGO INTEGRATION -->
 <div id="cartDrawer">
     <div class="cart-header">
         <h2 style="font-family:'Playfair Display'; margin:0;">Shopping Bag</h2>
@@ -432,36 +291,49 @@
     </div>
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-footer">
-        <div style="display:flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
-            <span>Total:</span>
-            <span id="cartTotal">₱0</span>
-        </div>
-        <button onclick="clearCart()" style="background: none; border: none; color: #ff4757; font-size: 0.75rem; cursor: pointer; padding: 0; margin-bottom: 15px;">Clear Bag</button>
         
-        <div class="info-callout">
-            📌 <b>Note:</b> A representative will call your number for order confirmation once the form is submitted.
-        </div>
-
         <div class="checkout-box">
-            <input type="text" id="custName" placeholder="Full Name">
-            <input type="email" id="custEmail" placeholder="Email Address">
-            <input type="tel" id="custPhone" placeholder="Contact Number (e.g. 0917...)">
-            <textarea id="custAddr" rows="2" placeholder="Shipping Address"></textarea>
+            <div class="checkout-section-title">Contact Information</div>
+            <input type="email" id="custEmail" placeholder="Email Address (Required for receipt)" required>
+            <input type="tel" id="custPhone" placeholder="Mobile Number (e.g. 0917...)" required>
             
-            <select id="paymentMethod">
-                <option value="" disabled selected>Select Payment Method</option>
-                <option value="GCash">GCash</option>
-                <option value="BPI">BPI Bank Transfer</option>
-                <option value="BDO">BDO Bank Transfer</option>
-            </select>
+            <div class="checkout-section-title">Shipping Address</div>
+            <input type="text" id="custName" placeholder="Full Name" required>
+            <input type="text" id="custStreet" placeholder="Street Address, Barangay" required>
+            <div class="row-inputs">
+                <input type="text" id="custCity" placeholder="City / Municipality" required>
+                <input type="text" id="custProvince" placeholder="Province" required>
+            </div>
+            <input type="text" id="custZip" placeholder="Postal / Zip Code" required style="width: 50%;">
 
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
-                <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem; text-transform:none; margin:0;">Remember my details for next time</label>
+            <div class="checkout-section-title">Payment Method</div>
+            <div class="payment-grid">
+                <label class="pay-method-card" onclick="selectPayment(this)">
+                    <input type="radio" name="payMethod" value="GCash"> GCash
+                </label>
+                <label class="pay-method-card" onclick="selectPayment(this)">
+                    <input type="radio" name="payMethod" value="Maya"> Maya
+                </label>
+                <label class="pay-method-card" onclick="selectPayment(this)">
+                    <input type="radio" name="payMethod" value="Card"> Credit/Debit Card
+                </label>
+                <label class="pay-method-card" onclick="selectPayment(this)">
+                    <input type="radio" name="payMethod" value="Bank"> Online Banking
+                </label>
             </div>
 
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+                <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem; text-transform:none; margin:0; color:#888;">Save my information for next time</label>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary-row"><span>Subtotal</span><span id="cartSubtotal">₱0.00</span></div>
+            <div class="order-summary-row"><span>Shipping</span><span>Calculated at next step</span></div>
+            <div class="order-summary-total"><span>Total</span><span id="cartTotal">₱0.00</span></div>
+
             <div style="display:flex; flex-direction:column; gap:10px;">
-                <button class="btn" style="background:var(--dark-pink);" onclick="processCheckout('website')">Checkout Web</button>
-                <button class="btn btn-secondary" style="background:#eee; color:#444;" onclick="copyOrderForm()">Copy Order Form</button>
+                <button id="checkoutBtn" class="btn" style="background:var(--dark-pink); padding:15px; font-size:1rem;" onclick="processCheckout()">Proceed to Secure Payment 🔒</button>
+                <button class="btn btn-secondary" style="background:#fff; border: 1px solid #ddd; color:#444;" onclick="copyOrderForm()">Copy Details for Messenger</button>
             </div>
         </div>
     </div>
@@ -547,85 +419,57 @@
     let cart = JSON.parse(localStorage.getItem('zabCart')) || [];
 
     // --- MOBILE NAV LOGIC ---
-    window.toggleMobileNav = () => {
-        document.getElementById('navLinks').classList.add('active');
-    };
-    window.closeMobileNav = () => {
-        document.getElementById('navLinks').classList.remove('active');
+    window.toggleMobileNav = () => { document.getElementById('navLinks').classList.add('active'); };
+    window.closeMobileNav = () => { document.getElementById('navLinks').classList.remove('active'); };
+
+    // --- CHECKOUT LOGIC & PAYMENT UI ---
+    window.selectPayment = (labelElement) => {
+        document.querySelectorAll('.pay-method-card').forEach(el => el.classList.remove('selected'));
+        labelElement.classList.add('selected');
+        labelElement.querySelector('input').checked = true;
     };
 
-    // --- INITIALIZE SAVED CHECKOUT INFO ---
     document.addEventListener("DOMContentLoaded", () => {
         if(localStorage.getItem('custName')) {
             document.getElementById('custName').value = localStorage.getItem('custName');
             document.getElementById('custEmail').value = localStorage.getItem('custEmail') || '';
             document.getElementById('custPhone').value = localStorage.getItem('custPhone') || '';
-            document.getElementById('custAddr').value = localStorage.getItem('custAddr') || '';
+            document.getElementById('custStreet').value = localStorage.getItem('custStreet') || '';
+            document.getElementById('custCity').value = localStorage.getItem('custCity') || '';
+            document.getElementById('custProvince').value = localStorage.getItem('custProvince') || '';
+            document.getElementById('custZip').value = localStorage.getItem('custZip') || '';
             document.getElementById('saveInfo').checked = true;
         }
     });
 
-    // --- UPDATED ORDER TRACKER LOGIC ---
     window.trackOrder = async () => {
         const emailInput = document.getElementById('trackEmail').value.trim().toLowerCase();
         const resultDiv = document.getElementById('trackResult');
-        
         if(!emailInput) return alert("Please enter your email.");
-        
-        resultDiv.innerHTML = "Searching...";
-        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Searching..."; resultDiv.style.display = "block";
 
         try {
             const q = query(collection(db, "orders"), where("customerEmail", "==", emailInput));
             const snap = await getDocs(q);
 
             if(snap.empty) {
-                resultDiv.innerHTML = `
-                    <p style="color:#e74c3c;">❌ No order found with this email.</p>
-                    <p style="font-size:0.75rem; color:#999;">Make sure it matches the email used during checkout.</p>
-                    <a href="https://m.me/zabprintsdigital" target="_blank" class="btn" style="font-size:0.75rem; padding:8px 15px; margin-top:10px;">Contact Support</a>
-                `;
+                resultDiv.innerHTML = `<p style="color:#e74c3c;">❌ No order found.</p><p style="font-size:0.75rem; color:#999;">Ensure it matches the email used during checkout.</p><a href="https://m.me/zabprintsdigital" target="_blank" class="btn" style="font-size:0.75rem; padding:8px 15px; margin-top:10px;">Contact Support</a>`;
             } else {
-                const orders = snap.docs.map(d => d.data());
-                orders.sort((a, b) => b.createdAt - a.createdAt);
-                
+                const orders = snap.docs.map(d => d.data()).sort((a, b) => b.createdAt - a.createdAt);
                 const order = orders[0];
-                const date = new Date(order.createdAt).toLocaleDateString();
-                const status = order.status || "Pending";
-                const paid = order.paid ? "PAID" : "UNPAID";
-                const orderID = order.orderID || "N/A";
-                
-                let statusColor = "#f1c40f"; 
-                if(status === "Processing") statusColor = "#3498db";
-                if(status === "Ready") statusColor = "#9b59b6";
-                if(status === "Shipped") statusColor = "#2ecc71";
-                if(status === "Cancelled") statusColor = "#e74c3c";
+                const date = new Date(order.createdAt).toLocaleDateString(), status = order.status || "Pending", paid = order.paid ? "PAID" : "UNPAID", orderID = order.orderID || "N/A";
+                let statusColor = "#f1c40f"; if(status === "Processing") statusColor = "#3498db"; if(status === "Ready") statusColor = "#9b59b6"; if(status === "Shipped") statusColor = "#2ecc71"; if(status === "Cancelled") statusColor = "#e74c3c";
 
                 resultDiv.innerHTML = `
                     <div style="font-weight:bold; color:var(--dark-pink); margin-bottom:5px;">Latest Order Found:</div>
-                    <div style="font-size:0.8rem; margin-bottom:5px;">ID: <b style="font-family:monospace;">${orderID}</b></div>
-                    <div style="font-size:0.8rem; margin-bottom:10px;">Date: ${date}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Status:</span>
-                        <span class="status-pill" style="background:${statusColor}; color:white; padding: 2px 10px; border-radius: 50px;">${status}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                        <span>Payment:</span>
-                        <span style="font-weight:bold; color:${order.paid ? '#2ecc71' : '#e74c3c'};">${paid}</span>
-                    </div>
-                    <div style="margin-top:10px; font-size:0.8rem; border-top:1px solid #eee; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <span>Total: <b>${order.total}</b></span>
-                        <a href="https://m.me/zabprintsdigital" target="_blank" style="font-size:0.7rem; color:var(--dark-pink); text-decoration:underline;">Inquire</a>
-                    </div>
-                `;
+                    <div style="font-size:0.8rem; margin-bottom:5px;">ID: <b style="font-family:monospace;">${orderID}</b></div><div style="font-size:0.8rem; margin-bottom:10px;">Date: ${date}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;"><span>Status:</span><span class="status-pill" style="background:${statusColor}; color:white;">${status}</span></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;"><span>Payment:</span><span style="font-weight:bold; color:${order.paid ? '#2ecc71' : '#e74c3c'};">${paid}</span></div>
+                    <div style="margin-top:10px; font-size:0.8rem; border-top:1px solid #eee; padding-top:10px; display:flex; justify-content:space-between; align-items:center;"><span>Total: <b>${order.total}</b></span><a href="https://m.me/zabprintsdigital" target="_blank" style="font-size:0.7rem; color:var(--dark-pink); text-decoration:underline;">Inquire</a></div>`;
             }
-        } catch (e) {
-            console.error("Tracking Error:", e);
-            resultDiv.innerHTML = "⚠️ Error searching. Ensure your email is correct.";
-        }
+        } catch (e) { resultDiv.innerHTML = "⚠️ Error searching. Ensure your email is correct."; }
     };
 
-    // --- CART SYSTEM ---
     window.toggleCart = () => {
         const drawer = document.getElementById('cartDrawer');
         drawer.classList.toggle('active');
@@ -634,49 +478,22 @@
     
     window.updateQty = (val) => {
         const warning = document.getElementById('moqWarning');
-        if (currentQty + val < itemMOQ) { 
-            warning.style.display = "block"; 
-            return; 
-        }
-        warning.style.display = "none";
-        currentQty += val;
-        document.getElementById('m-qty').innerText = currentQty;
+        if (currentQty + val < itemMOQ) { warning.style.display = "block"; return; }
+        warning.style.display = "none"; currentQty += val; document.getElementById('m-qty').innerText = currentQty;
     };
 
     window.addToCart = () => {
         if(selectedItem.options && selectedItem.options.length > 0 && !selectedOption) return alert("Please select a variant!");
-        
-        const cartItem = {
-            id: selectedItem.id + (selectedOption ? selectedOption.name : ""),
-            name: selectedItem.name,
-            variant: selectedOption ? selectedOption.name : "Standard",
-            price: selectedOption ? selectedOption.price : (selectedItem.price || 0),
-            qty: currentQty,
-            img: selectedItem.imgUrl || "IMG_1218.jpeg"
-        };
-
+        const cartItem = { id: selectedItem.id + (selectedOption ? selectedOption.name : ""), name: selectedItem.name, variant: selectedOption ? selectedOption.name : "Standard", price: selectedOption ? selectedOption.price : (selectedItem.price || 0), qty: currentQty, img: selectedItem.imgUrl || "IMG_1218.jpeg" };
         const existing = cart.find(i => i.id === cartItem.id);
-        if(existing) {
-            existing.qty += currentQty;
-        } else {
-            cart.push(cartItem);
-        }
-
-        saveCart();
-        closeModal();
-        toggleCart();
+        if(existing) existing.qty += currentQty; else cart.push(cartItem);
+        saveCart(); closeModal(); toggleCart();
     };
 
-    function saveCart() {
-        localStorage.setItem('zabCart', JSON.stringify(cart));
-        renderCart();
-    }
+    function saveCart() { localStorage.setItem('zabCart', JSON.stringify(cart)); renderCart(); }
 
     function renderCart() {
-        const container = document.getElementById('cartItems');
-        const countBadge = document.getElementById('cartCount');
-        const totalSpan = document.getElementById('cartTotal');
-        
+        const container = document.getElementById('cartItems'), countBadge = document.getElementById('cartCount'), totalSpan = document.getElementById('cartTotal'), subTotalSpan = document.getElementById('cartSubtotal');
         container.innerHTML = cart.length ? "" : "<p style='text-align:center; color:#999; padding-top:20px;'>Bag is empty.</p>";
         let total = 0;
         
@@ -685,104 +502,93 @@
             container.innerHTML += `
                 <div class="cart-item">
                     <img src="${item.img}">
-                    <div style="flex-grow:1">
-                        <div style="font-weight:600; font-size:0.85rem;">${item.name}</div>
-                        <div style="font-size:0.7rem; color:#888;">${item.variant} x ${item.qty}</div>
-                        <div style="color:var(--dark-pink); font-weight:600; font-size:0.85rem;">₱${item.price * item.qty}</div>
-                    </div>
-                    <span style="color:#ddd; cursor:pointer;" onclick="removeFromCart('${item.id}')">×</span>
+                    <div style="flex-grow:1"><div style="font-weight:600; font-size:0.85rem;">${item.name}</div><div style="font-size:0.7rem; color:#888;">${item.variant} x ${item.qty}</div><div style="color:var(--dark-pink); font-weight:600; font-size:0.85rem;">₱${item.price * item.qty}</div></div>
+                    <span style="color:#ddd; cursor:pointer; padding:0 5px;" onclick="removeFromCart('${item.id}')">×</span>
                 </div>`;
         });
-
         countBadge.innerText = cart.length;
-        totalSpan.innerText = "₱" + total;
+        const totalFormatted = "₱" + total.toLocaleString(undefined, {minimumFractionDigits:2});
+        subTotalSpan.innerText = totalFormatted;
+        totalSpan.innerText = totalFormatted;
     }
 
-    window.removeFromCart = (id) => {
-        cart = cart.filter(i => i.id !== id);
-        saveCart();
-    };
-
+    window.removeFromCart = (id) => { cart = cart.filter(i => i.id !== id); saveCart(); };
     window.clearCart = () => { if(confirm("Clear your shopping bag?")) { cart = []; saveCart(); } };
 
     function generateOrderSummaryText() {
-        const name = document.getElementById('custName').value.trim();
-        const email = document.getElementById('custEmail').value.trim();
-        const phone = document.getElementById('custPhone').value.trim();
-        const addr = document.getElementById('custAddr').value.trim();
-        const payMeth = document.getElementById('paymentMethod').value;
+        const name = document.getElementById('custName').value.trim(), email = document.getElementById('custEmail').value.trim(), phone = document.getElementById('custPhone').value.trim();
+        const street = document.getElementById('custStreet').value.trim(), city = document.getElementById('custCity').value.trim(), prov = document.getElementById('custProvince').value.trim(), zip = document.getElementById('custZip').value.trim();
+        const payMethNode = document.querySelector('input[name="payMethod"]:checked');
         
-        if(!cart.length || !name || !addr || !email || !phone) return null;
+        if(!cart.length || !name || !street || !city || !email || !phone) return null;
         
         let summary = `ORDER FORM - ZAB DIGITAL PRINTS\n---\n`;
         cart.forEach(i => summary += `• ${i.name} (${i.variant}) x${i.qty} - ₱${i.price * i.qty}\n`);
-        summary += `---\nTotal: ${document.getElementById('cartTotal').innerText}\nPayment Method: ${payMeth || 'Not selected'}\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nAddress: ${addr}`;
+        summary += `---\nTotal: ${document.getElementById('cartTotal').innerText}\nPayment Method: ${payMethNode ? payMethNode.value : 'Not selected'}\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nAddress: ${street}, ${city}, ${prov}, ${zip}`;
         return summary;
     }
 
     window.copyOrderForm = () => {
         const text = generateOrderSummaryText();
         if(!text) return alert("Please fill bag and all customer details!");
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Order form copied to clipboard! You can now paste it in Messenger.");
-        });
+        navigator.clipboard.writeText(text).then(() => { alert("Order form copied to clipboard! You can now paste it in Messenger."); });
     };
 
-    window.processCheckout = async (method) => {
-        const name = document.getElementById('custName').value.trim();
-        const email = document.getElementById('custEmail').value.trim();
-        const phone = document.getElementById('custPhone').value.trim();
-        const addr = document.getElementById('custAddr').value.trim();
-        const payMeth = document.getElementById('paymentMethod').value;
+    window.processCheckout = async () => {
+        const name = document.getElementById('custName').value.trim(), email = document.getElementById('custEmail').value.trim(), phone = document.getElementById('custPhone').value.trim();
+        const street = document.getElementById('custStreet').value.trim(), city = document.getElementById('custCity').value.trim(), prov = document.getElementById('custProvince').value.trim(), zip = document.getElementById('custZip').value.trim();
+        const payMethNode = document.querySelector('input[name="payMethod"]:checked');
         
-        if(!cart.length || !name || !addr || !email || !phone || (method === 'website' && !payMeth)) {
-            return alert("Please fill in all customer details and select a payment method.");
-        }
-
+        if(!cart.length) return alert("Your cart is empty.");
+        if(!name || !email || !phone || !street || !city || !prov || !zip) return alert("Please fill in all contact and shipping details.");
+        if(!payMethNode) return alert("Please select a payment method.");
+        
+        const payMeth = payMethNode.value;
+        const fullAddress = `${street}, ${city}, ${prov}, ${zip}`;
         const totalStr = document.getElementById('cartTotal').innerText;
         const orderID = "ZAB-" + Date.now().toString().slice(-6) + Math.floor(Math.random() * 100);
 
         if(document.getElementById('saveInfo').checked) {
-            localStorage.setItem('custName', name);
-            localStorage.setItem('custEmail', email);
-            localStorage.setItem('custPhone', phone);
-            localStorage.setItem('custAddr', addr);
+            localStorage.setItem('custName', name); localStorage.setItem('custEmail', email); localStorage.setItem('custPhone', phone);
+            localStorage.setItem('custStreet', street); localStorage.setItem('custCity', city); localStorage.setItem('custProvince', prov); localStorage.setItem('custZip', zip);
         } else {
-            localStorage.removeItem('custName');
-            localStorage.removeItem('custEmail');
-            localStorage.removeItem('custPhone');
-            localStorage.removeItem('custAddr');
+            localStorage.removeItem('custName'); localStorage.removeItem('custEmail'); localStorage.removeItem('custPhone');
+            localStorage.removeItem('custStreet'); localStorage.removeItem('custCity'); localStorage.removeItem('custProvince'); localStorage.removeItem('custZip');
         }
 
+        const btn = document.getElementById('checkoutBtn');
+        btn.innerHTML = "Creating Secure Session... ⏳";
+        btn.disabled = true;
+
         try {
+            /* 
+               [PAYMONGO INTEGRATION POINT]
+               In a production environment, this is where you would send an HTTP POST request 
+               to your backend server (e.g. Firebase Cloud Functions). 
+               The backend would call the PayMongo Checkout API using your Secret Key, 
+               generate a checkout_url, and return it to the frontend to redirect the user.
+               
+               For now, we save it to the DB as "Pending" and simulate the redirect.
+            */
+
             await addDoc(collection(db, "orders"), {
-                orderID: orderID,
-                customerName: name,
-                customerEmail: email.toLowerCase(),
-                customerPhone: phone,
-                address: addr,
-                items: cart,
-                total: totalStr,
-                method: 'Website',
-                paymentChoice: payMeth,
-                status: "Pending",
-                paid: false,
-                createdAt: Date.now()
+                orderID: orderID, customerName: name, customerEmail: email.toLowerCase(), customerPhone: phone,
+                address: fullAddress, items: cart, total: totalStr, method: 'PayMongo', paymentChoice: payMeth,
+                status: "Pending", paid: false, createdAt: Date.now()
             });
 
             const toast = document.getElementById('successToast');
             toast.classList.add('show');
 
             setTimeout(() => {
-                const cartData = encodeURIComponent(JSON.stringify(cart));
-                window.location.href = `payment.html?id=${orderID}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(totalStr)}&method=${encodeURIComponent(payMeth)}&items=${cartData}`;
-                cart = [];
-                saveCart();
-                toggleCart();
-                toast.classList.remove('show');
+                // Temporary redirect simulation until real backend endpoint is built
+                alert(`SUCCESS! Order ${orderID} saved.\n\nIn a live environment, you would now be redirected to the PayMongo Secure Checkout page for ${payMeth}.`);
+                cart = []; saveCart(); toggleCart(); toast.classList.remove('show');
+                btn.innerHTML = "Proceed to Secure Payment 🔒"; btn.disabled = false;
             }, 2000);
         } catch (e) {
             alert("Order failed. Please check your connection.");
+            btn.innerHTML = "Proceed to Secure Payment 🔒"; btn.disabled = false;
         }
     };
 
@@ -790,11 +596,7 @@
     const getPriceText = (item) => {
         if (item.options && item.options.length > 0) {
             const prices = item.options.map(o => parseFloat(o.price)).filter(p => !isNaN(p));
-            if (prices.length > 0) {
-                const min = Math.min(...prices);
-                const max = Math.max(...prices);
-                return min === max ? `₱${min}` : `₱${min} - ₱${max}`;
-            }
+            if (prices.length > 0) { const min = Math.min(...prices), max = Math.max(...prices); return min === max ? `₱${min}` : `₱${min} - ₱${max}`; }
         }
         return (item.price && item.price > 0) ? `₱${item.price}` : "Inquire";
     };
@@ -803,100 +605,52 @@
         const filterBar = document.getElementById('dynamic-filter-bar');
         filterBar.innerHTML = `<button class="filter-btn active" id="btn-all" onclick="setCategory('All', this)">All Items</button>`;
         snap.forEach(d => {
-            const btn = document.createElement('button');
-            btn.className = `filter-btn`;
-            btn.innerText = d.id;
-            btn.onclick = function() { setCategory(d.id, this); };
-            filterBar.appendChild(btn);
+            const btn = document.createElement('button'); btn.className = `filter-btn`; btn.innerText = d.id;
+            btn.onclick = function() { setCategory(d.id, this); }; filterBar.appendChild(btn);
         });
     });
 
     onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
-        allProducts = [];
-        snap.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
-        applyFilters();
+        allProducts = []; snap.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() })); applyFilters();
     });
 
     window.setCategory = (cat, btn) => {
-        currentCategory = cat;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        if (btn) btn.classList.add('active');
-        applyFilters();
+        currentCategory = cat; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active'); applyFilters();
     };
 
     window.applyFilters = () => {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        const grid = document.getElementById('catalog-grid');
-        grid.innerHTML = "";
+        const term = document.getElementById('searchInput').value.toLowerCase(), grid = document.getElementById('catalog-grid'); grid.innerHTML = "";
         let filtered = allProducts.filter(p => (currentCategory === "All" || p.category === currentCategory) && p.name.toLowerCase().includes(term));
         
         filtered.forEach(item => {
-            const isSoldOut = item.status === "Sold Out";
-            const displayPrice = getPriceText(item);
-            const card = document.createElement('div');
-            card.className = "card";
-            card.onclick = () => showModal(item.id);
-            card.innerHTML = `
-                <div class="badge ${isSoldOut ? 'badge-soldout' : 'badge-available'}">${item.status || 'Available'}</div>
-                <img src="${item.imgUrl || 'IMG_1218.jpeg'}">
-                <div class="card-body">
-                    <h3>${item.name}</h3>
-                    <div class="price">${displayPrice}</div>
-                    <button class="btn" ${isSoldOut ? 'disabled style="background:#ccc"' : ''}>${isSoldOut ? 'Sold Out' : 'Order Now'}</button>
-                </div>`;
+            const isSoldOut = item.status === "Sold Out", displayPrice = getPriceText(item), card = document.createElement('div');
+            card.className = "card"; card.onclick = () => showModal(item.id);
+            card.innerHTML = `<div class="badge ${isSoldOut ? 'badge-soldout' : 'badge-available'}">${item.status || 'Available'}</div><img src="${item.imgUrl || 'IMG_1218.jpeg'}"><div class="card-body"><h3>${item.name}</h3><div class="price">${displayPrice}</div><button class="btn" ${isSoldOut ? 'disabled style="background:#ccc"' : ''}>${isSoldOut ? 'Sold Out' : 'Order Now'}</button></div>`;
             grid.appendChild(card);
         });
     };
 
-    // Placeholder if expand functionality is ever needed
-    window.expandShop = () => {
-        isExpanded = true;
-        document.getElementById('loadMoreContainer').style.display = 'none';
-        applyFilters();
-    };
+    window.expandShop = () => { isExpanded = true; document.getElementById('loadMoreContainer').style.display = 'none'; applyFilters(); };
 
     window.showModal = (id) => {
-        const item = allProducts.find(p => p.id === id);
-        selectedItem = item;
-        selectedOption = null;
-        
-        const match = item.moq ? item.moq.match(/\d+/) : null;
-        itemMOQ = match ? parseInt(match[0]) : 1;
-        currentQty = itemMOQ;
-
+        const item = allProducts.find(p => p.id === id); selectedItem = item; selectedOption = null;
+        const match = item.moq ? item.moq.match(/\d+/) : null; itemMOQ = match ? parseInt(match[0]) : 1; currentQty = itemMOQ;
         const stockBadge = document.getElementById('stock-badge');
-        if (item.stock && item.stock <= 10 && item.stock > 0) {
-            stockBadge.innerText = `🔥 Only ${item.stock} left in stock!`;
-            stockBadge.style.display = "inline-block";
-        } else {
-            stockBadge.style.display = "none";
-        }
-
-        document.getElementById('m-qty').innerText = currentQty;
-        document.getElementById('m-img').src = item.imgUrl || "IMG_1218.jpeg";
-        document.getElementById('m-name').innerText = item.name;
-        document.getElementById('m-moq-label').innerText = item.moq ? "Minimum: " + item.moq : "";
-        document.getElementById('m-price').innerText = getPriceText(item);
-        document.getElementById('m-desc').innerText = item.description || "";
+        if (item.stock && item.stock <= 10 && item.stock > 0) { stockBadge.innerText = `🔥 Only ${item.stock} left in stock!`; stockBadge.style.display = "inline-block"; } else { stockBadge.style.display = "none"; }
+        document.getElementById('m-qty').innerText = currentQty; document.getElementById('m-img').src = item.imgUrl || "IMG_1218.jpeg";
+        document.getElementById('m-name').innerText = item.name; document.getElementById('m-moq-label').innerText = item.moq ? "Minimum: " + item.moq : "";
+        document.getElementById('m-price').innerText = getPriceText(item); document.getElementById('m-desc').innerText = item.description || "";
         
-        const choicesDiv = document.getElementById('m-choices');
-        choicesDiv.innerHTML = "";
+        const choicesDiv = document.getElementById('m-choices'); choicesDiv.innerHTML = "";
         if(item.options && item.options.length > 0) {
             item.options.forEach(opt => {
-                const pill = document.createElement('button');
-                pill.className = "m-choice-pill";
-                pill.innerText = `${opt.name} (₱${opt.price})`;
-                pill.onclick = () => {
-                    document.querySelectorAll('.m-choice-pill').forEach(p => p.classList.remove('selected'));
-                    pill.classList.add('selected');
-                    selectedOption = opt;
-                    document.getElementById('m-price').innerText = `₱${opt.price}`;
-                };
+                const pill = document.createElement('button'); pill.className = "m-choice-pill"; pill.innerText = `${opt.name} (₱${opt.price})`;
+                pill.onclick = () => { document.querySelectorAll('.m-choice-pill').forEach(p => p.classList.remove('selected')); pill.classList.add('selected'); selectedOption = opt; document.getElementById('m-price').innerText = `₱${opt.price}`; };
                 choicesDiv.appendChild(pill);
             });
         }
-        document.getElementById('productModal').style.display = "flex";
-        document.body.style.overflow = "hidden";
+        document.getElementById('productModal').style.display = "flex"; document.body.style.overflow = "hidden";
     };
 
     window.quickOrder = () => { addToCart(); toggleCart(); };
