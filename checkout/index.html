@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Zab Digital Prints</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #d48192; --bg-body: #f8f9fa; --text-main: #2d3436; --border: #edf2f7; --white: #ffffff; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-body); color: var(--text-main); display: flex; justify-content: center; padding: 40px 20px; }
+        
+        .checkout-container { display: flex; max-width: 1000px; width: 100%; gap: 40px; }
+        .checkout-form { flex: 1.5; background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        .order-summary { flex: 1; background: #fafbfc; padding: 40px; border-radius: 20px; border: 1px solid var(--border); height: fit-content; position: sticky; top: 40px; }
+
+        h2 { font-family: 'Playfair Display', serif; color: var(--primary); margin-top: 0; }
+        .section-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin: 30px 0 10px 0; letter-spacing: 0.5px; }
+        
+        input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212, 129, 146, 0.1); }
+        .row-inputs { display: flex; gap: 12px; }
+
+        .btn-primary { width: 100%; background: var(--primary); color: white; padding: 16px; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+        .btn-primary:hover { background: #c57283; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(212, 129, 146, 0.2); }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .cart-item-name { font-weight: 600; font-size: 0.9rem; }
+        .cart-item-meta { font-size: 0.75rem; color: #888; }
+        .summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 10px; color: #555; }
+        .summary-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.3rem; margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee; }
+
+        .back-link { display: inline-block; margin-bottom: 30px; color: #888; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
+        .back-link:hover { color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .checkout-container { flex-direction: column-reverse; }
+            .checkout-form, .order-summary { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="checkout-container">
+    <div class="checkout-form">
+        <a href="../shop/index.html" class="back-link">← Return to Shop</a>
+        <img src="../IMG_1218.jpeg" alt="Zab Logo" style="height: 50px; display: block; margin-bottom: 20px;">
+        <h2>Checkout</h2>
+
+        <div class="section-title">Contact Information</div>
+        <input type="email" id="custEmail" placeholder="Email Address (Required for receipt)" required>
+        <input type="tel" id="custPhone" placeholder="Mobile Number (e.g. 0917...)" required>
+        
+        <div class="section-title">Shipping Address</div>
+        <input type="text" id="custName" placeholder="Full Name" required>
+        <input type="text" id="custStreet" placeholder="Street Address, Barangay" required>
+        <div class="row-inputs">
+            <input type="text" id="custCity" placeholder="City / Municipality" required>
+            <input type="text" id="custProvince" placeholder="Province" required>
+        </div>
+        <input type="text" id="custZip" placeholder="Postal / Zip Code" required style="width: 50%;">
+
+        <button id="checkoutBtn" class="btn-primary" onclick="processCheckout()">Proceed to Secure Payment 🔒</button>
+    </div>
+
+    <div class="order-summary">
+        <h3 style="margin-bottom: 25px;">Order Summary</h3>
+        <div id="checkoutCartItems"></div>
+        <div class="summary-row" style="margin-top: 20px;"><span>Subtotal</span><span id="subTotalDisplay">₱0.00</span></div>
+        <div class="summary-row"><span>Shipping</span><span>Calculated at next step</span></div>
+        <div class="summary-total"><span>Total</span><span id="grandTotalDisplay">₱0.00</span></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyApoIe2nemnhB8unIDzoD5mnMSIMQv5pb0",
+        authDomain: "zab-digital-prints.firebaseapp.com",
+        projectId: "zab-digital-prints",
+        storageBucket: "zab-digital-prints.firebasestorage.app",
+        messagingSenderId: "1050157785592",
+        appId: "1:1050157785592:web:e6a3c8f10a9d28aa87b60d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let cart = JSON.parse(localStorage.getItem('zabCart')) || [];
+    let cartTotal = 0;
+
+    // Load Cart Data
+    const container = document.getElementById('checkoutCartItems');
+    if (cart.length === 0) {
+        container.innerHTML = "<p style='color:#999;'>Your cart is empty.</p>";
+        document.getElementById('checkoutBtn').disabled = true;
+    } else {
+        cart.forEach(item => {
+            cartTotal += (item.price * item.qty);
+            container.innerHTML += `
+                <div class="cart-item">
+                    <div>
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-meta">${item.variant} x ${item.qty}</div>
+                    </div>
+                    <div style="font-weight:600;">₱${(item.price * item.qty).toLocaleString()}</div>
+                </div>`;
+        });
+        document.getElementById('subTotalDisplay').innerText = `₱${cartTotal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+        document.getElementById('grandTotalDisplay').innerText = `₱${cartTotal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+    }
+
+    // Auto-fill saved info
+    if(localStorage.getItem('custName')) {
+        document.getElementById('custName').value = localStorage.getItem('custName');
+        document.getElementById('custEmail').value = localStorage.getItem('custEmail') || '';
+        document.getElementById('custPhone').value = localStorage.getItem('custPhone') || '';
+        document.getElementById('custStreet').value = localStorage.getItem('custStreet') || '';
+        document.getElementById('custCity').value = localStorage.getItem('custCity') || '';
+        document.getElementById('custProvince').value = localStorage.getItem('custProvince') || '';
+        document.getElementById('custZip').value = localStorage.getItem('custZip') || '';
+    }
+
+    window.processCheckout = async () => {
+        const name = document.getElementById('custName').value.trim(), email = document.getElementById('custEmail').value.trim(), phone = document.getElementById('custPhone').value.trim();
+        const street = document.getElementById('custStreet').value.trim(), city = document.getElementById('custCity').value.trim(), prov = document.getElementById('custProvince').value.trim(), zip = document.getElementById('custZip').value.trim();
+        
+        if(!name || !email || !phone || !street || !city || !prov || !zip) return alert("Please fill in all contact and shipping details.");
+        
+        const fullAddress = `${street}, ${city}, ${prov}, ${zip}`;
+        const orderID = "ZAB-" + Date.now().toString().slice(-6) + Math.floor(Math.random() * 100);
+
+        // Save for convenience
+        localStorage.setItem('custName', name); localStorage.setItem('custEmail', email); localStorage.setItem('custPhone', phone);
+        localStorage.setItem('custStreet', street); localStorage.setItem('custCity', city); localStorage.setItem('custProvince', prov); localStorage.setItem('custZip', zip);
+
+        const btn = document.getElementById('checkoutBtn');
+        btn.innerHTML = "Creating Secure Session... ⏳";
+        btn.disabled = true;
+
+        try {
+            // 1. Save Pending Order to Firestore
+            await addDoc(collection(db, "orders"), {
+                orderID: orderID, customerName: name, customerEmail: email.toLowerCase(), customerPhone: phone,
+                address: fullAddress, items: cart, total: cartTotal.toString(), method: 'PayMongo', paymentChoice: 'Redirect',
+                status: "Pending", paid: false, createdAt: Date.now()
+            });
+
+            // 2. Call Vercel API (Now passes the itemized cart array)
+            const res = await fetch('/api/create-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    items: cart, // Pass the cart array here
+                    customerName: name,
+                    customerEmail: email,
+                    customerPhone: phone,
+                    address: fullAddress,
+                    orderID: orderID
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to initialize payment');
+
+            // Clear cart & Redirect
+            localStorage.removeItem('zabCart'); 
+            window.location.href = data.checkoutUrl;
+
+        } catch (e) {
+            console.error(e);
+            alert("Payment setup failed: " + e.message);
+            btn.innerHTML = "Proceed to Secure Payment 🔒"; 
+            btn.disabled = false;
+        }
+    };
+</script>
+</body>
+</html>
