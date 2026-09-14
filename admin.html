@@ -164,6 +164,8 @@
             .a4-page { box-shadow: none; margin: 0; padding: 0; border: none; width: 100%; min-height: auto; }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -263,7 +265,8 @@
             <div class="form-grid-inv">
                 <div>
                     <label style="font-size:12px; font-weight:bold;">Client Name</label>
-                    <input type="text" id="docClientName" placeholder="e.g. Asean Centre for Biodiversity">
+                    <input type="text" id="docClientName" list="clientSuggestions" placeholder="e.g. Asean Centre for Biodiversity" oninput="prefillClientFromHistory()">
+                    <datalist id="clientSuggestions"></datalist>
                 </div>
                 <div>
                     <label style="font-size:12px; font-weight:bold;">Date</label>
@@ -272,6 +275,20 @@
                 <div style="grid-column: span 2;">
                     <label style="font-size:12px; font-weight:bold;">Client Address</label>
                     <input type="text" id="docClientAddress" placeholder="e.g. Domingo M.Lantican Avenue, University of the Philippines Los Banos, Laguna, Philippines">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold;">Client Email (for sending)</label>
+                    <input type="email" id="docClientEmail" placeholder="e.g. client@email.com">
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label style="font-size:12px; font-weight:bold;">Discount (%)</label>
+                        <input type="number" id="docDiscount" placeholder="0" min="0" max="100" value="0">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:12px; font-weight:bold;">Tax / VAT (%)</label>
+                        <input type="number" id="docTax" placeholder="0" min="0" max="100" value="0">
+                    </div>
                 </div>
             </div>
 
@@ -293,11 +310,15 @@
         </div>
 
         <!-- Document Previews -->
-        <div class="preview-controls" id="preview-controls" style="display:none;">
+        <div class="preview-controls" id="preview-controls" style="display:none; flex-wrap: wrap;">
             <button id="btn-show-inv" onclick="toggleDocView('invoice')" style="background:var(--owner-gold);">View Invoice</button>
             <button id="btn-show-del" onclick="toggleDocView('delivery')" style="background:#ddd; color:#333;">View Delivery Form</button>
-            <button onclick="window.print()" style="background:var(--text);">🖨️ Print Document</button>
+            <button onclick="window.print()" style="background:var(--text);">🖨️ Print</button>
+            <button onclick="downloadDocAsPDF()" style="background:#0984e3;">⬇️ Download PDF</button>
+            <button id="btn-save-record" onclick="saveInvoiceRecord()" style="background:#2ecc71;">💾 Save Invoice Record</button>
+            <button onclick="emailInvoice()" style="background:#636e72;">✉️ Email Invoice</button>
         </div>
+        <p id="save-hint" style="font-size:0.75rem; color:#999; margin: -10px 0 20px 0; display:none;">Saving assigns a permanent invoice number and adds it to Invoice History below with an Unpaid status.</p>
 
         <div id="print-area">
             <!-- INVOICE A4 TEMPLATE -->
@@ -311,6 +332,7 @@
                         <h2 class="doc-type">INVOICE</h2>
                         <p class="company-name">ZAB DIGITAL PRINTS</p>
                         <p class="company-tin">TIN NO. 296-724-666-000</p>
+                        <p class="company-tin" id="outInvNumber" style="color:#000;">Invoice No: DRAFT</p>
                     </div>
                 </div>
 
@@ -339,8 +361,9 @@
                     </tbody>
                 </table>
 
+                <div id="outInvBreakdown" style="font-size:13px; text-align:right; margin-bottom:6px;"></div>
                 <div class="doc-total-row">
-                    TOTAL <span id="outInvTotal">P0.00</span>
+                    TOTAL <span id="outInvTotal">₱0.00</span>
                 </div>
 
                 <div class="invoice-footer-grid">
@@ -361,8 +384,8 @@
                         <p>Safe storage of the products is necessary to ensure their quality, Zab Digital Prints will not be held accountable in case of unsafe storage of the products.</p>
                         
                         <div class="doc-signature">
-                            <div class="doc-signature-line">AILYN P. ORPILLA</div>
-                            <div class="doc-signature-role">AUTHORIZED SIGN</div>
+                            <div class="doc-signature-line" id="outSigName">AILYN P. ORPILLA</div>
+                            <div class="doc-signature-role" id="outSigRole">AUTHORIZED SIGN</div>
                         </div>
                     </div>
                 </div>
@@ -391,6 +414,7 @@
                         <h2 class="doc-type">DELIVERY FORM</h2>
                         <p class="company-name">ZAB DIGITAL PRINTS</p>
                         <p class="company-tin">TIN NO. 296-724-666-000</p>
+                        <p class="company-tin" id="outDelNumber" style="color:#000;">Ref: DRAFT</p>
                     </div>
                 </div>
 
@@ -445,6 +469,11 @@
                 </div>
             </div>
         </div>
+
+        <div class="panel" style="margin-top:20px;">
+            <h3 style="margin-top:0; color:var(--dark-pink);">Invoice History</h3>
+            <div id="invoice-history-list">Loading...</div>
+        </div>
     </div>
 
     <!-- SETTINGS TAB -->
@@ -478,6 +507,14 @@
                 </div>
                 <hr>
                 <div>
+                    <h4>Document Settings</h4>
+                    <p style="font-size:0.8rem; color:#999; margin-top:-5px;">Controls the signatory shown on generated Invoices.</p>
+                    <input type="text" id="docSigName" placeholder="Signatory Name (e.g. AILYN P. ORPILLA)">
+                    <input type="text" id="docSigRole" placeholder="Signatory Role (e.g. AUTHORIZED SIGN)">
+                    <button onclick="saveDocumentSettings()" style="background: var(--text);">Save Document Settings</button>
+                </div>
+                <hr>
+                <div>
                     <h4>Audit Logs</h4>
                     <table class="log-table">
                         <thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead>
@@ -505,7 +542,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    let editID = null, localItems = [], currentOptions = []; 
+    let editID = null, localItems = [], currentOptions = [], localOrders = [], localInvoices = [], documentSettings = { sigName: "AILYN P. ORPILLA", sigRole: "AUTHORIZED SIGN" };
 
     // --- LOGIN ---
     window.login = async () => {
@@ -572,6 +609,7 @@
             filterInventoryList();
         });
         initOrders();
+        initInvoiceGen();
         if(sessionStorage.getItem("zabAdminRole") === "Owner") document.getElementById('settings-menu-item').style.display = 'flex';
     }
 
@@ -580,8 +618,10 @@
             const list = document.getElementById('admin-orders-list');
             list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders.</p>" : "";
             let revenue = 0, active = 0, total = 0;
+            localOrders = [];
             snap.forEach(d => {
                 const o = d.data(); total++;
+                localOrders.push({ id: d.id, ...o });
                 const numericTotal = parseFloat(o.total.replace(/[₱,]/g, '')) || 0;
                 if(o.paid) revenue += numericTotal;
                 if(o.status !== "Cancelled" && o.status !== "Shipped") active++;
@@ -612,6 +652,7 @@
                                 <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
                             </select>
                             <span class="order-total">${o.total}</span>
+                            <button class="btn-small" style="background:#2ecc71;" onclick="createInvoiceFromOrder('${d.id}')">🧾 Invoice</button>
                             <button class="btn-small btn-del" onclick="deleteOrderRecord('${d.id}')">Delete</button>
                         </div>
                     </div>`;
@@ -754,7 +795,8 @@
         const rows = document.querySelectorAll('.inv-item-row');
         let invHtml = "";
         let delHtml = "";
-        let grandTotal = 0;
+        let subtotal = 0;
+        const lineItems = [];
 
         rows.forEach(row => {
             const qty = row.querySelector('.doc-qty').value || "0";
@@ -762,7 +804,8 @@
             const desc = row.querySelector('.doc-desc').value || "-";
             const price = parseFloat(row.querySelector('.doc-price').value) || 0;
             const sub = parseInt(qty) * price;
-            grandTotal += sub;
+            subtotal += sub;
+            lineItems.push({ qty, unit, desc, price, sub });
 
             const qtyText = `${qty} ${unit}`;
 
@@ -771,8 +814,8 @@
                 <tr>
                     <td>${qtyText}</td>
                     <td>${desc}</td>
-                    <td>P${price.toLocaleString()}</td>
-                    <td>P${sub.toLocaleString()}</td>
+                    <td>₱${price.toLocaleString()}</td>
+                    <td>₱${sub.toLocaleString()}</td>
                 </tr>
             `;
 
@@ -785,14 +828,233 @@
             `;
         });
 
+        const discountPct = parseFloat(document.getElementById('docDiscount').value) || 0;
+        const taxPct = parseFloat(document.getElementById('docTax').value) || 0;
+        const discountAmt = subtotal * (discountPct / 100);
+        const taxableAmt = subtotal - discountAmt;
+        const taxAmt = taxableAmt * (taxPct / 100);
+        const grandTotal = taxableAmt + taxAmt;
+
         document.getElementById('outInvTbody').innerHTML = invHtml;
         document.getElementById('outDelTbody').innerHTML = delHtml;
-        document.getElementById('outInvTotal').innerText = `P${grandTotal.toLocaleString()}`;
+        document.getElementById('outInvTotal').innerText = `₱${grandTotal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+
+        let breakdownHtml = `Subtotal: ₱${subtotal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+        if(discountPct > 0) breakdownHtml += `<br>Discount (${discountPct}%): -₱${discountAmt.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+        if(taxPct > 0) breakdownHtml += `<br>Tax/VAT (${taxPct}%): +₱${taxAmt.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+        document.getElementById('outInvBreakdown').innerHTML = (discountPct > 0 || taxPct > 0) ? breakdownHtml : "";
+
+        document.getElementById('outSigName').innerText = documentSettings.sigName;
+        document.getElementById('outSigRole').innerText = documentSettings.sigRole;
+        document.getElementById('outInvNumber').innerText = "Invoice No: DRAFT (not yet saved)";
+        document.getElementById('outDelNumber').innerText = "Ref: DRAFT (not yet saved)";
+
+        // Stash the current draft so Save/PDF/Email can use it
+        window.currentDocDraft = {
+            clientName: name, clientAddress: address, clientEmail: document.getElementById('docClientEmail').value || "",
+            date: dateInput, items: lineItems, subtotal, discountPct, taxPct, discountAmt, taxAmt, total: grandTotal,
+            invoiceNumber: null, savedId: null
+        };
+        document.getElementById('btn-save-record').disabled = false;
+        document.getElementById('btn-save-record').innerText = "💾 Save Invoice Record";
 
         // Show previews
         document.getElementById('preview-controls').style.display = 'flex';
+        document.getElementById('save-hint').style.display = 'block';
         toggleDocView('invoice');
     };
+
+    /* --- Document Settings (signatory) --- */
+    async function loadDocumentSettings() {
+        const snap = await getDoc(doc(db, "config", "documentSettings"));
+        if(snap.exists()) {
+            documentSettings.sigName = snap.data().sigName || documentSettings.sigName;
+            documentSettings.sigRole = snap.data().sigRole || documentSettings.sigRole;
+        }
+        const nameInput = document.getElementById('docSigName'), roleInput = document.getElementById('docSigRole');
+        if(nameInput) { nameInput.value = documentSettings.sigName; roleInput.value = documentSettings.sigRole; }
+    }
+    window.saveDocumentSettings = async () => {
+        const sigName = document.getElementById('docSigName').value.trim() || "AILYN P. ORPILLA";
+        const sigRole = document.getElementById('docSigRole').value.trim() || "AUTHORIZED SIGN";
+        await setDoc(doc(db, "config", "documentSettings"), { sigName, sigRole }, { merge: true });
+        documentSettings.sigName = sigName; documentSettings.sigRole = sigRole;
+        alert("Document settings saved.");
+    };
+
+    /* --- Client autocomplete from past invoices --- */
+    window.prefillClientFromHistory = () => {
+        const typed = document.getElementById('docClientName').value;
+        const match = localInvoices.find(i => i.clientName === typed);
+        if(match && !document.getElementById('docClientAddress').value) {
+            document.getElementById('docClientAddress').value = match.clientAddress || "";
+            document.getElementById('docClientEmail').value = match.clientEmail || "";
+        }
+    };
+    function refreshClientSuggestions() {
+        const list = document.getElementById('clientSuggestions');
+        if(!list) return;
+        const names = [...new Set(localInvoices.map(i => i.clientName).filter(Boolean))];
+        list.innerHTML = names.map(n => `<option value="${n}"></option>`).join("");
+    }
+
+    /* --- Create Invoice from an Order --- */
+    window.createInvoiceFromOrder = (orderId) => {
+        const o = localOrders.find(x => x.id === orderId);
+        if(!o) return alert("Order not found.");
+        document.querySelector('.menu-item[onclick*="invoice-gen"]').click();
+        document.getElementById('docClientName').value = o.customerName || "";
+        document.getElementById('docClientAddress').value = o.address || "";
+        document.getElementById('docClientEmail').value = o.customerEmail || "";
+        document.getElementById('docItemsContainer').innerHTML = "";
+        (o.items || []).forEach(i => {
+            const row = document.createElement('div');
+            row.className = "inv-item-row";
+            row.innerHTML = `
+                <input type="number" class="doc-qty" style="width:80px;" min="1" value="${i.qty}">
+                <input type="text" class="doc-unit" style="width:80px;" value="pcs">
+                <input type="text" class="doc-desc" style="flex:1;" value="${i.name}${i.variant ? ' (' + i.variant + ')' : ''}">
+                <input type="number" class="doc-price" style="width:120px;" min="0" value="${i.price}">
+                <button onclick="this.parentElement.remove()" class="btn-del" style="width:40px; margin:0;">X</button>
+            `;
+            document.getElementById('docItemsContainer').appendChild(row);
+        });
+        if(!o.items || o.items.length === 0) window.addDocRow();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    /* --- Save invoice record (assigns permanent number) --- */
+    window.saveInvoiceRecord = async () => {
+        const draft = window.currentDocDraft;
+        if(!draft) return alert("Generate a preview first.");
+        const btn = document.getElementById('btn-save-record');
+        btn.disabled = true; btn.innerText = "Saving...";
+
+        const counterRef = doc(db, "config", "documentSettings");
+        const counterSnap = await getDoc(counterRef);
+        const year = new Date().getFullYear();
+        let nextNum = (counterSnap.exists() && counterSnap.data().nextInvoiceNumber) ? counterSnap.data().nextInvoiceNumber : 1;
+        const invoiceNumber = `INV-${year}-${String(nextNum).padStart(4, '0')}`;
+        await setDoc(counterRef, { nextInvoiceNumber: nextNum + 1 }, { merge: true });
+
+        const adminName = sessionStorage.getItem("zabAdminName");
+        const record = {
+            invoiceNumber, clientName: draft.clientName, clientAddress: draft.clientAddress, clientEmail: draft.clientEmail,
+            date: draft.date, items: draft.items, subtotal: draft.subtotal, discountPct: draft.discountPct, taxPct: draft.taxPct,
+            total: draft.total, status: "Unpaid", createdBy: adminName, createdAt: Date.now()
+        };
+        const ref = await addDoc(collection(db, "invoices"), record);
+        await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Invoice Saved: ${invoiceNumber} (${draft.clientName})` });
+
+        draft.invoiceNumber = invoiceNumber; draft.savedId = ref.id;
+        document.getElementById('outInvNumber').innerText = `Invoice No: ${invoiceNumber}`;
+        document.getElementById('outDelNumber').innerText = `Ref: ${invoiceNumber}`;
+        btn.innerText = "✅ Saved as " + invoiceNumber;
+    };
+
+    /* --- Invoice History list --- */
+    function renderInvoiceHistory() {
+        const list = document.getElementById('invoice-history-list');
+        if(!list) return;
+        if(localInvoices.length === 0) { list.innerHTML = "<p style='text-align:center; padding:20px; color:#999;'>No saved invoices yet.</p>"; return; }
+        list.innerHTML = "";
+        localInvoices.forEach(inv => {
+            const isPaid = inv.status === "Paid";
+            list.innerHTML += `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <span class="order-customer">${inv.clientName}</span>
+                            <span class="order-id-badge">${inv.invoiceNumber}</span>
+                            <span class="badge-status ${isPaid ? 'paid-yes' : 'paid-no'}" onclick="toggleInvoicePaid('${inv.id}', ${isPaid})">${isPaid ? 'PAID' : 'UNPAID'}</span>
+                        </div>
+                        <span class="order-date">${inv.date}</span>
+                    </div>
+                    <div class="order-footer">
+                        <span class="order-total">₱${(inv.total || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn-small" style="background:#74b9ff;" onclick="reloadInvoiceIntoPreview('${inv.id}')">View</button>
+                            <button class="btn-small btn-del" onclick="deleteInvoiceRecord('${inv.id}')">Delete</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    }
+    window.toggleInvoicePaid = async (id, s) => await updateDoc(doc(db, "invoices", id), { status: s ? "Unpaid" : "Paid" });
+    window.deleteInvoiceRecord = async (id) => { if(confirm("Delete this invoice record? This does not affect the invoice number sequence.")) await deleteDoc(doc(db, "invoices", id)); };
+
+    window.reloadInvoiceIntoPreview = (id) => {
+        const inv = localInvoices.find(i => i.id === id);
+        if(!inv) return;
+        document.getElementById('docClientName').value = inv.clientName;
+        document.getElementById('docClientAddress').value = inv.clientAddress;
+        document.getElementById('docClientEmail').value = inv.clientEmail || "";
+        document.getElementById('docDate').value = inv.date;
+        document.getElementById('docDiscount').value = inv.discountPct || 0;
+        document.getElementById('docTax').value = inv.taxPct || 0;
+        document.getElementById('docItemsContainer').innerHTML = "";
+        inv.items.forEach(i => {
+            const row = document.createElement('div');
+            row.className = "inv-item-row";
+            row.innerHTML = `
+                <input type="number" class="doc-qty" style="width:80px;" min="1" value="${i.qty}">
+                <input type="text" class="doc-unit" style="width:80px;" value="${i.unit}">
+                <input type="text" class="doc-desc" style="flex:1;" value="${i.desc}">
+                <input type="number" class="doc-price" style="width:120px;" min="0" value="${i.price}">
+                <button onclick="this.parentElement.remove()" class="btn-del" style="width:40px; margin:0;">X</button>
+            `;
+            document.getElementById('docItemsContainer').appendChild(row);
+        });
+        window.generateDocs();
+        window.currentDocDraft.invoiceNumber = inv.invoiceNumber;
+        window.currentDocDraft.savedId = inv.id;
+        document.getElementById('outInvNumber').innerText = `Invoice No: ${inv.invoiceNumber}`;
+        document.getElementById('outDelNumber').innerText = `Ref: ${inv.invoiceNumber}`;
+        document.getElementById('btn-save-record').innerText = "✅ Saved as " + inv.invoiceNumber;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    /* --- PDF download of the currently visible template --- */
+    window.downloadDocAsPDF = async () => {
+        const isInvView = document.getElementById('preview-invoice').style.display !== 'none';
+        const target = document.getElementById(isInvView ? 'preview-invoice' : 'preview-delivery');
+        const draft = window.currentDocDraft || {};
+        const label = isInvView ? 'Invoice' : 'DeliveryForm';
+        const filename = `${label}-${draft.invoiceNumber || 'DRAFT'}-${(draft.clientName || 'client').replace(/[^a-z0-9]/gi,'_')}.pdf`;
+
+        const canvas = await html2canvas(target, { scale: 2, useCORS: true });
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = 210, pageHeight = 297;
+        const imgHeight = (canvas.height * pageWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight));
+        pdf.save(filename);
+    };
+
+    /* --- Email (mailto) --- */
+    window.emailInvoice = () => {
+        const draft = window.currentDocDraft;
+        if(!draft) return alert("Generate a preview first.");
+        if(!draft.clientEmail) return alert("Add a client email in the form first.");
+        const subject = encodeURIComponent(`Invoice ${draft.invoiceNumber || ''} - Zab Digital Prints`);
+        const body = encodeURIComponent(
+            `Hi ${draft.clientName},\n\nPlease find your invoice details below.\n\n` +
+            `Invoice No: ${draft.invoiceNumber || 'DRAFT'}\nDate: ${draft.date}\nTotal: P${draft.total.toLocaleString(undefined,{minimumFractionDigits:2})}\n\n` +
+            `Please download and attach the PDF (use the Download PDF button) before sending, as this link cannot attach files automatically.\n\n` +
+            `Thank you for your business!\nZab Digital Prints`
+        );
+        window.location.href = `mailto:${draft.clientEmail}?subject=${subject}&body=${body}`;
+    };
+
+    function initInvoiceGen() {
+        loadDocumentSettings();
+        onSnapshot(query(collection(db, "invoices"), orderBy("createdAt", "desc")), (snap) => {
+            localInvoices = []; snap.forEach(d => localInvoices.push({ id: d.id, ...d.data() }));
+            renderInvoiceHistory();
+            refreshClientSuggestions();
+        });
+    }
 
     window.toggleDocView = (type) => {
         const btnInv = document.getElementById('btn-show-inv');
