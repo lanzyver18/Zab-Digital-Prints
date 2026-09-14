@@ -88,7 +88,7 @@
         .preview-controls { display: flex; gap: 10px; margin-bottom: 20px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
         .preview-controls button { margin: 0; width: auto; flex-grow: 1; }
         
-        /* A4 Page Styling */
+        /* A4 Page Styling & Exact Formatting */
         .a4-page {
             width: 21cm;
             min-height: 29.7cm;
@@ -98,36 +98,58 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             color: #000;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
         }
 
-        .doc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid var(--dark-pink); padding-bottom: 20px; }
-        .doc-logo-area { display: flex; align-items: center; gap: 15px; }
-        .doc-logo-circle { width: 100px; height: 100px; border: 3px solid #ffdf00; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff9fa; }
-        .doc-logo-circle h2 { margin: 0; color: var(--dark-pink); font-family: 'Playfair Display'; font-size: 32px; letter-spacing: -1px; }
+        .doc-header { text-align: center; margin-bottom: 30px; }
+        .doc-logo-circle { 
+            width: 140px; height: 140px; border: 4px solid #ffdf00; border-radius: 50%; 
+            margin: 0 auto 10px auto; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; background: #fff9fa; 
+        }
+        .doc-logo-circle h2 { margin: 0; color: #ff1493; font-family: 'Arial Black', sans-serif; font-size: 40px; line-height: 1; }
+        .doc-logo-circle span { font-size: 10px; font-weight: bold; color: #9c27b0; letter-spacing: 1px; }
+        .doc-tagline { font-style: italic; color: #333; font-size: 14px; margin-top: 10px; font-weight: normal; }
+
+        .doc-top-section { display: flex; justify-content: space-between; margin-bottom: 30px; }
         
-        .doc-header-text h1 { color: var(--dark-pink); margin: 0; font-size: 24px; text-transform: uppercase; }
-        .doc-header-text p { margin: 2px 0; color: #555; font-size: 12px; }
+        .client-box { width: 50%; }
+        .client-box-title { color: #ff1493; font-weight: bold; font-size: 16px; margin: 0 0 5px 0; text-transform: uppercase; }
+        .client-name { font-weight: bold; font-size: 18px; margin: 0 0 5px 0; }
+        .client-address { font-size: 14px; margin: 0; line-height: 1.4; max-width: 90%; }
         
-        .doc-title-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
-        .doc-client-info p { margin: 2px 0; }
-        .doc-type { font-size: 28px; font-weight: bold; color: var(--dark-pink); letter-spacing: 2px; margin: 0; text-transform: uppercase; text-align: right; }
+        .company-box { text-align: right; width: 50%; }
+        .doc-type { font-size: 32px; font-weight: bold; color: #ff1493; letter-spacing: 2px; margin: 0 0 10px 0; text-transform: uppercase; }
+        .company-name { font-weight: bold; font-size: 14px; margin: 0 0 3px 0; }
+        .company-tin { font-size: 13px; margin: 0 0 15px 0; }
+        .doc-date { font-size: 14px; }
+        .doc-date span { font-weight: bold; }
+
+        .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        .doc-table th { border-top: 2px solid #ccc; border-bottom: 2px solid #ccc; padding: 10px 5px; text-align: left; font-weight: bold; }
+        .doc-table td { padding: 10px 5px; border-bottom: 1px solid #eee; }
         
-        .doc-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
-        .doc-table th { background: #fdf0f2; border-bottom: 2px solid var(--dark-pink); padding: 12px; text-align: left; color: var(--dark-pink); font-weight: 600; }
-        .doc-table td { padding: 12px; border-bottom: 1px solid #eee; }
+        .doc-total-row { text-align: right; font-size: 18px; font-weight: bold; margin-top: 10px; padding: 10px 5px; }
         
-        .doc-total-row { display: flex; justify-content: flex-end; font-size: 18px; font-weight: bold; margin-top: 20px; padding: 10px 0; border-top: 2px solid #333; }
+        .invoice-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; font-size: 13px; line-height: 1.5; }
+        .invoice-footer-grid h4 { color: #ff1493; margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; }
+        .payment-box { background: #fff9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #ffb7c5; }
+        .payment-box h4 { margin-bottom: 5px; color: #ff1493; }
+        .payment-box p { font-weight: bold; margin: 0; }
+
+        .doc-signature { margin-top: 50px; text-align: center; width: 220px; }
+        .doc-signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; font-size: 14px; }
         
-        .doc-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; font-size: 12px; line-height: 1.6; }
-        .doc-footer-grid h4 { color: var(--dark-pink); margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; }
-        
-        .doc-signature { margin-top: 40px; text-align: center; width: 250px; }
-        .doc-signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; }
-        
-        .doc-bottom-footer { text-align: center; margin-top: 50px; font-size: 11px; color: #666; border-top: 1px solid #eee; padding-top: 20px; }
-        .doc-bottom-footer p { margin: 3px 0; }
+        .doc-remarks { margin-top: 20px; font-size: 13px; line-height: 1.5; }
+        .delivery-signatures { display: flex; gap: 50px; margin-top: 60px; }
+        .delivery-sig-box { width: 200px; }
+        .delivery-sig-line { border-bottom: 1px solid #000; height: 30px; margin-bottom: 5px; }
+
+        .doc-bottom { text-align: center; margin-top: 50px; font-size: 12px; color: #000; }
+        .tax-disclaimer { font-weight: bold; color: #ff1493; margin-bottom: 20px; font-size: 11px; }
+        .thank-you { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
+        .contact-info { margin-top: 10px; }
 
         @media print {
             body * { visibility: hidden; }
@@ -135,7 +157,7 @@
             #print-area { position: absolute; left: 0; top: 0; width: 100%; }
             .sidebar, .workspace > *:not(#invoice-gen), .preview-controls, .form-panel { display: none !important; }
             .workspace { padding: 0; margin: 0; overflow: visible; }
-            .a4-page { box-shadow: none; margin: 0; padding: 1cm; border: none; width: 100%; min-height: auto; }
+            .a4-page { box-shadow: none; margin: 0; padding: 0; border: none; width: 100%; min-height: auto; }
         }
     </style>
 </head>
@@ -154,7 +176,7 @@
     <div class="sidebar-menu">
         <div class="menu-item active" onclick="switchTab('inventory', this)">Inventory</div>
         <div class="menu-item" onclick="switchTab('orders-tab', this)">Orders</div>
-        <!-- NEW TAB FOR GENERATOR -->
+        <!-- INVOICING TAB -->
         <div class="menu-item" onclick="switchTab('invoice-gen', this)">Invoicing</div>
         <div id="settings-menu-item" class="menu-item" onclick="switchTab('settings', this)" style="display:none;">Settings</div>
         <div class="menu-item" onclick="logout()" style="margin-top: 20px; color: #999;">Logout</div>
@@ -232,7 +254,7 @@
     <div id="invoice-gen" class="tab-content">
         <div class="panel form-panel">
             <h3 style="margin-top:0; color:var(--dark-pink);">Document Generator</h3>
-            <p style="font-size:0.85rem; color:#666; margin-bottom:20px;">Fill out the details below to automatically generate printable Invoices and Delivery Receipts.</p>
+            <p style="font-size:0.85rem; color:#666; margin-bottom:20px;">Fill out the details below to automatically generate printable Invoices and Delivery Receipts matching the Zab Digital Prints standard format.</p>
             
             <div class="form-grid-inv">
                 <div>
@@ -241,11 +263,11 @@
                 </div>
                 <div>
                     <label style="font-size:12px; font-weight:bold;">Date</label>
-                    <input type="date" id="docDate">
+                    <input type="text" id="docDate" placeholder="e.g. September 7, 2026">
                 </div>
                 <div style="grid-column: span 2;">
                     <label style="font-size:12px; font-weight:bold;">Client Address</label>
-                    <input type="text" id="docClientAddress" placeholder="e.g. Domingo M.Lantican Avenue, University of the Philippines Los Banos, Laguna">
+                    <input type="text" id="docClientAddress" placeholder="e.g. Domingo M.Lantican Avenue, University of the Philippines Los Banos, Laguna, Philippines">
                 </div>
             </div>
 
@@ -257,7 +279,7 @@
                     <input type="number" class="doc-qty" placeholder="Qty" style="width:80px;" min="1">
                     <input type="text" class="doc-unit" placeholder="Unit (pcs)" style="width:80px;" value="pcs">
                     <input type="text" class="doc-desc" placeholder="Item Description" style="flex:1;">
-                    <input type="number" class="doc-price" placeholder="Price (₱)" style="width:120px;" min="0">
+                    <input type="number" class="doc-price" placeholder="Price (P)" style="width:120px;" min="0">
                     <button onclick="this.parentElement.remove()" class="btn-del" style="width:40px; margin:0;">X</button>
                 </div>
             </div>
@@ -269,7 +291,7 @@
         <!-- Document Previews -->
         <div class="preview-controls" id="preview-controls" style="display:none;">
             <button id="btn-show-inv" onclick="toggleDocView('invoice')" style="background:var(--owner-gold);">View Invoice</button>
-            <button id="btn-show-del" onclick="toggleDocView('delivery')" style="background:#ddd; color:#333;">View Delivery Receipt</button>
+            <button id="btn-show-del" onclick="toggleDocView('delivery')" style="background:#ddd; color:#333;">View Delivery Form</button>
             <button onclick="window.print()" style="background:var(--text);">🖨️ Print Document</button>
         </div>
 
@@ -277,27 +299,25 @@
             <!-- INVOICE A4 TEMPLATE -->
             <div id="preview-invoice" class="a4-page" style="display:none;">
                 <div class="doc-header">
-                    <div class="doc-logo-area">
-                        <div class="doc-logo-circle"><h2>ZAB</h2></div>
-                        <div>
-                            <h1 style="color:var(--dark-pink); margin:0; font-size:22px; font-weight:800;">ZAB DIGITAL PRINTS</h1>
-                            <p style="margin:0; font-weight:bold; font-size:12px; letter-spacing:1px; color:#555;">EST. 2012</p>
-                            <p style="margin:0; font-style:italic; font-size:11px; color:#777; margin-top:3px;">Keeping your memories within view!</p>
-                        </div>
+                    <div class="doc-logo-circle">
+                        <h2>ZAB</h2>
+                        <span>DIGITAL PRINTS</span>
                     </div>
+                    <div style="font-weight:bold; font-size:13px; color:#2ecc71;">EST. 2012</div>
+                    <div class="doc-tagline">Keeping your memories within view!</div>
                 </div>
 
-                <div class="doc-title-row">
-                    <div class="doc-client-info">
-                        <p style="font-weight:bold; font-size:13px; color:#555;">INVOICE TO:</p>
-                        <p id="outInvName" style="font-weight:bold; font-size:16px;">[Client Name]</p>
-                        <p id="outInvAddress" style="max-width:300px; color:#444;">[Client Address]</p>
+                <div class="doc-top-section">
+                    <div class="client-box">
+                        <p class="client-box-title">INVOICE TO:</p>
+                        <p id="outInvName" class="client-name">[Client Name]</p>
+                        <p id="outInvAddress" class="client-address">[Client Address]</p>
                     </div>
-                    <div style="text-align:right;">
+                    <div class="company-box">
                         <h2 class="doc-type">INVOICE</h2>
-                        <p style="margin:0; font-weight:bold;">ZAB DIGITAL PRINTS</p>
-                        <p style="margin:2px 0;">TIN NO. 296-724-666-000[cite: 1, 2]</p>
-                        <p style="margin:10px 0 0 0;">Date: <span id="outInvDate" style="font-weight:bold;">[Date]</span></p>
+                        <p class="company-name">ZAB DIGITAL PRINTS</p>
+                        <p class="company-tin">TIN NO. 296-724-666-000</p>
+                        <p class="doc-date">Date: <span id="outInvDate">[Date]</span></p>
                     </div>
                 </div>
 
@@ -316,79 +336,76 @@
                 </table>
 
                 <div class="doc-total-row">
-                    TOTAL &nbsp; <span id="outInvTotal" style="color:var(--dark-pink);">₱0.00</span>
+                    TOTAL <span id="outInvTotal" style="margin-left: 20px;">P0.00</span>
                 </div>
 
-                <div class="doc-footer-grid">
+                <div class="invoice-footer-grid">
                     <div>
                         <h4>PAYMENTS:</h4>
-                        <p>We accept Cash, Online Deposit, or Cheque.[cite: 2]</p>
-                        <p>Cheque payments should be deposited directly to our designated bank account.[cite: 2]</p>
-                        <p>Cheque payments are subject to bank clearing unless otherwise stated or negotiated.[cite: 2]</p>
-                        <p>Goods and/or services will be released only after payment confirmation or cheque clearance, unless otherwise agreed.[cite: 2]</p>
+                        <p style="margin: 2px 0;">We accept Cash, Online Deposit, or Cheque.</p>
+                        <p style="margin: 2px 0;">Cheque payments should be deposited directly to our designated bank account.</p>
+                        <p style="margin: 2px 0;">Cheque payments are subject to bank clearing unless otherwise stated or negotiated.</p>
+                        <p style="margin: 2px 0;">Goods and/or services will be released only after payment confirmation or cheque clearance, unless otherwise agreed.</p>
                         
-                        <div style="background:#fdf0f2; padding:15px; border-radius:8px; margin-top:15px;">
-                            <h4 style="margin-bottom:5px;">PAYMENT DETAILS</h4>
-                            <p style="font-weight:bold; margin:0;">ZAB DIGITAL PRINTS[cite: 2]<br>BPI SAVINGS ACCOUNT[cite: 2]<br>ACCOUNT NO. 0929729956[cite: 2]</p>
+                        <div class="payment-box">
+                            <h4>PAYMENT DETAILS</h4>
+                            <p>ZAB DIGITAL PRINTS<br>BPI SAVINGS ACCOUNT<br>ACCOUNT NO. 0929729956</p>
                         </div>
                     </div>
                     <div>
                         <h4>TERMS AND CONDITION:</h4>
-                        <p>Safe storage of the products is necessary to ensure their quality, Zab Digital Prints will not be held accountable in case of unsafe storage of the products.[cite: 2]</p>
+                        <p style="margin: 2px 0;">Safe storage of the products is necessary to ensure their quality, Zab Digital Prints will not be held accountable in case of unsafe storage of the products.</p>
                         
                         <div class="doc-signature">
-                            <br><br><br>
-                            <div class="doc-signature-line">AILYN P. ORPILLA[cite: 2]</div>
-                            <div style="font-size:10px; color:#666; margin-top:3px;">AUTHORIZED SIGN[cite: 2]</div>
+                            <div class="doc-signature-line">AILYN P. ORPILLA</div>
+                            <div style="font-size:11px; color:#666; margin-top:3px;">AUTHORIZED SIGN</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="doc-bottom-footer">
-                    <p style="font-weight:bold; color:var(--dark-pink);">*THIS IS A BILLING STATEMENT. NOT VALID FOR CLAIM OF INPUT TAX. OFFICIAL RECEIPT WILL BE ISSUED UPON PAYMENT.[cite: 2]</p>
-                    <p style="font-size:14px; font-weight:bold; margin-top:15px; color:#333;">Thank you for your business![cite: 1, 2]</p>
-                    <p>If you have any questions concerning this invoice, please contact us.[cite: 2]</p>
-                    <p style="margin-top:10px;">
-                        98 Burgos St. Calamba City, Laguna[cite: 1] &nbsp;|&nbsp; 
-                        zabdigitalprints@yahoo.com.ph[cite: 1, 2] &nbsp;|&nbsp; 
-                        (63) 949-1637881[cite: 1, 2]
+                <div class="doc-bottom">
+                    <p class="tax-disclaimer">*THIS IS A BILLING STATEMENT. NOT VALID FOR CLAIM OF INPUT TAX. OFFICIAL RECEIPT WILL BE ISSUED UPON PAYMENT.</p>
+                    <p class="thank-you">Thank you for your business!</p>
+                    <p style="margin-bottom: 5px;">If you have any questions concerning this invoice, please contact us.</p>
+                    <p class="contact-info">
+                        98 Burgos St. Calamba City, Laguna<br>
+                        zabdigitalprints@yahoo.com.ph<br>
+                        (63) 949-1637881<br>
+                        <strong>Zab Digital Prints &nbsp; | &nbsp; ezab digital prints</strong>
                     </p>
-                    <p style="font-weight:bold;">Zab Digital Prints &nbsp;|&nbsp; ezab digital prints[cite: 1, 2]</p>
                 </div>
             </div>
 
-            <!-- DELIVERY RECEIPT A4 TEMPLATE -->
+            <!-- DELIVERY FORM A4 TEMPLATE -->
             <div id="preview-delivery" class="a4-page" style="display:none;">
                 <div class="doc-header">
-                    <div class="doc-logo-area">
-                        <div class="doc-logo-circle"><h2>ZAB</h2></div>
-                        <div>
-                            <h1 style="color:var(--dark-pink); margin:0; font-size:22px; font-weight:800;">ZAB DIGITAL PRINTS</h1>
-                            <p style="margin:0; font-weight:bold; font-size:12px; letter-spacing:1px; color:#555;">EST. 2012</p>
-                            <p style="margin:0; font-style:italic; font-size:11px; color:#777; margin-top:3px;">Keeping your memories within view!</p>
-                        </div>
+                    <div class="doc-logo-circle">
+                        <h2>ZAB</h2>
+                        <span>DIGITAL PRINTS</span>
+                    </div>
+                    <div style="font-weight:bold; font-size:13px; color:#2ecc71;">EST. 2012</div>
+                    <div class="doc-tagline">Keeping your memories within view!</div>
+                </div>
+
+                <div class="doc-top-section">
+                    <div class="client-box">
+                        <p class="client-box-title">CLIENT NAME</p>
+                        <p id="outDelName" class="client-name">[Client Name]</p>
+                        <p id="outDelAddress" class="client-address">[Client Address]</p>
+                    </div>
+                    <div class="company-box">
+                        <h2 class="doc-type">DELIVERY FORM</h2>
+                        <p class="company-name">ZAB DIGITAL PRINTS</p>
+                        <p class="company-tin">TIN NO. 296-724-666-000</p>
+                        <p class="doc-date">Date: <span id="outDelDate">[Date]</span></p>
                     </div>
                 </div>
 
-                <div class="doc-title-row">
-                    <div class="doc-client-info">
-                        <p style="font-weight:bold; font-size:13px; color:#555;">CLIENT NAME</p>
-                        <p id="outDelName" style="font-weight:bold; font-size:16px;">[Client Name][cite: 1]</p>
-                        <p id="outDelAddress" style="max-width:300px; color:#444;">[Client Address][cite: 1]</p>
-                    </div>
-                    <div style="text-align:right;">
-                        <h2 class="doc-type">DELIVERY FORM[cite: 1]</h2>
-                        <p style="margin:0; font-weight:bold;">ZAB DIGITAL PRINTS</p>
-                        <p style="margin:2px 0;">TIN NO. 296-724-666-000[cite: 1, 2]</p>
-                        <p style="margin:10px 0 0 0;">Date: <span id="outDelDate" style="font-weight:bold;">[Date]</span></p>
-                    </div>
-                </div>
-
-                <table class="doc-table" style="margin-bottom: 40px;">
+                <table class="doc-table" style="margin-bottom: 30px;">
                     <thead>
                         <tr>
-                            <th style="width: 25%;">QUANTITY[cite: 1]</th>
-                            <th style="width: 75%;">DESCRIPTION[cite: 1]</th>
+                            <th style="width: 25%;">QUANTITY</th>
+                            <th style="width: 75%;">DESCRIPTION</th>
                         </tr>
                     </thead>
                     <tbody id="outDelTbody">
@@ -396,31 +413,31 @@
                     </tbody>
                 </table>
 
-                <div style="font-size: 13px; line-height: 1.6; margin-bottom: 40px;">
+                <div class="doc-remarks">
                     <p style="font-weight:bold; margin-bottom: 5px;">Remarks:</p>
-                    <p>By signing, I confirm that I have inspected the items and found them to be in good condition, as ordered, and that the quantities match this document.[cite: 1]</p>
+                    <p>By signing, I confirm that I have inspected the items and found them to be in good condition, as ordered, and that the quantities match this document.</p>
                 </div>
 
-                <div style="display:flex; justify-content:flex-start; gap: 50px; margin-bottom: 60px;">
-                    <div style="width: 250px;">
-                        <div style="border-bottom: 1px solid #000; height: 30px;"></div>
-                        <p style="font-weight:bold; font-size:12px; margin-top:5px;">Received By:[cite: 1]</p>
+                <div class="delivery-signatures">
+                    <div class="delivery-sig-box">
+                        <div class="delivery-sig-line"></div>
+                        <p style="font-weight:bold; font-size:12px; margin:0;">Received By:</p>
                     </div>
-                    <div style="width: 150px;">
-                        <div style="border-bottom: 1px solid #000; height: 30px;"></div>
-                        <p style="font-weight:bold; font-size:12px; margin-top:5px;">Date:[cite: 1]</p>
+                    <div class="delivery-sig-box" style="width: 150px;">
+                        <div class="delivery-sig-line"></div>
+                        <p style="font-weight:bold; font-size:12px; margin:0;">Date:</p>
                     </div>
                 </div>
 
-                <div class="doc-bottom-footer">
-                    <p style="font-size:14px; font-weight:bold; margin-top:15px; color:#333;">Thank you for your business![cite: 1, 2]</p>
-                    <p>If you have any questions, please contact us.[cite: 1]</p>
-                    <p style="margin-top:10px;">
-                        98 Burgos St. Calamba City, Laguna[cite: 1] &nbsp;|&nbsp; 
-                        zabdigitalprints@yahoo.com.ph[cite: 1, 2] &nbsp;|&nbsp; 
-                        (63) 949-1637881[cite: 1, 2]
+                <div class="doc-bottom" style="margin-top: 80px;">
+                    <p class="thank-you">Thank you for your business!</p>
+                    <p style="margin-bottom: 5px;">If you have any questions, please contact us.</p>
+                    <p class="contact-info">
+                        98 Burgos St. Calamba City, Laguna<br>
+                        zabdigitalprints@yahoo.com.ph<br>
+                        (63) 949-1637881<br>
+                        <strong>Zab Digital Prints &nbsp; | &nbsp; ezab digital prints</strong>
                     </p>
-                    <p style="font-weight:bold;">Zab Digital Prints &nbsp;|&nbsp; ezab digital prints[cite: 1, 2]</p>
                 </div>
             </div>
         </div>
@@ -506,7 +523,8 @@
             document.getElementById('login-gate').style.display = "none";
             
             // Set default date for invoice generator
-            document.getElementById('invDate').valueAsDate = new Date();
+            const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('docDate').value = today;
 
             initApp();
         } else { alert("Invalid Password"); }
@@ -551,9 +569,6 @@
         });
         initOrders();
         if(sessionStorage.getItem("zabAdminRole") === "Owner") document.getElementById('settings-menu-item').style.display = 'flex';
-        
-        // Default date for invoice
-        document.getElementById('docDate').valueAsDate = new Date();
     }
 
     function initOrders() {
@@ -712,7 +727,7 @@
             <input type="number" class="doc-qty" placeholder="Qty" style="width:80px;" min="1">
             <input type="text" class="doc-unit" placeholder="Unit (pcs)" style="width:80px;" value="pcs">
             <input type="text" class="doc-desc" placeholder="Item Description" style="flex:1;">
-            <input type="number" class="doc-price" placeholder="Price (₱)" style="width:120px;" min="0">
+            <input type="number" class="doc-price" placeholder="Price (P)" style="width:120px;" min="0">
             <button onclick="this.parentElement.remove()" class="btn-del" style="width:40px; margin:0;">X</button>
         `;
         container.appendChild(row);
@@ -721,18 +736,16 @@
     window.generateDocs = () => {
         const name = document.getElementById('docClientName').value || "[Client Name]";
         const address = document.getElementById('docClientAddress').value || "[Client Address]";
-        
-        const dateInput = document.getElementById('docDate').value;
-        const formattedDate = dateInput ? new Date(dateInput).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : "[Date]";
+        const dateInput = document.getElementById('docDate').value || "[Date]";
 
         // Populate Headers
         document.getElementById('outInvName').innerText = name;
         document.getElementById('outInvAddress').innerText = address;
-        document.getElementById('outInvDate').innerText = formattedDate;
+        document.getElementById('outInvDate').innerText = dateInput;
 
         document.getElementById('outDelName').innerText = name;
         document.getElementById('outDelAddress').innerText = address;
-        document.getElementById('outDelDate').innerText = formattedDate;
+        document.getElementById('outDelDate').innerText = dateInput;
 
         const rows = document.querySelectorAll('.inv-item-row');
         let invHtml = "";
@@ -754,8 +767,8 @@
                 <tr>
                     <td>${qtyText}</td>
                     <td>${desc}</td>
-                    <td>₱${price.toLocaleString()}</td>
-                    <td>₱${sub.toLocaleString()}</td>
+                    <td>P${price.toLocaleString()}</td>
+                    <td>P${sub.toLocaleString()}</td>
                 </tr>
             `;
 
@@ -770,7 +783,7 @@
 
         document.getElementById('outInvTbody').innerHTML = invHtml;
         document.getElementById('outDelTbody').innerHTML = delHtml;
-        document.getElementById('outInvTotal').innerText = `₱${grandTotal.toLocaleString()}`;
+        document.getElementById('outInvTotal').innerText = `P${grandTotal.toLocaleString()}`;
 
         // Show previews
         document.getElementById('preview-controls').style.display = 'flex';
