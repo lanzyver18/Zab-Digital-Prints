@@ -960,21 +960,83 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    /* --- PDF download (Fixed Aspect Ratio/Stretching) --- */
+    window.downloadDocAsPDF = async () => {
+        const isInvView = document.getElementById('preview-invoice').style.display !== 'none';
+        const target = document.getElementById(isInvView ? 'preview-invoice' : 'preview-delivery');
+        const draft = window.currentDocDraft || {};
+        const label = isInvView ? 'Invoice' : 'DeliveryForm';
+        const filename = `${label}-${draft.invoiceNumber || 'DRAFT'}-${(draft.clientName || 'client').replace(/[^a-z0-9]/gi,'_')}.pdf`;
+
+        const canvas = await html2canvas(target, { scale: 2, useCORS: true });
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        
+        // Calculate proportional dimensions
+        let imgWidth = pageWidth;
+        let imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+        // If the document is taller than an A4 page, scale it down proportionally
+        if (imgHeight > pageHeight) {
+            imgHeight = pageHeight;
+            imgWidth = (canvas.width * pageHeight) / canvas.height;
+        }
+
+        // Center it horizontally if it was scaled down
+        const xOffset = (pageWidth - imgWidth) / 2;
+
+        pdf.addImage(imgData, 'PNG', xOffset, 0, imgWidth, imgHeight);
+        pdf.save(filename);
+    };
+
+    /* --- Combined PDF download (Fixed Aspect Ratio/Stretching) --- */
     window.downloadCombinedPDF = async () => {
-        const draft = window.currentDocDraft; if(!draft) return alert("Generate a preview first.");
+        const draft = window.currentDocDraft; 
+        if(!draft) return alert("Generate a preview first.");
+        
         const filename = `Combined-${draft.invoiceNumber || 'DRAFT'}-${(draft.clientName || 'client').replace(/[^a-z0-9]/gi,'_')}.pdf`;
-        const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4'); const pageWidth = 210, pageHeight = 297;
-        const viewInv = document.getElementById('preview-invoice'), viewDel = document.getElementById('preview-delivery');
+        const { jsPDF } = window.jspdf; 
+        const pdf = new jsPDF('p', 'mm', 'a4'); 
+        
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const viewInv = document.getElementById('preview-invoice');
+        const viewDel = document.getElementById('preview-delivery');
 
-        viewInv.style.display = 'block'; viewDel.style.display = 'none';
-        let canvas = await html2canvas(viewInv, { scale: 2, useCORS: true }), imgHeight = (canvas.height * pageWidth) / canvas.width;
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight));
+        // Helper function to maintain aspect ratio for both pages
+        const addProportionalImage = (canvas, pdfDoc) => {
+            const imgData = canvas.toDataURL('image/png');
+            let imgWidth = pageWidth;
+            let imgHeight = (canvas.height * pageWidth) / canvas.width;
+            
+            if (imgHeight > pageHeight) {
+                imgHeight = pageHeight;
+                imgWidth = (canvas.width * pageHeight) / canvas.height;
+            }
+            const xOffset = (pageWidth - imgWidth) / 2;
+            pdfDoc.addImage(imgData, 'PNG', xOffset, 0, imgWidth, imgHeight);
+        };
 
-        pdf.addPage(); viewInv.style.display = 'none'; viewDel.style.display = 'block';
-        canvas = await html2canvas(viewDel, { scale: 2, useCORS: true }); imgHeight = (canvas.height * pageWidth) / canvas.width;
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight));
+        // 1. Capture & Add Invoice
+        viewInv.style.display = 'block'; 
+        viewDel.style.display = 'none';
+        let canvas = await html2canvas(viewInv, { scale: 2, useCORS: true });
+        addProportionalImage(canvas, pdf);
 
-        window.toggleDocView('invoice'); pdf.save(filename);
+        // 2. Capture & Add Delivery Form
+        pdf.addPage(); 
+        viewInv.style.display = 'none'; 
+        viewDel.style.display = 'block';
+        canvas = await html2canvas(viewDel, { scale: 2, useCORS: true });
+        addProportionalImage(canvas, pdf);
+
+        // 3. Restore UI
+        window.toggleDocView('invoice'); 
+        pdf.save(filename);
     };
 
     window.saveInvoiceRecord = async () => {
@@ -1052,13 +1114,6 @@
         document.getElementById('outInvNumber').innerText = `Invoice No: ${inv.invoiceNumber}`; document.getElementById('outDelNumber').innerText = `Ref: ${inv.invoiceNumber}`;
         document.getElementById('btn-save-record').innerText = "✅ Saved " + inv.invoiceNumber;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    window.downloadDocAsPDF = async () => {
-        const isInvView = document.getElementById('preview-invoice').style.display !== 'none';
-        const target = document.getElementById(isInvView ? 'preview-invoice' : 'preview-delivery'), draft = window.currentDocDraft || {}, label = isInvView ? 'Invoice' : 'DeliveryForm', filename = `${label}-${draft.invoiceNumber || 'DRAFT'}-${(draft.clientName || 'client').replace(/[^a-z0-9]/gi,'_')}.pdf`;
-        const canvas = await html2canvas(target, { scale: 2, useCORS: true }), imgData = canvas.toDataURL('image/png'), { jsPDF } = window.jspdf, pdf = new jsPDF('p', 'mm', 'a4'), pageWidth = 210, pageHeight = 297, imgHeight = (canvas.height * pageWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight)); pdf.save(filename);
     };
 
     window.emailInvoice = () => {
