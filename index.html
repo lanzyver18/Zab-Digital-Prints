@@ -10,20 +10,32 @@
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); scroll-behavior: smooth; overflow-x: hidden; }
         
-        /* Nav */
+        /* --- HEADER & NAV --- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        .announcement-bar {
+            background: var(--dark-pink);
+            color: var(--white);
+            text-align: center;
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
         nav { 
             background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(10px);
-            padding: 10px 5%; 
+            padding: 12px 5%; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-            box-shadow: 0 2px 15px rgba(0,0,0,0.03); 
         }
-        .logo-img { height: 50px; width: auto; transition: 0.3s; }
+        .logo-img { height: 45px; width: auto; transition: 0.3s; }
 
         /* Cart Icon */
         .cart-icon-btn { position: relative; background: none; border: none; cursor: pointer; padding: 10px; color: var(--dark-pink); display: flex; align-items: center; }
@@ -119,7 +131,7 @@
         }
         .filter-btn.active, .filter-btn:hover { background: var(--pink); color: var(--white); transform: translateY(-3px); }
 
-        /* Grid - UPDATED TO 5 ITEMS PER ROW */
+        /* Grid */
         .catalog-section { padding: 40px 5% 40px 5%; background: var(--white); display: flex; flex-direction: column; align-items: center; }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; width: 100%; }
         .card { background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: 0.4s; position: relative; border: 1px solid #f9f9f9; cursor: pointer; animation: fadeIn 0.6s ease forwards; }
@@ -178,7 +190,6 @@
         .cart-header { padding: 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
         
-        /* FIX: Ensure cart item images are a professional small size */
         .cart-item { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; position: relative; }
         .cart-item img { width: 60px !important; height: 60px !important; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
         
@@ -186,18 +197,29 @@
 
         /* Checkout Box Styles */
         .checkout-box input, .checkout-box textarea, .checkout-box select { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box; }
+        .checkout-box input:focus, .checkout-box textarea:focus, .checkout-box select:focus { outline: none; border-color: var(--dark-pink); }
         .info-callout { background: #fff1f2; border-left: 4px solid var(--pink); padding: 10px; font-size: 0.75rem; color: var(--dark-pink); margin-bottom: 15px; border-radius: 0 10px 10px 0; }
 
-        footer { background: white; color: var(--text); padding: 60px 5% 30px 5%; border-top: 1px solid #f0f0f0; }
-        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 50px; }
+        /* --- FOOTER UPGRADES --- */
+        footer { background: white; color: var(--text); padding: 70px 5% 30px 5%; border-top: 1px solid #f0f0f0; }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.5fr; gap: 40px; margin-bottom: 50px; }
         .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--dark-pink); font-size: 1.2rem; margin-bottom: 20px; }
         .footer-col p { font-size: 0.85rem; line-height: 1.8; color: #777; margin: 0; }
         .footer-links { list-style: none; padding: 0; margin: 0; }
         .footer-links li { margin-bottom: 10px; }
         .footer-links a { text-decoration: none; color: #777; font-size: 0.85rem; transition: 0.3s; }
         .footer-links a:hover { color: var(--dark-pink); padding-left: 5px; }
+        
+        /* Social & Newsletter */
         .social-links { display: flex; gap: 15px; margin-top: 20px; }
-        .social-icon { width: 35px; height: 35px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; color: var(--dark-pink); text-decoration: none; font-size: 0.8rem; }
+        .social-icon { width: 35px; height: 35px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; color: var(--dark-pink); text-decoration: none; font-size: 0.8rem; border: 1px solid var(--pink); }
+        .social-icon:hover { background: var(--dark-pink); color: white; }
+        
+        .newsletter-input { display: flex; margin-top: 15px; }
+        .newsletter-input input { border-radius: 50px 0 0 50px; border: 1px solid #ddd; padding: 12px 15px; outline: none; width: 100%; border-right: none; }
+        .newsletter-input input:focus { border-color: var(--pink); }
+        .newsletter-input button { border-radius: 0 50px 50px 0; margin: 0; padding: 12px 20px; border: 1px solid var(--pink); }
+
         .footer-bottom { border-top: 1px solid #f9f9f9; padding-top: 30px; text-align: center; }
         .footer-bottom p { font-size: 0.75rem; color: #bbb; letter-spacing: 1px; }
 
@@ -207,6 +229,7 @@
         /* MOBILE OPTIMIZATION ADDITIONS */
         @media (max-width: 1024px) {
             .grid { grid-template-columns: repeat(3, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 768px) {
             .hero { flex-direction: column-reverse; padding: 40px 5%; text-align: center; gap: 30px; min-height: auto; }
@@ -240,15 +263,21 @@
 
 <div id="successToast">✅ Order Saved Successfully!</div>
 
-<nav>
-    <a href="#"><img src="IMG_1218.jpeg" alt="Zab Logo" class="logo-img"></a>
-    <button class="cart-icon-btn" onclick="toggleCart()">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-        <span class="cart-count" id="cartCount">0</span>
-    </button>
-</nav>
+<!-- UPGRADED HEADER -->
+<header class="site-header">
+    <div class="announcement-bar">
+        🔥 Free Nationwide Shipping on orders over ₱1,500! 🔥
+    </div>
+    <nav>
+        <a href="#"><img src="IMG_1218.jpeg" alt="Zab Logo" class="logo-img"></a>
+        <button class="cart-icon-btn" onclick="toggleCart()">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span class="cart-count" id="cartCount">0</span>
+        </button>
+    </nav>
+</header>
 
-<header class="hero">
+<section class="hero">
     <div class="hero-content">
         <h1>Beautifully Printed,<br>Unique to You.</h1>
         <p>Turning your favorite memories into premium souvenirs and keepsakes. Quality you can feel, designs you will love.</p>
@@ -257,7 +286,7 @@
     <div class="hero-image-area">
         <div class="hero-img-card"><img src="IMG_1217.jpeg" alt="Featured Souvenir"></div>
     </div>
-</header>
+</section>
 
 <div class="trust-bar">
     <div class="trust-item"><b>Nationwide Shipping</b><span>Across the Philippines</span></div>
@@ -281,8 +310,8 @@
 
 <main class="catalog-section">
     <div id="catalog-grid" class="grid">Loading collection...</div>
-    <div id="loadMoreContainer" class="load-more-container" style="display: none;">
-        <button class="btn btn-outline" onclick="expandShop()">View All Products</button>
+    <div id="loadMoreContainer" class="load-more-container" style="display: none; margin-top: 30px;">
+        <button class="btn btn-outline" onclick="expandShop()">View More Products</button>
     </div>
 </main>
 
@@ -347,7 +376,7 @@
             </select>
 
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
-                <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem;">Remember my details</label>
+                <input type="checkbox" id="saveInfo" style="width:auto;"><label style="font-size:0.75rem; text-transform:none; margin:0;">Remember my details for next time</label>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:10px;">
@@ -362,7 +391,7 @@
     <h2 style="font-family:'Playfair Display'; color: var(--dark-pink);">Track My Order</h2>
     <p style="font-size: 0.9rem; margin-bottom: 25px;">Enter your email to check your latest order progress.</p>
     <div class="tracker-box">
-        <input type="email" id="trackEmail" placeholder="Your Registered Email" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ddd; margin-bottom:15px;">
+        <input type="email" id="trackEmail" placeholder="Your Registered Email" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ddd; margin-bottom:15px; outline:none;">
         <button class="btn" onclick="trackOrder()" style="width:100%;">Find My Order</button>
         <div id="trackResult" class="tracker-result"></div>
     </div>
@@ -370,14 +399,15 @@
 
 <button id="backToTop" onclick="scrollToTop()">↑</button>
 
+<!-- UPGRADED FOOTER -->
 <footer>
     <div class="footer-grid">
         <div class="footer-col">
-            <img src="IMG_1218.jpeg" alt="Zab Logo" style="height: 40px; margin-bottom: 20px;">
+            <img src="IMG_1218.jpeg" alt="Zab Logo" style="height: 45px; margin-bottom: 20px;">
             <p>Zab Digital Prints creates high-quality customized souvenirs that keep your precious memories within view.</p>
             <div class="social-links">
                 <a href="https://www.facebook.com/zabprintsdigital" class="social-icon" target="_blank">FB</a>
-                <a href="https://www.instagram.com/zabdigitalprints" class="social-icon">IG</a>
+                <a href="https://www.instagram.com/zabdigitalprints" class="social-icon" target="_blank">IG</a>
             </div>
         </div>
         <div class="footer-col">
@@ -394,11 +424,16 @@
             <ul class="footer-links">
                 <li><a href="https://www.facebook.com/messages/t/zabprintsdigital" target="_blank">Contact Us</a></li>
                 <li><a href="#">FAQ</a></li>
+                <li><a href="#">Return Policy</a></li>
             </ul>
         </div>
         <div class="footer-col">
-            <h4>Location</h4>
-            <p>8 Burgos Street, Brgy. 2, Calamba City, Laguna 4027<br>Philippines</p>
+            <h4>Newsletter</h4>
+            <p>Subscribe for exclusive deals and new product drops straight to your inbox.</p>
+            <div class="newsletter-input">
+                <input type="email" placeholder="Your email address">
+                <button class="btn" onclick="alert('Subscribed successfully!')">Join</button>
+            </div>
         </div>
     </div>
     <div class="footer-bottom"><p>&copy; 2026 ZAB DIGITAL PRINTS. ALL RIGHTS RESERVED.</p></div>
@@ -432,7 +467,18 @@
     let itemMOQ = 1;
     let cart = JSON.parse(localStorage.getItem('zabCart')) || [];
 
-    // --- UPDATED ORDER TRACKER LOGIC (Index-Free + Support Bridge) ---
+    // --- INITIALIZE SAVED CHECKOUT INFO ---
+    document.addEventListener("DOMContentLoaded", () => {
+        if(localStorage.getItem('custName')) {
+            document.getElementById('custName').value = localStorage.getItem('custName');
+            document.getElementById('custEmail').value = localStorage.getItem('custEmail') || '';
+            document.getElementById('custPhone').value = localStorage.getItem('custPhone') || '';
+            document.getElementById('custAddr').value = localStorage.getItem('custAddr') || '';
+            document.getElementById('saveInfo').checked = true;
+        }
+    });
+
+    // --- UPDATED ORDER TRACKER LOGIC ---
     window.trackOrder = async () => {
         const emailInput = document.getElementById('trackEmail').value.trim().toLowerCase();
         const resultDiv = document.getElementById('trackResult');
@@ -614,6 +660,11 @@
             localStorage.setItem('custEmail', email);
             localStorage.setItem('custPhone', phone);
             localStorage.setItem('custAddr', addr);
+        } else {
+            localStorage.removeItem('custName');
+            localStorage.removeItem('custEmail');
+            localStorage.removeItem('custPhone');
+            localStorage.removeItem('custAddr');
         }
 
         try {
@@ -636,7 +687,6 @@
             toast.classList.add('show');
 
             setTimeout(() => {
-                // FEATURE: Send cart data to payment page
                 const cartData = encodeURIComponent(JSON.stringify(cart));
                 window.location.href = `payment.html?id=${orderID}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(totalStr)}&method=${encodeURIComponent(payMeth)}&items=${cartData}`;
                 cart = [];
@@ -709,6 +759,13 @@
                 </div>`;
             grid.appendChild(card);
         });
+    };
+
+    // Placeholder if expand functionality is ever needed
+    window.expandShop = () => {
+        isExpanded = true;
+        document.getElementById('loadMoreContainer').style.display = 'none';
+        applyFilters();
     };
 
     window.showModal = (id) => {
