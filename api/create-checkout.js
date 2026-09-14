@@ -1,18 +1,18 @@
 export default async function handler(req, res) {
-    // Only allow POST requests
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     const { amount, description, remarks } = req.body;
+    
+    // This securely grabs the key you placed in Vercel Settings
     const secretKey = process.env.PAYMONGO_SECRET_KEY;
 
     if (!secretKey) {
-        return res.status(500).json({ error: 'PAYMONGO_SECRET_KEY is not set in Vercel environment variables.' });
+        return res.status(500).json({ error: 'PAYMONGO_SECRET_KEY is missing in Vercel.' });
     }
 
     try {
-        // PayMongo Basic Auth requires key + ":" base64 encoded
         const authHeader = 'Basic ' + Buffer.from(secretKey + ':').toString('base64');
 
         const response = await fetch('https://api.paymongo.com/v1/links', {
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 data: {
                     attributes: {
-                        amount: Math.round(Number(amount) * 100), // Convert PHP to centavos
+                        amount: Math.round(Number(amount) * 100), // PayMongo requires centavos
                         description: description || 'Zab Digital Prints Order',
                         remarks: remarks || ''
                     }
