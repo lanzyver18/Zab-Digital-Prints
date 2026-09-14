@@ -23,10 +23,12 @@
         
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-body); color: var(--text-main); display: flex; min-height: 100vh; }
         
+        /* Typography & Layout */
         h2, h3, h4 { color: var(--primary); margin-top: 0; }
         h2 { font-family: 'Playfair Display', serif; }
         hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
         
+        /* Sidebar Nav */
         .sidebar { width: 250px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 100; box-sizing: border-box;}
         .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border); text-align: center; }
         .sidebar-header b { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary); letter-spacing: 1px; }
@@ -35,18 +37,22 @@
         .menu-item:hover { background: var(--secondary); color: var(--text-main); }
         .menu-item.active { background: #fff5f6; color: var(--primary); font-weight: 600; }
 
+        /* Workspace */
         .workspace { flex-grow: 1; padding: 40px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Panels */
         .panel { background: var(--bg-panel); padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-bottom: 30px; }
         
+        /* Unified Form Inputs */
         label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
         input, select, textarea { width: 100%; padding: 12px 16px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fdfdfd; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; transition: 0.2s; color: var(--text-main); }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212, 129, 146, 0.1); }
         textarea { resize: vertical; min-height: 80px; }
         
+        /* Unified Button System */
         .btn { padding: 10px 20px; font-family: inherit; font-size: 0.9rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; }
         .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .btn:active { transform: translateY(0); }
@@ -69,6 +75,7 @@
         .btn-small { padding: 6px 12px; font-size: 0.75rem; border-radius: 6px; }
         .btn-block { width: 100%; margin-top: 10px; }
 
+        /* Grids & Cards */
         .inventory-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; align-items: start; }
         
         .data-list-row { display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; transition: 0.2s; background: white;}
@@ -81,6 +88,7 @@
         
         .action-btns { display: flex; gap: 8px; }
 
+        /* Order & Invoice Cards */
         .order-card { border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 15px; background: white; transition: 0.2s; }
         .order-card:hover { border-color: var(--primary-light); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 15px; margin-bottom: 15px; }
@@ -91,6 +99,7 @@
         .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); background: #fafbfc; border-radius: 0 0 12px 12px; margin: 15px -20px -20px -20px; padding: 15px 20px;}
         .order-total { font-weight: 700; font-size: 1.1rem; }
 
+        /* Badges & Tags */
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; cursor: pointer; border: 1px solid transparent; }
         .badge-paid { background: #e6fffa; color: #234e52; border-color: #b2f5ea; }
         .badge-unpaid { background: #fff5f5; color: #822727; border-color: #feb2b2; }
@@ -100,11 +109,13 @@
         .tag span { margin-left: 8px; cursor: pointer; color: var(--text-muted); font-size: 1.1rem; line-height: 1;}
         .tag span:hover { color: var(--danger); }
 
+        /* Analytics */
         .analytics-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
         .stat-card small { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; }
         .stat-card h2 { margin: 10px 0 0 0; font-size: 2rem; color: var(--primary); }
 
+        /* Invoice Generator Specifics */
         .form-grid-inv { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
         .inv-item-row { display: flex; gap: 10px; align-items: flex-start; background: var(--secondary); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px; }
         .inv-item-row input { margin-bottom: 0; }
@@ -112,17 +123,21 @@
         .preview-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 10; border: 1px solid var(--border);}
         .preview-controls .btn { flex-grow: 1; }
         
+        /* Owner Gate */
         .owner-gate { border: 2px solid var(--owner-gold); background: #fffcf5; padding: 25px; border-radius: 12px; text-align: center; }
         .owner-gate .btn { background: var(--owner-gold); color: white; margin-top: 15px; }
         .owner-gate .btn:hover { background: #b8962a; }
 
+        /* Login Gate */
         #login-gate { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; width: 340px; border: 1px solid var(--border); }
 
+        /* Tables */
         .log-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .log-table th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
         .log-table td { padding: 12px; border-bottom: 1px solid var(--border); }
 
+        /* Upload Container Styling */
         .upload-container { border: 2px dashed #cbd5e1; padding: 18px; border-radius: 10px; text-align: center; background: #fafbfc; margin-bottom: 15px; transition: 0.2s; }
         .upload-container:hover { border-color: var(--primary); background: #fff5f6; }
 
@@ -193,9 +208,6 @@
             .a4-page { box-shadow: none; margin: 0; padding: 0; border: none; width: 100%; min-height: auto; }
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -383,8 +395,6 @@
 
             <hr>
             <h4>Line Items</h4>
-            
-            <!-- NEW: Datalist containing all live products from Inventory for auto-pricing -->
             <datalist id="productInventoryList"></datalist>
 
             <div id="docItemsContainer">
@@ -448,7 +458,7 @@
                     <tbody id="outInvTbody"></tbody>
                 </table>
                 <div class="doc-notes-box" id="outInvNotesBox" style="display:none;"><b>Notes / Special Instructions</b><span id="outInvNotes"></span></div>
-                <div id="outInvBreakdown" style="font-size:13px; text-align:right; margin-bottom:6px;"></div>
+                <div id="outInvBreakdown" style="font-size:13px; text-align:right; margin-bottom:6px; line-height: 1.4;"></div>
                 <div class="doc-total-row">TOTAL <span id="outInvTotal">₱0.00</span></div>
                 <div class="invoice-footer-grid">
                     <div>
@@ -521,7 +531,6 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin:0;">Invoice History</h3>
                 <div style="display: flex; gap: 10px;">
-                    <!-- NEW: Live Search & CSV Export for Invoices -->
                     <input type="text" id="invoiceSearch" placeholder="Search Client or Invoice No..." oninput="renderInvoiceHistory()" style="margin:0; width: 250px; padding: 8px 12px;">
                     <button class="btn btn-secondary" onclick="exportInvoicesToCSV()" style="margin:0; padding: 8px 15px;">⬇️ Download Report</button>
                 </div>
@@ -673,7 +682,6 @@
         } catch(err) { alert("Error creating staff: " + err.message); }
     };
 
-    /* --- DB Actions --- */
     window.deleteItem = async (id) => {
         if(confirm("Permanently delete this product?")) {
             await deleteDoc(doc(db, "products", id));
@@ -817,7 +825,7 @@
         } else { alert("Wrong Master Password"); }
     };
 
-    /* --- NEW: Invoice Smart Linking & Auto-Price --- */
+    /* --- Invoice Smart Linking & Auto-Price --- */
     function updateProductSuggestions() {
         const list = document.getElementById('productInventoryList');
         if(list) list.innerHTML = localItems.map(p => `<option value="${p.name}"></option>`).join("");
@@ -843,6 +851,7 @@
         container.appendChild(row);
     };
 
+    /* --- INCLUSIVE VAT CALCULATION FIX --- */
     window.generateDocs = () => {
         const name = document.getElementById('docClientName').value || "[Client Name]", address = document.getElementById('docClientAddress').value || "[Client Address]", dateInput = document.getElementById('docDate').value || "[Date]";
         document.getElementById('outInvName').innerText = name; document.getElementById('outInvAddress').innerText = address; document.getElementById('outInvDate').innerText = dateInput;
@@ -858,16 +867,30 @@
             delHtml += `<tr><td>${qtyText}</td><td>${desc}</td></tr>`;
         });
 
+        // Inclusive VAT Logic
         const discountPct = parseFloat(document.getElementById('docDiscount').value) || 0, taxPct = parseFloat(document.getElementById('docTax').value) || 0;
-        const discountAmt = subtotal * (discountPct / 100), taxableAmt = subtotal - discountAmt, taxAmt = taxableAmt * (taxPct / 100), grandTotal = taxableAmt + taxAmt;
+        const discountAmt = subtotal * (discountPct / 100);
+        
+        // Grand Total is calculated BEFORE any tax (because tax is inclusive)
+        const grandTotal = subtotal - discountAmt; 
+        
+        // Extract VAT amount *out* of the Grand Total
+        const vatableSales = grandTotal / (1 + (taxPct / 100));
+        const taxAmt = grandTotal - vatableSales;
 
         document.getElementById('outInvTbody').innerHTML = invHtml; document.getElementById('outDelTbody').innerHTML = delHtml;
         document.getElementById('outInvTotal').innerText = `₱${grandTotal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
 
         let breakdownHtml = `Subtotal: ₱${subtotal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
         if(discountPct > 0) breakdownHtml += `<br>Discount (${discountPct}%): -₱${discountAmt.toLocaleString(undefined, {minimumFractionDigits:2})}`;
-        if(taxPct > 0) breakdownHtml += `<br>Tax/VAT (${taxPct}%): +₱${taxAmt.toLocaleString(undefined, {minimumFractionDigits:2})}`;
-        document.getElementById('outInvBreakdown').innerHTML = (discountPct > 0 || taxPct > 0) ? breakdownHtml : "";
+        
+        // Display inclusive breakdown to client
+        if(taxPct > 0) {
+            breakdownHtml += `<br><span style="color:#888;">Vatable Sales: ₱${vatableSales.toLocaleString(undefined, {minimumFractionDigits:2})}</span>`;
+            breakdownHtml += `<br><span style="color:#888;">VAT Amount (${taxPct}% Inclusive): ₱${taxAmt.toLocaleString(undefined, {minimumFractionDigits:2})}</span>`;
+        }
+        
+        document.getElementById('outInvBreakdown').innerHTML = breakdownHtml;
 
         document.getElementById('outSigName').innerText = documentSettings.sigName; document.getElementById('outSigRole').innerText = documentSettings.sigRole;
         document.getElementById('outInvNumber').innerText = "Invoice No: DRAFT (not yet saved)"; document.getElementById('outDelNumber').innerText = "Ref: DRAFT (not yet saved)";
@@ -910,7 +933,7 @@
             const row = document.createElement('div'); row.className = "inv-item-row";
             row.innerHTML = `<div style="width:80px;"><label>Qty</label><input type="number" class="doc-qty" min="1" value="${i.qty}"></div>
                 <div style="width:80px;"><label>Unit</label><input type="text" class="doc-unit" value="pcs"></div>
-                <div style="flex:1;"><label>Description</label><input type="text" class="doc-desc" value="${i.name}${i.variant ? ' (' + i.variant + ')' : ''}"></div>
+                <div style="flex:1;"><label>Description (Auto-Pricing)</label><input type="text" class="doc-desc" list="productInventoryList" value="${i.name}${i.variant ? ' (' + i.variant + ')' : ''}" oninput="autoFillProductPrice(this)"></div>
                 <div style="width:120px;"><label>Price (₱)</label><input type="number" class="doc-price" min="0" value="${i.price}"></div>
                 <div style="width:40px; margin-top:22px;"><button onclick="this.parentElement.parentElement.remove()" class="btn btn-danger btn-small" style="padding: 10px; width: 100%;">X</button></div>`;
             document.getElementById('docItemsContainer').appendChild(row);
@@ -991,7 +1014,6 @@
         } catch (error) { console.error(error); alert("Error saving invoice: " + error.message); btn.innerText = "💾 Retry Save"; btn.disabled = false; }
     };
 
-    /* --- NEW: Searchable Invoice History --- */
     window.renderInvoiceHistory = () => {
         const list = document.getElementById('invoice-history-list'); if(!list) return;
         const searchTerm = (document.getElementById('invoiceSearch').value || "").toLowerCase();
@@ -1057,10 +1079,10 @@
         window.location.href = `mailto:${draft.clientEmail}?subject=${subject}&body=${body}`;
     };
 
-    /* --- NEW: Export Invoices to CSV --- */
     window.exportInvoicesToCSV = () => {
         if(localInvoices.length === 0) return alert("No invoices to export.");
-        let csv = "Invoice No,Date,Client Name,Client Email,Subtotal (P),Discount (P),Tax (P),Grand Total (P),Status\n";
+        // Updated header to reflect VAT Inclusive math
+        let csv = "Invoice No,Date,Client Name,Client Email,Subtotal (P),Discount (P),VAT Inclusive (P),Grand Total (P),Status\n";
         localInvoices.forEach(i => {
             const cleanName = (i.clientName || "").replace(/,/g, " ");
             const cleanEmail = (i.clientEmail || "").replace(/,/g, " ");
