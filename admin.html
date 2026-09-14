@@ -102,54 +102,58 @@
             font-size: 14px;
         }
 
-        .doc-header-center { text-align: center; margin-bottom: 40px; }
-        .doc-header-center img { width: 140px; height: 140px; object-fit: contain; margin-bottom: 5px; display: block; margin: 0 auto; }
-        .doc-header-text { margin-top: 5px; }
-        .doc-header-text h1 { margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 1px; color: #000; text-transform: uppercase; }
-        .doc-header-text p { margin: 2px 0; font-size: 12px; font-weight: bold; color: #000; }
-        .doc-header-text .tagline { font-weight: normal; font-style: italic; color: #333; margin-top: 4px; }
+        /* Brand accent colors sampled from the actual Zab letterhead */
+        .a4-page { --doc-pink: #ec1e79; --doc-teal: #0f9e93; --doc-line: #f0a868; }
 
-        .doc-top-section { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; line-height: 1.4; }
-        
-        .client-box { width: 55%; }
-        .client-box-title { font-weight: bold; font-size: 14px; margin: 0 0 5px 0; text-transform: uppercase; color: #000; }
-        .client-name { font-weight: normal; font-size: 15px; margin: 0 0 2px 0; }
-        .client-address { font-size: 14px; margin: 0; }
-        
-        .company-box { text-align: right; width: 45%; }
-        .doc-type { font-size: 26px; font-weight: bold; color: #000; letter-spacing: 1px; margin: 0 0 15px 0; text-transform: uppercase; }
-        .company-name { font-weight: normal; font-size: 14px; margin: 0; text-transform: uppercase; }
-        .company-tin { font-size: 14px; margin: 0; text-transform: uppercase; }
-        .doc-date { font-size: 14px; margin-top: 10px; }
+        .doc-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+        .doc-header-left { text-align: left; }
+        .doc-logo { width: 110px; height: 110px; object-fit: contain; display: block; }
+        .doc-tagline-left { font-weight: normal; font-style: italic; color: var(--doc-pink); font-size: 11px; margin: 6px 0 0 2px; }
 
-        .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
-        .doc-table th { border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 12px 5px; text-align: left; font-weight: bold; text-transform: uppercase; }
-        .doc-table td { padding: 10px 5px; border-bottom: none; }
-        .doc-table tr:last-child td { border-bottom: 1px solid #000; padding-bottom: 20px; }
-        
-        .doc-total-row { display: flex; justify-content: flex-end; font-size: 16px; font-weight: bold; margin-top: 15px; padding: 5px 5px 15px 5px; border-bottom: 1px solid #000; }
-        .doc-total-row span { margin-left: 30px; }
-        
-        .invoice-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; font-size: 12px; line-height: 1.5; }
-        .invoice-footer-grid h4 { margin: 0 0 5px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; }
-        .invoice-footer-grid p { margin: 0 0 5px 0; }
-        .payment-box { margin-top: 20px; }
-        .payment-box h4 { margin-bottom: 5px; }
+        .doc-header-right { text-align: right; }
+        .doc-type { font-size: 30px; font-weight: 800; color: #000; letter-spacing: 1px; margin: 5px 0 10px 0; text-transform: uppercase; }
+        .company-name { font-weight: bold; font-size: 15px; margin: 0; color: var(--doc-pink); }
+        .company-tin { font-size: 12px; margin: 2px 0 0 0; font-weight: bold; color: var(--doc-teal); }
+
+        .doc-top-section { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; line-height: 1.4; }
+
+        .client-box { width: 60%; }
+        .client-box-title { font-weight: bold; font-size: 13px; margin: 0 0 4px 0; text-transform: uppercase; color: #000; }
+        .client-name { font-weight: normal; font-size: 14px; margin: 0 0 2px 0; }
+        .client-address { font-size: 13px; margin: 0; }
+
+        .date-box { text-align: right; }
+        .doc-date { font-size: 13px; margin: 0; color: #000; }
+
+        .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 13px; }
+        .doc-table th { background: var(--doc-pink); color: #fff; padding: 12px 10px; text-align: left; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+        .doc-table td { padding: 10px; border-bottom: 1px solid var(--doc-line); }
+        .doc-table tr:last-child td { border-bottom: none; }
+
+        .doc-total-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 15px; font-size: 20px; font-weight: 800; margin: 15px 0 20px 0; }
+
+        .invoice-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px; font-size: 11px; line-height: 1.5; }
+        .invoice-footer-grid h4 { margin: 0 0 5px 0; font-size: 12px; text-transform: uppercase; font-weight: bold; color: var(--doc-pink); }
+        .invoice-footer-grid p { margin: 0 0 5px 0; color: #000; }
+        .payment-box { margin-top: 18px; }
+        .payment-box h4 { margin-bottom: 5px; color: #000; }
         .payment-box p { font-weight: bold; margin: 0; text-transform: uppercase; }
 
-        .doc-signature { margin-top: 60px; text-align: center; width: 220px; }
+        .doc-signature { margin-top: 55px; text-align: center; width: 220px; }
         .doc-signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; font-size: 13px; text-transform: uppercase; }
-        
-        .doc-remarks { margin-top: 20px; font-size: 13px; line-height: 1.5; }
+        .doc-signature-role { font-size: 11px; color: var(--doc-pink); margin-top: 3px; font-weight: bold; }
+
+        .doc-remarks { margin-top: 15px; font-size: 12px; line-height: 1.5; }
         .doc-remarks p { margin: 0 0 5px 0; }
-        .delivery-signatures { display: flex; gap: 60px; margin-top: 80px; }
+        .delivery-signatures { display: flex; gap: 60px; margin-top: 70px; }
         .delivery-sig-box { width: 220px; }
         .delivery-sig-line { border-bottom: 1px solid #000; height: 30px; margin-bottom: 5px; }
 
-        .doc-bottom { text-align: center; margin-top: 60px; font-size: 12px; color: #000; line-height: 1.5; }
-        .tax-disclaimer { font-weight: bold; margin-bottom: 25px; font-size: 10px; text-transform: uppercase; }
-        .thank-you { font-size: 15px; font-weight: bold; margin-bottom: 15px; }
-        .contact-info { margin-top: 15px; }
+        .doc-bottom { text-align: center; margin-top: 50px; font-size: 11px; color: #000; line-height: 1.6; }
+        .tax-disclaimer { font-weight: bold; font-style: italic; margin-bottom: 15px; font-size: 9px; text-transform: uppercase; }
+        .thank-you { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: var(--doc-pink); }
+        .contact-info { margin-top: 12px; color: var(--doc-teal); font-weight: 600; }
+        .contact-info .social-line { color: #000; font-weight: bold; }
 
         @media print {
             body * { visibility: hidden; }
@@ -298,25 +302,25 @@
         <div id="print-area">
             <!-- INVOICE A4 TEMPLATE -->
             <div id="preview-invoice" class="a4-page" style="display:none;">
-                <div class="doc-header-center">
-                    <img src="IMG_1218.jpeg" alt="ZAB Logo">
-                    <div class="doc-header-text">
-                        <h1>ZAB DIGITAL PRINTS</h1>
-                        <p>EST. 2012</p>
-                        <p class="tagline">Keeping your memories within view![cite: 1, 2]</p>
+                <div class="doc-header-row">
+                    <div class="doc-header-left">
+                        <img src="IMG_1218.jpeg" alt="ZAB Logo" class="doc-logo">
+                        <p class="doc-tagline-left">Keeping your memories within view!</p>
+                    </div>
+                    <div class="doc-header-right">
+                        <h2 class="doc-type">INVOICE</h2>
+                        <p class="company-name">ZAB DIGITAL PRINTS</p>
+                        <p class="company-tin">TIN NO. 296-724-666-000</p>
                     </div>
                 </div>
 
                 <div class="doc-top-section">
                     <div class="client-box">
-                        <p class="client-box-title">INVOICE TO:[cite: 2]</p>
+                        <p class="client-box-title">INVOICE TO:</p>
                         <p id="outInvName" class="client-name">[Client Name]</p>
                         <p id="outInvAddress" class="client-address">[Client Address]</p>
                     </div>
-                    <div class="company-box">
-                        <h2 class="doc-type">INVOICE</h2>
-                        <p class="company-name">ZAB DIGITAL PRINTS[cite: 1, 2]</p>
-                        <p class="company-tin">TIN NO. 296-724-666-000[cite: 1, 2]</p>
+                    <div class="date-box">
                         <p class="doc-date">Date: <span id="outInvDate">[Date]</span></p>
                     </div>
                 </div>
@@ -341,71 +345,71 @@
 
                 <div class="invoice-footer-grid">
                     <div>
-                        <h4>PAYMENTS:[cite: 2]</h4>
-                        <p>We accept Cash, Online Deposit, or Cheque.[cite: 2]</p>
-                        <p>Cheque payments should be deposited directly to our designated bank account.[cite: 2]</p>
-                        <p>Cheque payments are subject to bank clearing unless otherwise stated or negotiated.[cite: 2]</p>
-                        <p>Goods and/or services will be released only after payment confirmation or cheque clearance, unless otherwise agreed.[cite: 2]</p>
+                        <h4>PAYMENTS:</h4>
+                        <p>We accept Cash, Online Deposit, or Cheque.</p>
+                        <p>Cheque payments should be deposited directly to our designated bank account.</p>
+                        <p>Cheque payments are subject to bank clearing unless otherwise stated or negotiated.</p>
+                        <p>Goods and/or services will be released only after payment confirmation or cheque clearance, unless otherwise agreed.</p>
                         
                         <div class="payment-box">
                             <h4>PAYMENT DETAILS</h4>
-                            <p>ZAB DIGITAL PRINTS<br>BPI SAVINGS ACCOUNT<br>ACCOUNT NO. 0929729956[cite: 2]</p>
+                            <p>ZAB DIGITAL PRINTS<br>BPI SAVINGS ACCOUNT<br>ACCOUNT NO. 0929729956</p>
                         </div>
                     </div>
                     <div>
-                        <h4>TERMS AND CONDITION:[cite: 2]</h4>
-                        <p>Safe storage of the products is necessary to ensure their quality, Zab Digital Prints will not be held accountable in case of unsafe storage of the products.[cite: 2]</p>
+                        <h4>TERMS AND CONDITION:</h4>
+                        <p>Safe storage of the products is necessary to ensure their quality, Zab Digital Prints will not be held accountable in case of unsafe storage of the products.</p>
                         
                         <div class="doc-signature">
-                            <div class="doc-signature-line">AILYN P. ORPILLA[cite: 2]</div>
-                            <div style="font-size:11px; color:#666; margin-top:3px;">AUTHORIZED SIGN[cite: 2]</div>
+                            <div class="doc-signature-line">AILYN P. ORPILLA</div>
+                            <div class="doc-signature-role">AUTHORIZED SIGN</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="doc-bottom">
-                    <p class="tax-disclaimer">*THIS IS A BILLING STATEMENT. NOT VALID FOR CLAIM OF INPUT TAX. OFFICIAL RECEIPT WILL BE ISSUED UPON PAYMENT.[cite: 2]</p>
-                    <p class="thank-you">Thank you for your business![cite: 1, 2]</p>
-                    <p style="margin-bottom: 5px;">If you have any questions concerning this invoice, please contact us.[cite: 2]</p>
+                    <p class="tax-disclaimer">*This is a billing statement. Not valid for claim of input tax. Official receipt will be issued upon payment.</p>
+                    <p class="thank-you">Thank you for your business!</p>
+                    <p style="margin-bottom: 5px;">If you have any questions concerning this invoice, please contact us.</p>
                     <p class="contact-info">
-                        98 Burgos St. Calamba City, Laguna[cite: 1, 2]<br>
-                        zabdigitalprints@yahoo.com.ph[cite: 1, 2]<br>
-                        (63) 949-1637881[cite: 1, 2]<br>
-                        <span style="font-weight:bold; margin-top:10px; display:block;">Zab Digital Prints &nbsp; | &nbsp; ezab digital prints[cite: 1, 2]</span>
+                        📍 98 Burgos St. Calamba City, Laguna<br>
+                        ✉️ zabdigitalprints@yahoo.com.ph<br>
+                        📞 (63) 949-1637881<br>
+                        <span class="social-line">📘 Zab Digital Prints &nbsp;|&nbsp; 📷 @zab digital prints</span>
                     </p>
                 </div>
             </div>
 
             <!-- DELIVERY FORM A4 TEMPLATE -->
             <div id="preview-delivery" class="a4-page" style="display:none;">
-                <div class="doc-header-center">
-                    <img src="IMG_1218.jpeg" alt="ZAB Logo">
-                    <div class="doc-header-text">
-                        <h1>ZAB DIGITAL PRINTS</h1>
-                        <p>EST. 2012</p>
-                        <p class="tagline">Keeping your memories within view![cite: 1, 2]</p>
+                <div class="doc-header-row">
+                    <div class="doc-header-left">
+                        <img src="IMG_1218.jpeg" alt="ZAB Logo" class="doc-logo">
+                        <p class="doc-tagline-left">Keeping your memories within view!</p>
+                    </div>
+                    <div class="doc-header-right">
+                        <h2 class="doc-type">DELIVERY FORM</h2>
+                        <p class="company-name">ZAB DIGITAL PRINTS</p>
+                        <p class="company-tin">TIN NO. 296-724-666-000</p>
                     </div>
                 </div>
 
                 <div class="doc-top-section">
                     <div class="client-box">
-                        <p class="client-box-title">CLIENT NAME[cite: 1]</p>
+                        <p class="client-box-title">CLIENT NAME</p>
                         <p id="outDelName" class="client-name">[Client Name]</p>
                         <p id="outDelAddress" class="client-address">[Client Address]</p>
                     </div>
-                    <div class="company-box">
-                        <h2 class="doc-type">DELIVERY FORM[cite: 1]</h2>
-                        <p class="company-name">ZAB DIGITAL PRINTS[cite: 1, 2]</p>
-                        <p class="company-tin">TIN NO. 296-724-666-000[cite: 1, 2]</p>
+                    <div class="date-box">
                         <p class="doc-date">Date: <span id="outDelDate">[Date]</span></p>
                     </div>
                 </div>
 
-                <table class="doc-table" style="margin-bottom: 30px;">
+                <table class="doc-table" style="margin-bottom: 25px;">
                     <thead>
                         <tr>
-                            <th style="width: 25%;">QUANTITY[cite: 1]</th>
-                            <th style="width: 75%;">DESCRIPTION[cite: 1]</th>
+                            <th style="width: 25%;">QUANTITY</th>
+                            <th style="width: 75%;">DESCRIPTION</th>
                         </tr>
                     </thead>
                     <tbody id="outDelTbody">
@@ -414,29 +418,29 @@
                 </table>
 
                 <div class="doc-remarks">
-                    <p style="font-weight:bold; margin-bottom: 5px;">Remarks:[cite: 1]</p>
-                    <p>By signing, I confirm that I have inspected the items and found them to be in good condition, as ordered, and that the quantities match this document.[cite: 1]</p>
+                    <p style="font-weight:bold; margin-bottom: 5px;">Remarks:</p>
+                    <p>By signing, I confirm that I have inspected the items and found them to be in good condition, as ordered, and that the quantities match this document.</p>
                 </div>
 
                 <div class="delivery-signatures">
                     <div class="delivery-sig-box">
                         <div class="delivery-sig-line"></div>
-                        <p style="font-weight:bold; font-size:13px; margin:0;">Received By:[cite: 1]</p>
+                        <p style="font-weight:bold; font-size:13px; margin:0;">Received By:</p>
                     </div>
                     <div class="delivery-sig-box" style="width: 150px;">
                         <div class="delivery-sig-line"></div>
-                        <p style="font-weight:bold; font-size:13px; margin:0;">Date:[cite: 1]</p>
+                        <p style="font-weight:bold; font-size:13px; margin:0;">Date:</p>
                     </div>
                 </div>
 
-                <div class="doc-bottom" style="margin-top: 80px;">
-                    <p class="thank-you">Thank you for your business![cite: 1, 2]</p>
-                    <p style="margin-bottom: 5px;">If you have any questions, please contact us.[cite: 1]</p>
+                <div class="doc-bottom" style="margin-top: 70px;">
+                    <p class="thank-you">Thank you for your business!</p>
+                    <p style="margin-bottom: 5px;">If you have any questions, please contact us.</p>
                     <p class="contact-info">
-                        98 Burgos St. Calamba City, Laguna[cite: 1, 2]<br>
-                        zabdigitalprints@yahoo.com.ph[cite: 1, 2]<br>
-                        (63) 949-1637881[cite: 1, 2]<br>
-                        <span style="font-weight:bold; margin-top:10px; display:block;">Zab Digital Prints &nbsp; | &nbsp; ezab digital prints[cite: 1, 2]</span>
+                        📍 98 Burgos St. Calamba City, Laguna<br>
+                        ✉️ zabdigitalprints@yahoo.com.ph<br>
+                        📞 (63) 949-1637881<br>
+                        <span class="social-line">📘 Zab Digital Prints &nbsp;|&nbsp; 📷 @zab digital prints</span>
                     </p>
                 </div>
             </div>
