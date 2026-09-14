@@ -591,7 +591,7 @@
                         <thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead>
                         <tbody id="security-logs"></tbody>
                     </table>
-                    <button class="btn btn-danger" onclick="clearAuditHistory()">Clear Logs</button>
+                    <button class="btn-danger" onclick="clearAuditHistory()">Clear Logs</button>
                 </div>
             </div>
         </div>
@@ -994,33 +994,96 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    /* --- Save invoice record (assigns permanent number) --- */
+    /* --- Missing Combined PDF Downloader --- */
+    window.downloadCombinedPDF = async () => {
+        const draft = window.currentDocDraft;
+        if(!draft) return alert("Generate a preview first.");
+        
+        const filename = `Combined-${draft.invoiceNumber || 'DRAFT'}-${(draft.clientName || 'client').replace(/[^a-z0-9]/gi,'_')}.pdf`;
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = 210, pageHeight = 297;
+
+        const viewInv = document.getElementById('preview-invoice');
+        const viewDel = document.getElementById('preview-delivery');
+
+        // 1. Capture Invoice View
+        viewInv.style.display = 'block';
+        viewDel.style.display = 'none';
+        
+        let canvas = await html2canvas(viewInv, { scale: 2, useCORS: true });
+        let imgHeight = (canvas.height * pageWidth) / canvas.width;
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight));
+
+        // 2. Add Page & Capture Delivery View
+        pdf.addPage();
+        viewInv.style.display = 'none';
+        viewDel.style.display = 'block';
+        
+        canvas = await html2canvas(viewDel, { scale: 2, useCORS: true });
+        imgHeight = (canvas.height * pageWidth) / canvas.width;
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight));
+
+        // 3. Restore UI
+        window.toggleDocView('invoice');
+        pdf.save(filename);
+    };
+
+    /* --- Fixed Save Invoice Logic with Error Handling --- */
     window.saveInvoiceRecord = async () => {
         const draft = window.currentDocDraft;
         if(!draft) return alert("Generate a preview first.");
         const btn = document.getElementById('btn-save-record');
-        btn.disabled = true; btn.innerText = "Saving...";
+        btn.disabled = true; 
+        btn.innerText = "Saving...";
 
-        const counterRef = doc(db, "config", "documentSettings");
-        const counterSnap = await getDoc(counterRef);
-        const year = new Date().getFullYear();
-        let nextNum = (counterSnap.exists() && counterSnap.data().nextInvoiceNumber) ? counterSnap.data().nextInvoiceNumber : 1;
-        const invoiceNumber = `INV-${year}-${String(nextNum).padStart(4, '0')}`;
-        await setDoc(counterRef, { nextInvoiceNumber: nextNum + 1 }, { merge: true });
+        try {
+            const counterRef = doc(db, "config", "documentSettings");
+            const counterSnap = await getDoc(counterRef);
+            const year = new Date().getFullYear();
+            let nextNum = (counterSnap.exists() && counterSnap.data().nextInvoiceNumber) ? counterSnap.data().nextInvoiceNumber : 1;
+            
+            // Allow re-saving updates without creating duplicate records
+            if(draft.savedId) {
+                await updateDoc(doc(db, "invoices", draft.savedId), {
+                    clientName: draft.clientName, clientAddress: draft.clientAddress, clientEmail: draft.clientEmail,
+                    date: draft.date, items: draft.items, subtotal: draft.subtotal, discountPct: draft.discountPct, 
+                    taxPct: draft.taxPct, total: draft.total
+                });
+                btn.innerText = "✅ Updated " + draft.invoiceNumber;
+                btn.disabled = false;
+                return;
+            }
 
-        const adminName = sessionStorage.getItem("zabAdminName");
-        const record = {
-            invoiceNumber, clientName: draft.clientName, clientAddress: draft.clientAddress, clientEmail: draft.clientEmail,
-            date: draft.date, items: draft.items, subtotal: draft.subtotal, discountPct: draft.discountPct, taxPct: draft.taxPct,
-            total: draft.total, status: "Unpaid", createdBy: adminName, createdAt: Date.now()
-        };
-        const ref = await addDoc(collection(db, "invoices"), record);
-        await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Invoice Saved: ${invoiceNumber} (${draft.clientName})` });
+            const invoiceNumber = `INV-${year}-${String(nextNum).padStart(4, '0')}`;
+            await setDoc(counterRef, { nextInvoiceNumber: nextNum + 1 }, { merge: true });
 
-        draft.invoiceNumber = invoiceNumber; draft.savedId = ref.id;
-        document.getElementById('outInvNumber').innerText = `Invoice No: ${invoiceNumber}`;
-        document.getElementById('outDelNumber').innerText = `Ref: ${invoiceNumber}`;
-        btn.innerText = "✅ Saved as " + invoiceNumber;
+            // Ensure adminName is never null to prevent Firebase crashing
+            const adminName = sessionStorage.getItem("zabAdminName") || "Unknown Admin";
+            
+            const record = {
+                invoiceNumber, clientName: draft.clientName, clientAddress: draft.clientAddress, clientEmail: draft.clientEmail,
+                date: draft.date, items: draft.items, subtotal: draft.subtotal, discountPct: draft.discountPct, taxPct: draft.taxPct,
+                total: draft.total, status: "Unpaid", createdBy: adminName, createdAt: Date.now()
+            };
+            
+            const ref = await addDoc(collection(db, "invoices"), record);
+            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Invoice Saved: ${invoiceNumber} (${draft.clientName})` });
+
+            draft.invoiceNumber = invoiceNumber; 
+            draft.savedId = ref.id;
+            
+            document.getElementById('outInvNumber').innerText = `Invoice No: ${invoiceNumber}`;
+            document.getElementById('outDelNumber').innerText = `Ref: ${invoiceNumber}`;
+            btn.innerText = "✅ Saved as " + invoiceNumber;
+            btn.disabled = false; 
+
+        } catch (error) {
+            console.error(error);
+            alert("Error saving invoice: " + error.message);
+            btn.innerText = "💾 Retry Save";
+            btn.disabled = false;
+        }
     };
 
     /* --- Invoice History list --- */
