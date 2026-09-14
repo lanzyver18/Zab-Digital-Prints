@@ -4,166 +4,189 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zab Digital Prints Admin Access | Control Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --pink: #ffb7c5; --dark-pink: #d48192; --bg: #fff5f6; --text: #2d3436; --owner-gold: #d4af37; --success: #2ecc71; --warning: #f1c40f; }
+        :root { 
+            --primary: #d48192; 
+            --primary-light: #ffb7c5; 
+            --bg-body: #f8f9fa; 
+            --bg-panel: #ffffff; 
+            --text-main: #2d3436; 
+            --text-muted: #636e72;
+            --border: #edf2f7;
+            --owner-gold: #d4af37; 
+            --success: #2ecc71; 
+            --danger: #ff7675; 
+            --secondary: #f1f3f5;
+        }
         
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: #f8f9fa; color: var(--text); display: flex; min-height: 100vh; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-body); color: var(--text-main); display: flex; min-height: 100vh; }
+        
+        /* Typography & Layout */
+        h2, h3, h4 { color: var(--primary); margin-top: 0; }
+        h2 { font-family: 'Playfair Display', serif; }
+        hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
         
         /* Sidebar Nav */
-        .sidebar { width: 240px; background: white; border-right: 1px solid #edf2f7; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 100; }
-        .sidebar-header { padding: 30px; border-bottom: 1px solid #f1f1f1; text-align: center; }
+        .sidebar { width: 250px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 100; box-sizing: border-box;}
+        .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border); text-align: center; }
+        .sidebar-header b { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary); letter-spacing: 1px; }
         .sidebar-menu { padding: 20px; flex-grow: 1; }
-        .menu-item { padding: 12px 15px; border-radius: 10px; color: #636e72; cursor: pointer; margin-bottom: 5px; transition: 0.3s; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-        .menu-item:hover, .menu-item.active { background: var(--bg); color: var(--dark-pink); }
+        .menu-item { padding: 12px 15px; border-radius: 8px; color: var(--text-muted); cursor: pointer; margin-bottom: 5px; transition: 0.2s; font-weight: 500; font-size: 0.9rem; }
+        .menu-item:hover { background: var(--secondary); color: var(--text-main); }
+        .menu-item.active { background: #fff5f6; color: var(--primary); font-weight: 600; }
 
         /* Workspace */
         .workspace { flex-grow: 1; padding: 40px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
-        .tab-content { display: none; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Panels */
-        .panel { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f1f1; margin-bottom: 30px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 10px; background: #fcfcfc; font-family: inherit; box-sizing: border-box; }
+        .panel { background: var(--bg-panel); padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-bottom: 30px; }
+        
+        /* Unified Form Inputs */
+        label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+        input, select, textarea { width: 100%; padding: 12px 16px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fdfdfd; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; transition: 0.2s; color: var(--text-main); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212, 129, 146, 0.1); }
         textarea { resize: vertical; min-height: 80px; }
-        button { width: 100%; padding: 14px; background: var(--dark-pink); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { filter: brightness(1.1); }
         
-        /* Owner Protection Styling */
-        .owner-gate { border: 2px solid var(--owner-gold); background: #fffcf5; padding: 20px; border-radius: 15px; margin-top: 20px; }
-        .owner-label { color: var(--owner-gold); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
-
-        /* Grid Layouts */
-        .inventory-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; align-items: start; }
-        .product-row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f9f9f9; }
-        .product-row img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 15px; }
+        /* Unified Button System */
+        .btn { padding: 10px 20px; font-family: inherit; font-size: 0.9rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .btn:active { transform: translateY(0); }
         
-        .action-btns { display: flex; gap: 5px; }
-        .btn-small { padding: 5px 10px; font-size: 11px; width: auto; margin: 0; }
-        .btn-del { background: #ff7675; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #c57283; }
+        
+        .btn-secondary { background: var(--secondary); color: var(--text-main); border-color: #e2e8f0; }
+        .btn-secondary:hover { background: #e2e8f0; }
 
-        #login-gate { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .cat-tag, .staff-tag, .opt-tag { display: inline-flex; align-items: center; background: var(--bg); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.85rem; border: 1px solid var(--pink); }
-        .opt-tag { border-color: #74b9ff; background: #ebf5ff; color: #0984e3; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #27ae60; }
+        
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #e15f5e; }
+        
+        .btn-outline { background: transparent; border-color: var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: #fff5f6; }
+        
+        .btn-small { padding: 6px 12px; font-size: 0.75rem; border-radius: 6px; }
+        .btn-block { width: 100%; margin-top: 10px; }
 
-        /* Order Management Styles */
-        .order-card { border: 1.5px solid #eee; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: white; transition: 0.3s; }
-        .order-card:hover { border-color: var(--pink); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f9f9f9; padding-bottom: 10px; margin-bottom: 10px; }
-        .order-customer { font-weight: 600; color: var(--dark-pink); }
-        .order-date { font-size: 0.75rem; color: #999; }
-        .order-items { margin: 10px 0; }
-        .order-item-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 3px 0; border-bottom: 1px dotted #eee; }
-        .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f9f9f9; }
-        .order-total { font-weight: bold; color: var(--text); }
-        .btn-clear { background: #ff7675; width: auto; margin: 0; padding: 5px 15px; font-size: 0.75rem; }
+        /* Grids & Cards */
+        .inventory-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; align-items: start; }
+        
+        .data-list-row { display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; transition: 0.2s; background: white;}
+        .data-list-row:hover { border-color: var(--primary-light); box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        
+        .product-info { display: flex; align-items: center; gap: 15px; flex-grow: 1; }
+        .product-info img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .product-info b { font-size: 0.95rem; }
+        .product-info small { color: var(--text-muted); font-size: 0.8rem; display: block; }
+        
+        .action-btns { display: flex; gap: 8px; }
 
-        /* Status Toggles */
-        .badge-status { padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; cursor: pointer; border: 1px solid transparent; }
-        .paid-yes { background: #e6fffa; color: #234e52; border-color: #b2f5ea; }
-        .paid-no { background: #fff5f5; color: #822727; border-color: #feb2b2; }
+        /* Order & Invoice Cards */
+        .order-card { border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 15px; background: white; transition: 0.2s; }
+        .order-card:hover { border-color: var(--primary-light); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 15px; margin-bottom: 15px; }
+        .order-customer { font-weight: 600; font-size: 1.05rem; }
+        .order-date { font-size: 0.8rem; color: var(--text-muted); }
+        .order-items { font-size: 0.85rem; color: var(--text-main); margin-bottom: 15px;}
+        .order-item-row { display: flex; justify-content: space-between; padding: 4px 0; }
+        .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); background: #fafbfc; border-radius: 0 0 12px 12px; margin: 15px -20px -20px -20px; padding: 15px 20px;}
+        .order-total { font-weight: 700; font-size: 1.1rem; }
 
-        .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
-        .log-table th { text-align: left; padding: 10px; border-bottom: 2px solid var(--owner-gold); color: var(--owner-gold); }
-        .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        /* Badges & Tags */
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; cursor: pointer; border: 1px solid transparent; }
+        .badge-paid { background: #e6fffa; color: #234e52; border-color: #b2f5ea; }
+        .badge-unpaid { background: #fff5f5; color: #822727; border-color: #feb2b2; }
+        .badge-id { font-family: monospace; background: var(--secondary); color: var(--text-muted); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #e2e8f0; margin-left: 8px;}
+        
+        .tag { display: inline-flex; align-items: center; background: var(--secondary); padding: 6px 12px; border-radius: 8px; margin: 0 8px 8px 0; font-size: 0.85rem; border: 1px solid var(--border); color: var(--text-main); font-weight: 500;}
+        .tag span { margin-left: 8px; cursor: pointer; color: var(--text-muted); font-size: 1.1rem; line-height: 1;}
+        .tag span:hover { color: var(--danger); }
 
+        /* Analytics */
         .analytics-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
-        .stat-card small { font-size: 0.7rem; text-transform: uppercase; color: #999; font-weight: bold; letter-spacing: 1px; }
-        .stat-card h2 { margin: 5px 0 0 0; color: var(--dark-pink); font-family: 'Playfair Display'; }
-        .btn-msg { background: #0084ff; font-size: 0.75rem; width: auto; margin: 0; padding: 5px 12px; }
-        .btn-export { background: var(--text); margin-bottom: 20px; font-size: 0.8rem; }
-        
-        .order-id-badge { font-family: monospace; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: #555; margin-left: 10px; border: 1px solid #ddd; }
-        .trans-badge { background: #fff4e5; color: #663c00; font-family: monospace; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin-left: 5px; }
-        .btn-danger { background: #ff7675 !important; margin-top: 20px; font-size: 0.75rem; width: auto; padding: 8px 15px; }
+        .stat-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+        .stat-card small { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; }
+        .stat-card h2 { margin: 10px 0 0 0; font-size: 2rem; color: var(--primary); }
 
-        .staff-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #f1f1f1; font-size: 0.9rem; }
-
-        /* =========================================
-           INVOICE / DELIVERY GENERATOR STYLES
-           ========================================= */
-        .form-grid-inv { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .inv-item-row { display: flex; gap: 10px; align-items: center; background: #fdfdfd; padding: 10px; border-radius: 10px; border: 1px solid #eee; margin-bottom: 10px; }
-        .preview-controls { display: flex; gap: 10px; margin-bottom: 20px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-        .preview-controls button { margin: 0; width: auto; flex-grow: 1; }
+        /* Invoice Generator Specifics */
+        .form-grid-inv { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+        .inv-item-row { display: flex; gap: 10px; align-items: flex-start; background: var(--secondary); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px; }
+        .inv-item-row input { margin-bottom: 0; }
         
+        .preview-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 10; border: 1px solid var(--border);}
+        .preview-controls .btn { flex-grow: 1; }
+        
+        /* Owner Gate */
+        .owner-gate { border: 2px solid var(--owner-gold); background: #fffcf5; padding: 25px; border-radius: 12px; text-align: center; }
+        .owner-gate .btn { background: var(--owner-gold); color: white; margin-top: 15px; }
+        .owner-gate .btn:hover { background: #b8962a; }
+
+        /* Login Gate */
+        #login-gate { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; width: 340px; border: 1px solid var(--border); }
+
+        /* Tables */
+        .log-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .log-table th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+        .log-table td { padding: 12px; border-bottom: 1px solid var(--border); }
+
         /* EXACT 1:1 A4 Page Styling */
         .a4-page {
-            width: 21cm;
-            min-height: 29.7cm;
-            padding: 2.5cm 2cm;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            color: #000;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14px;
+            width: 21cm; min-height: 29.7cm; padding: 2.5cm 2cm; margin: 0 auto; background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); color: #000; box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif; font-size: 14px; position: relative;
+            --doc-pink: #ec1e79; --doc-teal: #0f9e93; --doc-line: #f0a868;
         }
-
-        /* Brand accent colors sampled from the actual Zab letterhead */
-        .a4-page { --doc-pink: #ec1e79; --doc-teal: #0f9e93; --doc-line: #f0a868; }
-
         .doc-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
         .doc-header-left { text-align: left; }
         .doc-logo { width: 110px; height: 110px; object-fit: contain; display: block; }
         .doc-tagline-left { font-weight: normal; font-style: italic; color: var(--doc-pink); font-size: 11px; margin: 6px 0 0 2px; }
-
         .doc-header-right { text-align: right; }
         .doc-type { font-size: 30px; font-weight: 800; color: #000; letter-spacing: 1px; margin: 5px 0 10px 0; text-transform: uppercase; }
         .company-name { font-weight: bold; font-size: 15px; margin: 0; color: var(--doc-pink); }
         .company-tin { font-size: 12px; margin: 2px 0 0 0; font-weight: bold; color: var(--doc-teal); }
-
         .doc-top-section { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; line-height: 1.4; }
-
         .client-box { width: 60%; }
         .client-box-title { font-weight: bold; font-size: 13px; margin: 0 0 4px 0; text-transform: uppercase; color: #000; }
         .client-name { font-weight: normal; font-size: 14px; margin: 0 0 2px 0; }
         .client-address { font-size: 13px; margin: 0; }
-
         .date-box { text-align: right; }
         .doc-date { font-size: 13px; margin: 0; color: #000; }
-
         .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 13px; }
         .doc-table th { background: var(--doc-pink); color: #fff; padding: 12px 10px; text-align: left; font-weight: bold; text-transform: uppercase; font-size: 12px; }
         .doc-table td { padding: 10px; border-bottom: 1px solid var(--doc-line); }
         .doc-table tr:last-child td { border-bottom: none; }
-
         .doc-total-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 15px; font-size: 20px; font-weight: 800; margin: 15px 0 20px 0; }
-
         .invoice-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px; font-size: 11px; line-height: 1.5; }
         .invoice-footer-grid h4 { margin: 0 0 5px 0; font-size: 12px; text-transform: uppercase; font-weight: bold; color: var(--doc-pink); }
         .invoice-footer-grid p { margin: 0 0 5px 0; color: #000; }
         .payment-box { margin-top: 18px; }
         .payment-box h4 { margin-bottom: 5px; color: #000; }
         .payment-box p { font-weight: bold; margin: 0; text-transform: uppercase; }
-
         .doc-signature { margin-top: 55px; text-align: center; width: 220px; }
         .doc-signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; font-size: 13px; text-transform: uppercase; }
         .doc-signature-role { font-size: 11px; color: var(--doc-pink); margin-top: 3px; font-weight: bold; }
-
         .doc-remarks { margin-top: 15px; font-size: 12px; line-height: 1.5; }
         .doc-remarks p { margin: 0 0 5px 0; }
         .delivery-signatures { display: flex; gap: 60px; margin-top: 70px; }
         .delivery-sig-box { width: 220px; }
         .delivery-sig-line { border-bottom: 1px solid #000; height: 30px; margin-bottom: 5px; }
-
         .doc-bottom { text-align: center; margin-top: 50px; font-size: 11px; color: #000; line-height: 1.6; }
         .tax-disclaimer { font-weight: bold; font-style: italic; margin-bottom: 15px; font-size: 9px; text-transform: uppercase; }
         .thank-you { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: var(--doc-pink); }
         .contact-info { margin-top: 12px; color: var(--doc-teal); font-weight: 600; }
         .contact-info .social-line { color: #000; font-weight: bold; }
-
-        /* Watermark / stamp overlays */
         .doc-watermark { position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%) rotate(-28deg); font-size: 90px; font-weight: 800; color: rgba(230, 41, 155, 0.14); letter-spacing: 8px; text-transform: uppercase; pointer-events: none; user-select: none; z-index: 1; white-space: nowrap; }
         .doc-paid-stamp { position: absolute; top: 130px; right: 60px; border: 5px solid #1e8e4f; color: #1e8e4f; font-size: 28px; font-weight: 800; padding: 6px 18px; border-radius: 10px; transform: rotate(-18deg); opacity: 0.75; letter-spacing: 3px; pointer-events: none; z-index: 2; }
-        .a4-page { position: relative; }
-
         .doc-extra-line { font-size: 12px; margin: 2px 0; color: #444; }
         .doc-notes-box { margin: 15px 0; padding: 10px 12px; background: #fdfaf5; border: 1px dashed #e0c9a6; border-radius: 8px; font-size: 12px; }
         .doc-notes-box b { display: block; margin-bottom: 3px; color: #000; font-size: 11px; text-transform: uppercase; }
-
         .qr-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px; gap: 20px; }
         .qr-box { text-align: center; font-size: 9px; color: #666; }
         .qr-box div.qr-canvas-holder { display: inline-block; }
@@ -187,22 +210,22 @@
 <body>
 
 <div id="login-gate">
-    <div style="width: 320px; text-align: center;">
-        <h2 style="color: var(--dark-pink); font-family: 'Playfair Display';">Zab Digital Prints Admin Access</h2>
-        <input type="password" id="entryPass" placeholder="Admin Password" onkeydown="if(event.key==='Enter') login()">
-        <button onclick="login()">LOGIN</button>
+    <div class="login-box">
+        <h2>Zab Digital Prints</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Admin Control Center</p>
+        <input type="password" id="entryPass" placeholder="Enter Admin Password" onkeydown="if(event.key==='Enter') login()">
+        <button class="btn btn-primary btn-block" onclick="login()">Access Dashboard</button>
     </div>
 </div>
 
 <aside class="sidebar">
-    <div class="sidebar-header"><b style="color: var(--dark-pink); font-family: 'Playfair Display';">ZAB CONTROL</b></div>
+    <div class="sidebar-header"><b>ZAB CONTROL</b></div>
     <div class="sidebar-menu">
-        <div class="menu-item active" onclick="switchTab('inventory', this)">Inventory</div>
-        <div class="menu-item" onclick="switchTab('orders-tab', this)">Orders</div>
-        <!-- INVOICING TAB -->
-        <div class="menu-item" onclick="switchTab('invoice-gen', this)">Invoicing</div>
-        <div id="settings-menu-item" class="menu-item" onclick="switchTab('settings', this)" style="display:none;">Settings</div>
-        <div class="menu-item" onclick="logout()" style="margin-top: 20px; color: #999;">Logout</div>
+        <div class="menu-item active" onclick="switchTab('inventory', this)">📦 Inventory</div>
+        <div class="menu-item" onclick="switchTab('orders-tab', this)">🛒 Orders</div>
+        <div class="menu-item" onclick="switchTab('invoice-gen', this)">🧾 Invoicing</div>
+        <div id="settings-menu-item" class="menu-item" onclick="switchTab('settings', this)" style="display:none;">⚙️ Settings</div>
+        <div class="menu-item" onclick="logout()" style="margin-top: 30px; color: #a0aec0;">🚪 Logout</div>
     </div>
 </aside>
 
@@ -211,37 +234,64 @@
     <div id="inventory" class="tab-content active">
         <div class="inventory-grid">
             <div>
-                <div class="panel form-panel">
-                    <h3 id="formHeader" style="margin-top:0;">Product Editor</h3>
+                <div class="panel">
+                    <h3 id="formHeader">Product Editor</h3>
+                    <label>Product Details</label>
                     <input type="text" id="pName" placeholder="Product Name" oninput="updateLiveView()">
-                    <div style="display:flex; gap:10px;">
-                        <input type="number" id="pPrice" placeholder="Base Price" oninput="updateLiveView()">
-                        <input type="number" id="pStock" placeholder="Stock Count" oninput="updateLiveView()">
-                    </div>
-                    <input type="text" id="pMoq" placeholder="Minimum Quantity (e.g. 12pcs)" oninput="updateLiveView()">
-                    <textarea id="pDesc" placeholder="Product Description" oninput="updateLiveView()"></textarea>
                     
-                    <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: #999;">Variants with Prices</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="optName" placeholder="Choice" style="margin: 0;">
-                            <input type="number" id="optPrice" placeholder="Price" style="margin: 0; width: 100px;">
-                            <button onclick="addOption()" style="width: 100px; margin: 0; background: #74b9ff;">Add</button>
+                    <div style="display:flex; gap:15px;">
+                        <div style="flex:1;">
+                            <label>Base Price (₱)</label>
+                            <input type="number" id="pPrice" placeholder="0.00" oninput="updateLiveView()">
+                        </div>
+                        <div style="flex:1;">
+                            <label>Stock Count</label>
+                            <input type="number" id="pStock" placeholder="0" oninput="updateLiveView()">
+                        </div>
+                    </div>
+                    
+                    <label>Minimum Quantity</label>
+                    <input type="text" id="pMoq" placeholder="e.g. 12pcs" oninput="updateLiveView()">
+                    
+                    <label>Description</label>
+                    <textarea id="pDesc" placeholder="Product Description..." oninput="updateLiveView()"></textarea>
+                    
+                    <div style="background: var(--secondary); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+                        <label>Variants with Prices</label>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <input type="text" id="optName" placeholder="Choice Name" style="margin: 0; flex: 2;">
+                            <input type="number" id="optPrice" placeholder="Price" style="margin: 0; flex: 1;">
+                            <button class="btn btn-secondary" onclick="addOption()">Add</button>
                         </div>
                         <div id="current-options-list" style="margin-top: 10px;"></div>
                     </div>
 
-                    <select id="pCat"></select>
-                    <select id="pStatus" onchange="updateLiveView()"><option value="Available">Available</option><option value="Sold Out">Sold Out</option></select>
-                    <input type="text" id="pImg" placeholder="Image URL" oninput="updateLiveView()">
-                    <button id="saveBtn">Save Product</button>
+                    <div style="display:flex; gap:15px;">
+                        <div style="flex:1;">
+                            <label>Category</label>
+                            <select id="pCat"></select>
+                        </div>
+                        <div style="flex:1;">
+                            <label>Status</label>
+                            <select id="pStatus" onchange="updateLiveView()">
+                                <option value="Available">Available</option>
+                                <option value="Sold Out">Sold Out</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label>Image URL</label>
+                    <input type="text" id="pImg" placeholder="https://..." oninput="updateLiveView()">
+                    
+                    <button class="btn btn-primary btn-block" id="saveBtn">Save Product</button>
                 </div>
+
                 <div class="panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 style="margin: 0;">Inventory List</h3>
-                        <div style="display: flex; gap: 5px;">
-                            <input type="text" id="inventorySearch" placeholder="Search..." oninput="filterInventoryList()" style="margin:0; width: 120px; padding: 8px;">
-                            <select id="inventoryFilter" onchange="filterInventoryList()" style="margin: 0; padding: 8px; width: 140px;">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="inventorySearch" placeholder="Search..." oninput="filterInventoryList()" style="margin:0; width: 150px; padding: 8px 12px;">
+                            <select id="inventoryFilter" onchange="filterInventoryList()" style="margin: 0; padding: 8px 12px; width: 140px;">
                                 <option value="All">All Categories</option>
                             </select>
                         </div>
@@ -249,14 +299,16 @@
                     <div id="admin-list"></div>
                 </div>
             </div>
-            <div class="live-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: sticky; top: 40px;">
-                <img id="pre-img" src="IMG_1218.jpeg" style="width:100%; height:320px; object-fit:cover;">
+
+            <!-- Live Preview Card -->
+            <div style="background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: sticky; top: 40px; border: 1px solid var(--border);">
+                <img id="pre-img" src="IMG_1218.jpeg" style="width:100%; height:300px; object-fit:cover; border-bottom: 1px solid var(--border);">
                 <div style="padding: 25px; text-align: center;">
-                    <h3 id="pre-name" style="font-family:'Playfair Display'; margin:0;">Product Name</h3>
-                    <div id="pre-price" style="color:var(--dark-pink); font-size:1.5rem; font-weight:600; margin:10px 0;">₱0.00</div>
+                    <h3 id="pre-name" style="font-family:'Playfair Display', serif; margin:0; font-size: 1.4rem;">Product Name</h3>
+                    <div id="pre-price" style="color:var(--primary); font-size:1.5rem; font-weight:700; margin:10px 0;">₱0.00</div>
                     <div id="pre-stock" style="font-size:0.8rem; color:#e67e22; font-weight:600; margin-bottom:10px; display:none;">🔥 Low Stock!</div>
-                    <div id="pre-desc" style="font-size:0.85rem; color:#666; margin:15px 0;"></div>
-                    <div style="background:var(--pink); color:white; padding:10px 30px; border-radius:50px; display:inline-block; font-weight:bold;">PREVIEW</div>
+                    <div id="pre-desc" style="font-size:0.85rem; color:var(--text-muted); margin:15px 0;"></div>
+                    <div style="background:var(--primary); color:white; padding:8px 25px; border-radius:50px; display:inline-block; font-weight:600; font-size: 0.85rem; letter-spacing: 1px;">PREVIEW</div>
                 </div>
             </div>
         </div>
@@ -269,91 +321,93 @@
             <div class="stat-card"><small>Active Orders</small><h2 id="stat-active">0</h2></div>
             <div class="stat-card"><small>Total Orders</small><h2 id="stat-total">0</h2></div>
         </div>
-        <button class="btn btn-export" onclick="exportOrdersToCSV()">Export Paid Orders</button>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+            <button class="btn btn-secondary" onclick="exportOrdersToCSV()">⬇️ Export Paid Orders</button>
+        </div>
         <div id="admin-orders-list">Loading orders...</div>
     </div>
 
     <!-- INVOICE & DELIVERY GENERATOR TAB -->
     <div id="invoice-gen" class="tab-content">
         <div class="panel form-panel">
-            <h3 style="margin-top:0; color:var(--dark-pink);">Document Generator</h3>
-            <p style="font-size:0.85rem; color:#666; margin-bottom:20px;">Fill out the details below to automatically generate printable Invoices and Delivery Receipts matching the exact Zab Digital Prints format.</p>
+            <h3>Document Generator</h3>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:25px;">Fill out the details below to automatically generate printable Invoices and Delivery Receipts matching the official format.</p>
             
             <div class="form-grid-inv">
                 <div>
-                    <label style="font-size:12px; font-weight:bold;">Client Name</label>
+                    <label>Client Name</label>
                     <input type="text" id="docClientName" list="clientSuggestions" placeholder="e.g. Asean Centre for Biodiversity" oninput="prefillClientFromHistory()">
                     <datalist id="clientSuggestions"></datalist>
                 </div>
                 <div>
-                    <label style="font-size:12px; font-weight:bold;">Date</label>
+                    <label>Date</label>
                     <input type="text" id="docDate" placeholder="e.g. September 7, 2026">
                 </div>
                 <div style="grid-column: span 2;">
-                    <label style="font-size:12px; font-weight:bold;">Client Address</label>
-                    <input type="text" id="docClientAddress" placeholder="e.g. Domingo M.Lantican Avenue, University of the Philippines Los Banos, Laguna, Philippines">
+                    <label>Client Address</label>
+                    <input type="text" id="docClientAddress" placeholder="e.g. Domingo M.Lantican Avenue, Los Banos...">
                 </div>
                 <div>
-                    <label style="font-size:12px; font-weight:bold;">Client Email (for sending)</label>
+                    <label>Client Email (for sending)</label>
                     <input type="email" id="docClientEmail" placeholder="e.g. client@email.com">
                 </div>
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:15px;">
                     <div style="flex:1;">
-                        <label style="font-size:12px; font-weight:bold;">Discount (%)</label>
+                        <label>Discount (%)</label>
                         <input type="number" id="docDiscount" placeholder="0" min="0" max="100" value="0">
                     </div>
                     <div style="flex:1;">
-                        <label style="font-size:12px; font-weight:bold;">Tax / VAT (%)</label>
+                        <label>Tax / VAT (%)</label>
                         <input type="number" id="docTax" placeholder="0" min="0" max="100" value="0">
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:12px; font-weight:bold;">Payment Terms</label>
+                    <label>Payment Terms</label>
                     <input type="text" id="docTerms" placeholder="e.g. Due upon receipt" value="Due upon receipt">
                 </div>
                 <div>
-                    <label style="font-size:12px; font-weight:bold;">Due Date (optional)</label>
+                    <label>Due Date (optional)</label>
                     <input type="text" id="docDueDate" placeholder="e.g. September 21, 2026">
                 </div>
                 <div>
-                    <label style="font-size:12px; font-weight:bold;">Client TIN (optional)</label>
+                    <label>Client TIN (optional)</label>
                     <input type="text" id="docClientTin" placeholder="e.g. 123-456-789-000">
                 </div>
-                <div id="docOrderRefDisplay" style="font-size:12px; color:#2ecc71; font-weight:bold; align-self:center; display:none;"></div>
+                <div id="docOrderRefDisplay" style="font-size:12px; color:var(--success); font-weight:bold; align-self:center; display:none;"></div>
                 <div style="grid-column: span 2;">
-                    <label style="font-size:12px; font-weight:bold;">Notes / Special Instructions</label>
-                    <textarea id="docNotes" placeholder="e.g. Rush order, for pick-up at store, etc." style="min-height:50px;"></textarea>
+                    <label>Notes / Special Instructions</label>
+                    <textarea id="docNotes" placeholder="e.g. Rush order, for pick-up at store, etc." style="min-height:60px;"></textarea>
                 </div>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-            <h4 style="margin: 0 0 10px 0;">Line Items</h4>
+            <hr>
+            <h4>Line Items</h4>
             
             <div id="docItemsContainer">
                 <div class="inv-item-row">
-                    <input type="number" class="doc-qty" placeholder="Qty" style="width:80px;" min="1">
-                    <input type="text" class="doc-unit" placeholder="Unit (pcs)" style="width:80px;" value="pcs">
-                    <input type="text" class="doc-desc" placeholder="Item Description" style="flex:1;">
-                    <input type="number" class="doc-price" placeholder="Price (P)" style="width:120px;" min="0">
-                    <button onclick="this.parentElement.remove()" class="btn-del" style="width:40px; margin:0;">X</button>
+                    <div style="width:80px;"><label>Qty</label><input type="number" class="doc-qty" min="1"></div>
+                    <div style="width:80px;"><label>Unit</label><input type="text" class="doc-unit" value="pcs"></div>
+                    <div style="flex:1;"><label>Description</label><input type="text" class="doc-desc" placeholder="Item Name"></div>
+                    <div style="width:120px;"><label>Price (₱)</label><input type="number" class="doc-price" min="0"></div>
+                    <div style="width:40px; margin-top:22px;"><button onclick="this.parentElement.parentElement.remove()" class="btn btn-danger btn-small" style="padding: 10px; width: 100%;">X</button></div>
                 </div>
             </div>
-            <button onclick="addDocRow()" style="background:#74b9ff; width:150px; font-size:12px;">+ Add Item Line</button>
-
-            <button onclick="generateDocs()" style="margin-top:30px;">Generate Preview</button>
+            
+            <button class="btn btn-secondary" onclick="addDocRow()" style="margin-top: 5px;">+ Add Item Line</button>
+            <button class="btn btn-primary btn-block" onclick="generateDocs()" style="margin-top: 30px; padding: 15px; font-size: 1rem;">Generate Previews</button>
         </div>
 
         <!-- Document Previews -->
-        <div class="preview-controls" id="preview-controls" style="display:none; flex-wrap: wrap;">
-            <button id="btn-show-inv" onclick="toggleDocView('invoice')" style="background:var(--owner-gold);">View Invoice</button>
-            <button id="btn-show-del" onclick="toggleDocView('delivery')" style="background:#ddd; color:#333;">View Delivery Form</button>
-            <button onclick="window.print()" style="background:var(--text);">🖨️ Print</button>
-            <button onclick="downloadDocAsPDF()" style="background:#0984e3;">⬇️ Download PDF</button>
-            <button onclick="downloadCombinedPDF()" style="background:#6c5ce7;">📎 Download Both (Combined)</button>
-            <button id="btn-save-record" onclick="saveInvoiceRecord()" style="background:#2ecc71;">💾 Save Invoice Record</button>
-            <button onclick="emailInvoice()" style="background:#636e72;">✉️ Email Invoice</button>
+        <div class="preview-controls" id="preview-controls" style="display:none;">
+            <button id="btn-show-inv" class="btn btn-primary" onclick="toggleDocView('invoice')">👁️ View Invoice</button>
+            <button id="btn-show-del" class="btn btn-secondary" onclick="toggleDocView('delivery')">👁️ View Delivery Form</button>
+            <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+            <button class="btn btn-secondary" onclick="downloadDocAsPDF()">⬇️ PDF (Current)</button>
+            <button class="btn btn-secondary" onclick="downloadCombinedPDF()">📎 PDF (Both)</button>
+            <button class="btn btn-secondary" onclick="emailInvoice()">✉️ Email</button>
+            <button id="btn-save-record" class="btn btn-success" onclick="saveInvoiceRecord()">💾 Save Record</button>
         </div>
-        <p id="save-hint" style="font-size:0.75rem; color:#999; margin: -10px 0 20px 0; display:none;">Saving assigns a permanent invoice number and adds it to Invoice History below with an Unpaid status.</p>
+        <p id="save-hint" style="font-size:0.8rem; color:var(--text-muted); margin: -10px 0 20px 0; text-align: right; display:none;">Saving assigns a permanent invoice number to your history.</p>
 
         <div id="print-area">
             <!-- INVOICE A4 TEMPLATE -->
@@ -397,9 +451,7 @@
                             <th style="width: 20%;">SUB TOTAL</th>
                         </tr>
                     </thead>
-                    <tbody id="outInvTbody">
-                        <!-- Items injected here -->
-                    </tbody>
+                    <tbody id="outInvTbody"></tbody>
                 </table>
 
                 <div class="doc-notes-box" id="outInvNotesBox" style="display:none;">
@@ -408,9 +460,7 @@
                 </div>
 
                 <div id="outInvBreakdown" style="font-size:13px; text-align:right; margin-bottom:6px;"></div>
-                <div class="doc-total-row">
-                    TOTAL <span id="outInvTotal">₱0.00</span>
-                </div>
+                <div class="doc-total-row">TOTAL <span id="outInvTotal">₱0.00</span></div>
 
                 <div class="invoice-footer-grid">
                     <div>
@@ -488,14 +538,9 @@
 
                 <table class="doc-table" style="margin-bottom: 25px;">
                     <thead>
-                        <tr>
-                            <th style="width: 25%;">QUANTITY</th>
-                            <th style="width: 75%;">DESCRIPTION</th>
-                        </tr>
+                        <tr><th style="width: 25%;">QUANTITY</th><th style="width: 75%;">DESCRIPTION</th></tr>
                     </thead>
-                    <tbody id="outDelTbody">
-                        <!-- Items injected here -->
-                    </tbody>
+                    <tbody id="outDelTbody"></tbody>
                 </table>
 
                 <div class="doc-notes-box" id="outDelNotesBox" style="display:none;">
@@ -540,8 +585,8 @@
             </div>
         </div>
 
-        <div class="panel" style="margin-top:20px;">
-            <h3 style="margin-top:0; color:var(--dark-pink);">Invoice History</h3>
+        <div class="panel" style="margin-top:30px;">
+            <h3>Invoice History</h3>
             <div id="invoice-history-list">Loading...</div>
         </div>
     </div>
@@ -550,48 +595,52 @@
     <div id="settings" class="tab-content">
         <div class="panel">
             <h2>Business Settings</h2>
+            
             <div class="owner-gate" id="ownerGate">
-                <span class="owner-label">⚠️ Master Authorization</span>
+                <h4 style="color: var(--owner-gold); margin-bottom: 10px;">⚠️ Master Authorization Required</h4>
                 <input type="password" id="ownerPassInput" placeholder="Enter Owner Password">
-                <button onclick="unlockSettings()" style="background: var(--owner-gold);">Unlock Master Settings</button>
+                <button class="btn" onclick="unlockSettings()">Unlock Master Settings</button>
             </div>
 
             <div id="protectedSettings" style="display:none; margin-top: 20px;">
                 <div style="margin-top: 20px;">
                     <h4>Admin Accounts</h4>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:10px; margin-bottom: 20px;">
-                        <input type="text" id="newStaffName" placeholder="Staff Name" style="margin:0;">
-                        <input type="text" id="newStaffPass" placeholder="Password" style="margin:0;">
-                        <button onclick="addStaffAccount()" style="margin:0; width: 100px; background: var(--text);">Create</button>
+                    <div style="display:flex; gap:10px; margin-bottom: 20px; align-items: flex-end;">
+                        <div style="flex:1;"><label>Staff Name</label><input type="text" id="newStaffName" style="margin:0;"></div>
+                        <div style="flex:1;"><label>Password</label><input type="text" id="newStaffPass" style="margin:0;"></div>
+                        <button class="btn btn-secondary" onclick="addStaffAccount()" style="margin:0;">Create Account</button>
                     </div>
                     <div id="staff-account-list"></div>
                 </div>
                 <hr>
                 <div>
                     <h4>Categories</h4>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="newCatInput" placeholder="New category">
-                        <button onclick="addCategory()" style="width:100px; margin:0;">Add</button>
+                    <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                        <input type="text" id="newCatInput" placeholder="New category name" style="margin:0;">
+                        <button class="btn btn-secondary" onclick="addCategory()" style="margin:0;">Add Category</button>
                     </div>
-                    <div id="category-list" style="margin-top:10px;"></div>
+                    <div id="category-list"></div>
                 </div>
                 <hr>
                 <div>
                     <h4>Document Settings</h4>
-                    <p style="font-size:0.8rem; color:#999; margin-top:-5px;">Controls the signatory shown on generated Invoices.</p>
-                    <input type="text" id="docSigName" placeholder="Signatory Name (e.g. AILYN P. ORPILLA)">
-                    <input type="text" id="docSigRole" placeholder="Signatory Role (e.g. AUTHORIZED SIGN)">
-                    <input type="text" id="docPaymentQr" placeholder="GCash/Maya QR Code Image URL (optional)">
-                    <button onclick="saveDocumentSettings()" style="background: var(--text);">Save Document Settings</button>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:-5px; margin-bottom: 15px;">Controls the signatory shown on generated Invoices.</p>
+                    <label>Signatory Name</label>
+                    <input type="text" id="docSigName" placeholder="e.g. AILYN P. ORPILLA">
+                    <label>Signatory Role</label>
+                    <input type="text" id="docSigRole" placeholder="e.g. AUTHORIZED SIGN">
+                    <button class="btn btn-primary" onclick="saveDocumentSettings()">Save Document Settings</button>
                 </div>
                 <hr>
                 <div>
                     <h4>Audit Logs</h4>
-                    <table class="log-table">
-                        <thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead>
-                        <tbody id="security-logs"></tbody>
-                    </table>
-                    <button class="btn-danger" onclick="clearAuditHistory()">Clear Logs</button>
+                    <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px;">
+                        <table class="log-table">
+                            <thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead>
+                            <tbody id="security-logs"></tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-danger" onclick="clearAuditHistory()">Clear Security Logs</button>
                 </div>
             </div>
         </div>
@@ -615,7 +664,6 @@
     const db = getFirestore(app);
     let editID = null, localItems = [], currentOptions = [], localOrders = [], localInvoices = [], documentSettings = { sigName: "AILYN P. ORPILLA", sigRole: "AUTHORIZED SIGN" };
 
-    // --- LOGIN ---
     window.login = async () => {
         const pass = document.getElementById('entryPass').value;
         const ownerSnap = await getDoc(doc(db, "config", "security"));
@@ -634,7 +682,6 @@
             sessionStorage.setItem("zabAdminName", adminName);
             document.getElementById('login-gate').style.display = "none";
             
-            // Set default date for invoice generator
             const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
             document.getElementById('docDate').value = today;
 
@@ -642,16 +689,11 @@
         } else { alert("Invalid Password"); }
     };
 
-    // --- LOGIC ---
     window.deleteItem = async (id) => {
         if(confirm("Permanently delete this product?")) {
             const adminName = sessionStorage.getItem("zabAdminName");
             await deleteDoc(doc(db, "products", id));
-            await addDoc(collection(db, "security_logs"), { 
-                timestamp: new Date().toLocaleString(), 
-                admin: adminName, 
-                action: `Product Deleted (ID: ${id})` 
-            });
+            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Product Deleted (ID: ${id})` });
         }
     };
 
@@ -670,7 +712,7 @@
             const catList = document.getElementById('category-list'), catSelect = document.getElementById('pCat'), catFilter = document.getElementById('inventoryFilter');
             catList.innerHTML = ""; catSelect.innerHTML = ""; catFilter.innerHTML = '<option value="All">All Categories</option>';
             snap.forEach(d => {
-                catList.innerHTML += `<div class="cat-tag">${d.id} <span onclick="deleteCat('${d.id}')" style="cursor:pointer; margin-left:8px;">×</span></div>`;
+                catList.innerHTML += `<div class="tag">${d.id} <span onclick="deleteCat('${d.id}')">×</span></div>`;
                 catSelect.innerHTML += `<option value="${d.id}">${d.id}</option>`;
                 catFilter.innerHTML += `<option value="${d.id}">${d.id}</option>`;
             });
@@ -687,7 +729,7 @@
     function initOrders() {
         onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
             const list = document.getElementById('admin-orders-list');
-            list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:#999;'>No orders.</p>" : "";
+            list.innerHTML = snap.empty ? "<p style='text-align:center; padding:20px; color:var(--text-muted);'>No orders found.</p>" : "";
             let revenue = 0, active = 0, total = 0;
             localOrders = [];
             snap.forEach(d => {
@@ -699,32 +741,34 @@
                 
                 const date = new Date(o.createdAt).toLocaleString();
                 const isPaid = o.paid === true;
-                let itemsHtml = ""; o.items.forEach(i => { itemsHtml += `<div class="order-item-row"><span>• ${i.name} (${i.variant}) x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`; });
+                let itemsHtml = ""; o.items.forEach(i => { itemsHtml += `<div class="order-item-row"><span>• ${i.name} ${i.variant ? `(${i.variant})` : ''} x${i.qty}</span> <span>₱${i.price * i.qty}</span></div>`; });
                 
                 list.innerHTML += `
                     <div class="order-card">
                         <div class="order-header">
                             <div>
                                 <span class="order-customer">${o.customerName}</span>
-                                <span class="order-id-badge">${o.orderID || 'Legacy'}</span>
-                                ${o.transactionRef ? `<span class="trans-badge">TX: ${o.transactionRef}</span>` : ''}
-                                <span class="badge-status ${isPaid ? 'paid-yes' : 'paid-no'}" onclick="togglePaidStatus('${d.id}', ${isPaid})">${isPaid ? 'PAID' : 'UNPAID'}</span>
+                                <span class="badge-id">${o.orderID || 'Legacy'}</span>
+                                ${o.transactionRef ? `<span class="badge-id">TX: ${o.transactionRef}</span>` : ''}
+                                <span class="badge ${isPaid ? 'badge-paid' : 'badge-unpaid'}" style="margin-left:8px;" onclick="togglePaidStatus('${d.id}', ${isPaid})">${isPaid ? 'PAID' : 'UNPAID'}</span>
                             </div>
                             <span class="order-date">${date}</span>
                         </div>
                         <div class="order-items">${itemsHtml}</div>
-                        <div style="font-size:0.8rem; background:#f9f9f9; padding:10px; border-radius:10px;">
-                            📞 ${o.customerPhone || 'N/A'} | 📧 ${o.customerEmail || 'N/A'}<br>📍 ${o.address}
+                        <div style="font-size:0.8rem; background:var(--secondary); padding:10px 15px; border-radius:8px; border: 1px solid var(--border);">
+                            📞 ${o.customerPhone || 'N/A'} &nbsp;|&nbsp; 📧 ${o.customerEmail || 'N/A'}<br>📍 ${o.address}
                         </div>
                         <div class="order-footer">
-                            <select onchange="updateOrderStatus('${d.id}', this.value)" style="width:auto; margin:0; font-size:0.75rem;">
+                            <select onchange="updateOrderStatus('${d.id}', this.value)" style="width:auto; margin:0; padding: 6px 12px; font-size:0.8rem;">
                                 <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
                                 <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
                                 <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
                             </select>
                             <span class="order-total">${o.total}</span>
-                            <button class="btn-small" style="background:#2ecc71;" onclick="createInvoiceFromOrder('${d.id}')">🧾 Invoice</button>
-                            <button class="btn-small btn-del" onclick="deleteOrderRecord('${d.id}')">Delete</button>
+                            <div class="action-btns">
+                                <button class="btn btn-outline btn-small" onclick="createInvoiceFromOrder('${d.id}')">🧾 Invoice</button>
+                                <button class="btn btn-danger btn-small" onclick="deleteOrderRecord('${d.id}')">Delete</button>
+                            </div>
                         </div>
                     </div>`;
             });
@@ -740,12 +784,14 @@
         localItems.forEach(item => {
             if ((cat === "All" || item.category === cat) && item.name.toLowerCase().includes(term)) {
                 list.innerHTML += `
-                    <div class="product-row">
-                        <img src="${item.imgUrl || 'IMG_1218.jpeg'}">
-                        <div style="flex-grow:1"><b>${item.name}</b><br><small>Stock: ${item.stock || 0}</small></div>
+                    <div class="data-list-row">
+                        <div class="product-info">
+                            <img src="${item.imgUrl || 'IMG_1218.jpeg'}">
+                            <div><b>${item.name}</b><small>Stock: ${item.stock || 0} | ₱${item.price || 0}</small></div>
+                        </div>
                         <div class="action-btns">
-                            <button class="btn-small" onclick="startEdit('${item.id}')">Edit</button>
-                            <button class="btn-small btn-del" onclick="deleteItem('${item.id}')">Delete</button>
+                            <button class="btn btn-secondary btn-small" onclick="startEdit('${item.id}')">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteItem('${item.id}')">Del</button>
                         </div>
                     </div>`;
             }
@@ -759,7 +805,7 @@
     window.removeOption = (idx) => { currentOptions.splice(idx, 1); renderOptions(); updateLiveView(); };
     function renderOptions() {
         const list = document.getElementById('current-options-list'); list.innerHTML = "";
-        currentOptions.forEach((o, i) => { list.innerHTML += `<div class="opt-tag">${o.name} (₱${o.price}) <span onclick="removeOption(${i})">×</span></div>`; });
+        currentOptions.forEach((o, i) => { list.innerHTML += `<div class="tag">${o.name} (₱${o.price}) <span onclick="removeOption(${i})">×</span></div>`; });
     }
 
     window.updateLiveView = () => {
@@ -775,17 +821,9 @@
     window.saveProduct = async () => {
         const adminName = sessionStorage.getItem("zabAdminName");
         const data = {
-            name: document.getElementById('pName').value,
-            price: document.getElementById('pPrice').value || 0,
-            stock: Number(document.getElementById('pStock').value) || 0,
-            moq: document.getElementById('pMoq').value || "",
-            description: document.getElementById('pDesc').value || "",
-            options: currentOptions, 
-            category: document.getElementById('pCat').value,
-            status: document.getElementById('pStatus').value,
-            imgUrl: document.getElementById('pImg').value || "",
-            updatedBy: adminName,
-            createdAt: editID ? localItems.find(i => i.id === editID).createdAt : Date.now()
+            name: document.getElementById('pName').value, price: document.getElementById('pPrice').value || 0, stock: Number(document.getElementById('pStock').value) || 0,
+            moq: document.getElementById('pMoq').value || "", description: document.getElementById('pDesc').value || "", options: currentOptions, category: document.getElementById('pCat').value,
+            status: document.getElementById('pStatus').value, imgUrl: document.getElementById('pImg').value || "", updatedBy: adminName, createdAt: editID ? localItems.find(i => i.id === editID).createdAt : Date.now()
         };
         if(!data.name) return alert("Name required!");
         if(editID) await updateDoc(doc(db, "products", editID), data);
@@ -820,11 +858,11 @@
             document.getElementById('protectedSettings').style.display = "block";
             onSnapshot(collection(db, "staff_accounts"), (snap) => {
                 const list = document.getElementById('staff-account-list'); list.innerHTML = "";
-                snap.forEach(d => { list.innerHTML += `<div class="staff-row"><span>${d.data().name}</span><button class="btn-small btn-del" onclick="deleteDoc(doc(db, 'staff_accounts', '${d.id}'))">Remove</button></div>`; });
+                snap.forEach(d => { list.innerHTML += `<div class="data-list-row"><span><b>${d.data().name}</b></span><button class="btn btn-danger btn-small" onclick="deleteDoc(doc(db, 'staff_accounts', '${d.id}'))">Remove</button></div>`; });
             });
-            onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
+            onSnapshot(query(collection(db, "security_logs"), orderBy("timestamp", "desc"), limit(30)), (snap) => {
                 const l = document.getElementById('security-logs'); l.innerHTML = "";
-                snap.forEach(d => { l.innerHTML += `<tr><td>${d.data().timestamp}</td><td>${d.data().admin}</td><td>${d.data().action}</td></tr>`; });
+                snap.forEach(d => { l.innerHTML += `<tr><td>${d.data().timestamp}</td><td><b>${d.data().admin}</b></td><td>${d.data().action}</td></tr>`; });
             });
         } else { alert("Wrong Master Password"); }
     };
@@ -832,82 +870,39 @@
     window.logout = () => { sessionStorage.clear(); location.reload(); };
     if(sessionStorage.getItem("zabAuth")) { document.getElementById('login-gate').style.display = "none"; initApp(); }
 
-    /* =========================================
-       INVOICE / DELIVERY GENERATOR LOGIC
-       ========================================= */
     window.addDocRow = () => {
         const container = document.getElementById('docItemsContainer');
         const row = document.createElement('div');
         row.className = "inv-item-row";
         row.innerHTML = `
-            <input type="number" class="doc-qty" placeholder="Qty" style="width:80px;" min="1">
-            <input type="text" class="doc-unit" placeholder="Unit (pcs)" style="width:80px;" value="pcs">
-            <input type="text" class="doc-desc" placeholder="Item Description" style="flex:1;">
-            <input type="number" class="doc-price" placeholder="Price (P)" style="width:120px;" min="0">
-            <button onclick="this.parentElement.remove()" class="btn-del" style="width:40px; margin:0;">X</button>
+            <div style="width:80px;"><label>Qty</label><input type="number" class="doc-qty" min="1"></div>
+            <div style="width:80px;"><label>Unit</label><input type="text" class="doc-unit" value="pcs"></div>
+            <div style="flex:1;"><label>Description</label><input type="text" class="doc-desc" placeholder="Item Name"></div>
+            <div style="width:120px;"><label>Price (₱)</label><input type="number" class="doc-price" min="0"></div>
+            <div style="width:40px; margin-top:22px;"><button onclick="this.parentElement.parentElement.remove()" class="btn btn-danger btn-small" style="padding: 10px; width: 100%;">X</button></div>
         `;
         container.appendChild(row);
     };
 
     window.generateDocs = () => {
-        const name = document.getElementById('docClientName').value || "[Client Name]";
-        const address = document.getElementById('docClientAddress').value || "[Client Address]";
-        const dateInput = document.getElementById('docDate').value || "[Date]";
-
-        // Populate Headers
-        document.getElementById('outInvName').innerText = name;
-        document.getElementById('outInvAddress').innerText = address;
-        document.getElementById('outInvDate').innerText = dateInput;
-
-        document.getElementById('outDelName').innerText = name;
-        document.getElementById('outDelAddress').innerText = address;
-        document.getElementById('outDelDate').innerText = dateInput;
+        const name = document.getElementById('docClientName').value || "[Client Name]", address = document.getElementById('docClientAddress').value || "[Client Address]", dateInput = document.getElementById('docDate').value || "[Date]";
+        document.getElementById('outInvName').innerText = name; document.getElementById('outInvAddress').innerText = address; document.getElementById('outInvDate').innerText = dateInput;
+        document.getElementById('outDelName').innerText = name; document.getElementById('outDelAddress').innerText = address; document.getElementById('outDelDate').innerText = dateInput;
 
         const rows = document.querySelectorAll('.inv-item-row');
-        let invHtml = "";
-        let delHtml = "";
-        let subtotal = 0;
-        const lineItems = [];
-
+        let invHtml = "", delHtml = "", subtotal = 0; const lineItems = [];
         rows.forEach(row => {
-            const qty = row.querySelector('.doc-qty').value || "0";
-            const unit = row.querySelector('.doc-unit').value || "pcs";
-            const desc = row.querySelector('.doc-desc').value || "-";
-            const price = parseFloat(row.querySelector('.doc-price').value) || 0;
-            const sub = parseInt(qty) * price;
-            subtotal += sub;
-            lineItems.push({ qty, unit, desc, price, sub });
-
+            const qty = row.querySelector('.doc-qty').value || "0", unit = row.querySelector('.doc-unit').value || "pcs", desc = row.querySelector('.doc-desc').value || "-", price = parseFloat(row.querySelector('.doc-price').value) || 0;
+            const sub = parseInt(qty) * price; subtotal += sub; lineItems.push({ qty, unit, desc, price, sub });
             const qtyText = `${qty} ${unit}`;
-
-            // Add to Invoice
-            invHtml += `
-                <tr>
-                    <td>${qtyText}</td>
-                    <td>${desc}</td>
-                    <td>₱${price.toLocaleString()}</td>
-                    <td>₱${sub.toLocaleString()}</td>
-                </tr>
-            `;
-
-            // Add to Delivery Form
-            delHtml += `
-                <tr>
-                    <td>${qtyText}</td>
-                    <td>${desc}</td>
-                </tr>
-            `;
+            invHtml += `<tr><td>${qtyText}</td><td>${desc}</td><td>₱${price.toLocaleString()}</td><td>₱${sub.toLocaleString()}</td></tr>`;
+            delHtml += `<tr><td>${qtyText}</td><td>${desc}</td></tr>`;
         });
 
-        const discountPct = parseFloat(document.getElementById('docDiscount').value) || 0;
-        const taxPct = parseFloat(document.getElementById('docTax').value) || 0;
-        const discountAmt = subtotal * (discountPct / 100);
-        const taxableAmt = subtotal - discountAmt;
-        const taxAmt = taxableAmt * (taxPct / 100);
-        const grandTotal = taxableAmt + taxAmt;
+        const discountPct = parseFloat(document.getElementById('docDiscount').value) || 0, taxPct = parseFloat(document.getElementById('docTax').value) || 0;
+        const discountAmt = subtotal * (discountPct / 100), taxableAmt = subtotal - discountAmt, taxAmt = taxableAmt * (taxPct / 100), grandTotal = taxableAmt + taxAmt;
 
-        document.getElementById('outInvTbody').innerHTML = invHtml;
-        document.getElementById('outDelTbody').innerHTML = delHtml;
+        document.getElementById('outInvTbody').innerHTML = invHtml; document.getElementById('outDelTbody').innerHTML = delHtml;
         document.getElementById('outInvTotal').innerText = `₱${grandTotal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
 
         let breakdownHtml = `Subtotal: ₱${subtotal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
@@ -915,182 +910,103 @@
         if(taxPct > 0) breakdownHtml += `<br>Tax/VAT (${taxPct}%): +₱${taxAmt.toLocaleString(undefined, {minimumFractionDigits:2})}`;
         document.getElementById('outInvBreakdown').innerHTML = (discountPct > 0 || taxPct > 0) ? breakdownHtml : "";
 
-        document.getElementById('outSigName').innerText = documentSettings.sigName;
-        document.getElementById('outSigRole').innerText = documentSettings.sigRole;
-        document.getElementById('outInvNumber').innerText = "Invoice No: DRAFT (not yet saved)";
-        document.getElementById('outDelNumber').innerText = "Ref: DRAFT (not yet saved)";
+        document.getElementById('outSigName').innerText = documentSettings.sigName; document.getElementById('outSigRole').innerText = documentSettings.sigRole;
+        document.getElementById('outInvNumber').innerText = "Invoice No: DRAFT (not yet saved)"; document.getElementById('outDelNumber').innerText = "Ref: DRAFT (not yet saved)";
 
-        // Stash the current draft so Save/PDF/Email can use it
-        window.currentDocDraft = {
-            clientName: name, clientAddress: address, clientEmail: document.getElementById('docClientEmail').value || "",
-            date: dateInput, items: lineItems, subtotal, discountPct, taxPct, discountAmt, taxAmt, total: grandTotal,
-            invoiceNumber: null, savedId: null
-        };
-        document.getElementById('btn-save-record').disabled = false;
-        document.getElementById('btn-save-record').innerText = "💾 Save Invoice Record";
-
-        // Show previews
-        document.getElementById('preview-controls').style.display = 'flex';
-        document.getElementById('save-hint').style.display = 'block';
-        toggleDocView('invoice');
+        window.currentDocDraft = { clientName: name, clientAddress: address, clientEmail: document.getElementById('docClientEmail').value || "", date: dateInput, items: lineItems, subtotal, discountPct, taxPct, discountAmt, taxAmt, total: grandTotal, invoiceNumber: null, savedId: null };
+        document.getElementById('btn-save-record').disabled = false; document.getElementById('btn-save-record').innerText = "💾 Save Record";
+        document.getElementById('preview-controls').style.display = 'flex'; document.getElementById('save-hint').style.display = 'block'; toggleDocView('invoice');
     };
 
-    /* --- Document Settings (signatory) --- */
     async function loadDocumentSettings() {
         const snap = await getDoc(doc(db, "config", "documentSettings"));
-        if(snap.exists()) {
-            documentSettings.sigName = snap.data().sigName || documentSettings.sigName;
-            documentSettings.sigRole = snap.data().sigRole || documentSettings.sigRole;
-        }
+        if(snap.exists()) { documentSettings.sigName = snap.data().sigName || documentSettings.sigName; documentSettings.sigRole = snap.data().sigRole || documentSettings.sigRole; }
         const nameInput = document.getElementById('docSigName'), roleInput = document.getElementById('docSigRole');
         if(nameInput) { nameInput.value = documentSettings.sigName; roleInput.value = documentSettings.sigRole; }
     }
+    
     window.saveDocumentSettings = async () => {
-        const sigName = document.getElementById('docSigName').value.trim() || "AILYN P. ORPILLA";
-        const sigRole = document.getElementById('docSigRole').value.trim() || "AUTHORIZED SIGN";
+        const sigName = document.getElementById('docSigName').value.trim() || "AILYN P. ORPILLA", sigRole = document.getElementById('docSigRole').value.trim() || "AUTHORIZED SIGN";
         await setDoc(doc(db, "config", "documentSettings"), { sigName, sigRole }, { merge: true });
         documentSettings.sigName = sigName; documentSettings.sigRole = sigRole;
         alert("Document settings saved.");
     };
 
-    /* --- Client autocomplete from past invoices --- */
     window.prefillClientFromHistory = () => {
-        const typed = document.getElementById('docClientName').value;
-        const match = localInvoices.find(i => i.clientName === typed);
-        if(match && !document.getElementById('docClientAddress').value) {
-            document.getElementById('docClientAddress').value = match.clientAddress || "";
-            document.getElementById('docClientEmail').value = match.clientEmail || "";
-        }
+        const typed = document.getElementById('docClientName').value, match = localInvoices.find(i => i.clientName === typed);
+        if(match && !document.getElementById('docClientAddress').value) { document.getElementById('docClientAddress').value = match.clientAddress || ""; document.getElementById('docClientEmail').value = match.clientEmail || ""; }
     };
     function refreshClientSuggestions() {
-        const list = document.getElementById('clientSuggestions');
-        if(!list) return;
+        const list = document.getElementById('clientSuggestions'); if(!list) return;
         const names = [...new Set(localInvoices.map(i => i.clientName).filter(Boolean))];
         list.innerHTML = names.map(n => `<option value="${n}"></option>`).join("");
     }
 
-    /* --- Create Invoice from an Order --- */
     window.createInvoiceFromOrder = (orderId) => {
-        const o = localOrders.find(x => x.id === orderId);
-        if(!o) return alert("Order not found.");
+        const o = localOrders.find(x => x.id === orderId); if(!o) return alert("Order not found.");
         document.querySelector('.menu-item[onclick*="invoice-gen"]').click();
-        document.getElementById('docClientName').value = o.customerName || "";
-        document.getElementById('docClientAddress').value = o.address || "";
-        document.getElementById('docClientEmail').value = o.customerEmail || "";
+        document.getElementById('docClientName').value = o.customerName || ""; document.getElementById('docClientAddress').value = o.address || ""; document.getElementById('docClientEmail').value = o.customerEmail || "";
         document.getElementById('docItemsContainer').innerHTML = "";
         (o.items || []).forEach(i => {
-            const row = document.createElement('div');
-            row.className = "inv-item-row";
-            row.innerHTML = `
-                <input type="number" class="doc-qty" style="width:80px;" min="1" value="${i.qty}">
-                <input type="text" class="doc-unit" style="width:80px;" value="pcs">
-                <input type="text" class="doc-desc" style="flex:1;" value="${i.name}${i.variant ? ' (' + i.variant + ')' : ''}">
-                <input type="number" class="doc-price" style="width:120px;" min="0" value="${i.price}">
-                <button onclick="this.parentElement.remove()" class="btn-del" style="width:40px; margin:0;">X</button>
-            `;
+            const row = document.createElement('div'); row.className = "inv-item-row";
+            row.innerHTML = `<div style="width:80px;"><label>Qty</label><input type="number" class="doc-qty" min="1" value="${i.qty}"></div>
+                <div style="width:80px;"><label>Unit</label><input type="text" class="doc-unit" value="pcs"></div>
+                <div style="flex:1;"><label>Description</label><input type="text" class="doc-desc" value="${i.name}${i.variant ? ' (' + i.variant + ')' : ''}"></div>
+                <div style="width:120px;"><label>Price (₱)</label><input type="number" class="doc-price" min="0" value="${i.price}"></div>
+                <div style="width:40px; margin-top:22px;"><button onclick="this.parentElement.parentElement.remove()" class="btn btn-danger btn-small" style="padding: 10px; width: 100%;">X</button></div>`;
             document.getElementById('docItemsContainer').appendChild(row);
         });
         if(!o.items || o.items.length === 0) window.addDocRow();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    /* --- Missing Combined PDF Downloader --- */
     window.downloadCombinedPDF = async () => {
-        const draft = window.currentDocDraft;
-        if(!draft) return alert("Generate a preview first.");
-        
+        const draft = window.currentDocDraft; if(!draft) return alert("Generate a preview first.");
         const filename = `Combined-${draft.invoiceNumber || 'DRAFT'}-${(draft.clientName || 'client').replace(/[^a-z0-9]/gi,'_')}.pdf`;
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = 210, pageHeight = 297;
+        const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4'); const pageWidth = 210, pageHeight = 297;
+        const viewInv = document.getElementById('preview-invoice'), viewDel = document.getElementById('preview-delivery');
 
-        const viewInv = document.getElementById('preview-invoice');
-        const viewDel = document.getElementById('preview-delivery');
-
-        // 1. Capture Invoice View
-        viewInv.style.display = 'block';
-        viewDel.style.display = 'none';
-        
-        let canvas = await html2canvas(viewInv, { scale: 2, useCORS: true });
-        let imgHeight = (canvas.height * pageWidth) / canvas.width;
+        viewInv.style.display = 'block'; viewDel.style.display = 'none';
+        let canvas = await html2canvas(viewInv, { scale: 2, useCORS: true }), imgHeight = (canvas.height * pageWidth) / canvas.width;
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight));
 
-        // 2. Add Page & Capture Delivery View
-        pdf.addPage();
-        viewInv.style.display = 'none';
-        viewDel.style.display = 'block';
-        
-        canvas = await html2canvas(viewDel, { scale: 2, useCORS: true });
-        imgHeight = (canvas.height * pageWidth) / canvas.width;
+        pdf.addPage(); viewInv.style.display = 'none'; viewDel.style.display = 'block';
+        canvas = await html2canvas(viewDel, { scale: 2, useCORS: true }); imgHeight = (canvas.height * pageWidth) / canvas.width;
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight));
 
-        // 3. Restore UI
-        window.toggleDocView('invoice');
-        pdf.save(filename);
+        window.toggleDocView('invoice'); pdf.save(filename);
     };
 
-    /* --- Fixed Save Invoice Logic with Error Handling --- */
     window.saveInvoiceRecord = async () => {
-        const draft = window.currentDocDraft;
-        if(!draft) return alert("Generate a preview first.");
-        const btn = document.getElementById('btn-save-record');
-        btn.disabled = true; 
-        btn.innerText = "Saving...";
+        const draft = window.currentDocDraft; if(!draft) return alert("Generate a preview first.");
+        const btn = document.getElementById('btn-save-record'); btn.disabled = true; btn.innerText = "Saving...";
 
         try {
-            const counterRef = doc(db, "config", "documentSettings");
-            const counterSnap = await getDoc(counterRef);
-            const year = new Date().getFullYear();
+            const counterRef = doc(db, "config", "documentSettings"), counterSnap = await getDoc(counterRef);
             let nextNum = (counterSnap.exists() && counterSnap.data().nextInvoiceNumber) ? counterSnap.data().nextInvoiceNumber : 1;
             
-            // Allow re-saving updates without creating duplicate records
             if(draft.savedId) {
-                await updateDoc(doc(db, "invoices", draft.savedId), {
-                    clientName: draft.clientName, clientAddress: draft.clientAddress, clientEmail: draft.clientEmail,
-                    date: draft.date, items: draft.items, subtotal: draft.subtotal, discountPct: draft.discountPct, 
-                    taxPct: draft.taxPct, total: draft.total
-                });
-                btn.innerText = "✅ Updated " + draft.invoiceNumber;
-                btn.disabled = false;
-                return;
+                await updateDoc(doc(db, "invoices", draft.savedId), { clientName: draft.clientName, clientAddress: draft.clientAddress, clientEmail: draft.clientEmail, date: draft.date, items: draft.items, subtotal: draft.subtotal, discountPct: draft.discountPct, taxPct: draft.taxPct, total: draft.total });
+                btn.innerText = "✅ Updated " + draft.invoiceNumber; btn.disabled = false; return;
             }
 
-            const invoiceNumber = `INV-${year}-${String(nextNum).padStart(4, '0')}`;
+            const invoiceNumber = `INV-${new Date().getFullYear()}-${String(nextNum).padStart(4, '0')}`;
             await setDoc(counterRef, { nextInvoiceNumber: nextNum + 1 }, { merge: true });
-
-            // Ensure adminName is never null to prevent Firebase crashing
             const adminName = sessionStorage.getItem("zabAdminName") || "Unknown Admin";
-            
-            const record = {
-                invoiceNumber, clientName: draft.clientName, clientAddress: draft.clientAddress, clientEmail: draft.clientEmail,
-                date: draft.date, items: draft.items, subtotal: draft.subtotal, discountPct: draft.discountPct, taxPct: draft.taxPct,
-                total: draft.total, status: "Unpaid", createdBy: adminName, createdAt: Date.now()
-            };
+            const record = { invoiceNumber, clientName: draft.clientName, clientAddress: draft.clientAddress, clientEmail: draft.clientEmail, date: draft.date, items: draft.items, subtotal: draft.subtotal, discountPct: draft.discountPct, taxPct: draft.taxPct, total: draft.total, status: "Unpaid", createdBy: adminName, createdAt: Date.now() };
             
             const ref = await addDoc(collection(db, "invoices"), record);
-            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Invoice Saved: ${invoiceNumber} (${draft.clientName})` });
+            await addDoc(collection(db, "security_logs"), { timestamp: new Date().toLocaleString(), admin: adminName, action: `Invoice Saved: ${invoiceNumber}` });
 
-            draft.invoiceNumber = invoiceNumber; 
-            draft.savedId = ref.id;
-            
-            document.getElementById('outInvNumber').innerText = `Invoice No: ${invoiceNumber}`;
-            document.getElementById('outDelNumber').innerText = `Ref: ${invoiceNumber}`;
-            btn.innerText = "✅ Saved as " + invoiceNumber;
-            btn.disabled = false; 
-
-        } catch (error) {
-            console.error(error);
-            alert("Error saving invoice: " + error.message);
-            btn.innerText = "💾 Retry Save";
-            btn.disabled = false;
-        }
+            draft.invoiceNumber = invoiceNumber; draft.savedId = ref.id;
+            document.getElementById('outInvNumber').innerText = `Invoice No: ${invoiceNumber}`; document.getElementById('outDelNumber').innerText = `Ref: ${invoiceNumber}`;
+            btn.innerText = "✅ Saved " + invoiceNumber; btn.disabled = false; 
+        } catch (error) { console.error(error); alert("Error saving invoice: " + error.message); btn.innerText = "💾 Retry Save"; btn.disabled = false; }
     };
 
-    /* --- Invoice History list --- */
     function renderInvoiceHistory() {
-        const list = document.getElementById('invoice-history-list');
-        if(!list) return;
-        if(localInvoices.length === 0) { list.innerHTML = "<p style='text-align:center; padding:20px; color:#999;'>No saved invoices yet.</p>"; return; }
+        const list = document.getElementById('invoice-history-list'); if(!list) return;
+        if(localInvoices.length === 0) { list.innerHTML = "<p style='text-align:center; padding:20px; color:var(--text-muted);'>No saved invoices yet.</p>"; return; }
         list.innerHTML = "";
         localInvoices.forEach(inv => {
             const isPaid = inv.status === "Paid";
@@ -1099,16 +1015,16 @@
                     <div class="order-header">
                         <div>
                             <span class="order-customer">${inv.clientName}</span>
-                            <span class="order-id-badge">${inv.invoiceNumber}</span>
-                            <span class="badge-status ${isPaid ? 'paid-yes' : 'paid-no'}" onclick="toggleInvoicePaid('${inv.id}', ${isPaid})">${isPaid ? 'PAID' : 'UNPAID'}</span>
+                            <span class="badge-id">${inv.invoiceNumber}</span>
+                            <span class="badge ${isPaid ? 'badge-paid' : 'badge-unpaid'}" style="margin-left:8px;" onclick="toggleInvoicePaid('${inv.id}', ${isPaid})">${isPaid ? 'PAID' : 'UNPAID'}</span>
                         </div>
                         <span class="order-date">${inv.date}</span>
                     </div>
                     <div class="order-footer">
                         <span class="order-total">₱${(inv.total || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn-small" style="background:#74b9ff;" onclick="reloadInvoiceIntoPreview('${inv.id}')">View</button>
-                            <button class="btn-small btn-del" onclick="deleteInvoiceRecord('${inv.id}')">Delete</button>
+                        <div class="action-btns">
+                            <button class="btn btn-outline btn-small" onclick="reloadInvoiceIntoPreview('${inv.id}')">View</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteInvoiceRecord('${inv.id}')">Delete</button>
                         </div>
                     </div>
                 </div>`;
@@ -1118,98 +1034,53 @@
     window.deleteInvoiceRecord = async (id) => { if(confirm("Delete this invoice record? This does not affect the invoice number sequence.")) await deleteDoc(doc(db, "invoices", id)); };
 
     window.reloadInvoiceIntoPreview = (id) => {
-        const inv = localInvoices.find(i => i.id === id);
-        if(!inv) return;
-        document.getElementById('docClientName').value = inv.clientName;
-        document.getElementById('docClientAddress').value = inv.clientAddress;
-        document.getElementById('docClientEmail').value = inv.clientEmail || "";
-        document.getElementById('docDate').value = inv.date;
-        document.getElementById('docDiscount').value = inv.discountPct || 0;
-        document.getElementById('docTax').value = inv.taxPct || 0;
+        const inv = localInvoices.find(i => i.id === id); if(!inv) return;
+        document.getElementById('docClientName').value = inv.clientName; document.getElementById('docClientAddress').value = inv.clientAddress; document.getElementById('docClientEmail').value = inv.clientEmail || "";
+        document.getElementById('docDate').value = inv.date; document.getElementById('docDiscount').value = inv.discountPct || 0; document.getElementById('docTax').value = inv.taxPct || 0;
         document.getElementById('docItemsContainer').innerHTML = "";
         inv.items.forEach(i => {
-            const row = document.createElement('div');
-            row.className = "inv-item-row";
-            row.innerHTML = `
-                <input type="number" class="doc-qty" style="width:80px;" min="1" value="${i.qty}">
-                <input type="text" class="doc-unit" style="width:80px;" value="${i.unit}">
-                <input type="text" class="doc-desc" style="flex:1;" value="${i.desc}">
-                <input type="number" class="doc-price" style="width:120px;" min="0" value="${i.price}">
-                <button onclick="this.parentElement.remove()" class="btn-del" style="width:40px; margin:0;">X</button>
-            `;
+            const row = document.createElement('div'); row.className = "inv-item-row";
+            row.innerHTML = `<div style="width:80px;"><label>Qty</label><input type="number" class="doc-qty" min="1" value="${i.qty}"></div>
+                <div style="width:80px;"><label>Unit</label><input type="text" class="doc-unit" value="${i.unit}"></div>
+                <div style="flex:1;"><label>Description</label><input type="text" class="doc-desc" value="${i.desc}"></div>
+                <div style="width:120px;"><label>Price (₱)</label><input type="number" class="doc-price" min="0" value="${i.price}"></div>
+                <div style="width:40px; margin-top:22px;"><button onclick="this.parentElement.parentElement.remove()" class="btn btn-danger btn-small" style="padding: 10px; width: 100%;">X</button></div>`;
             document.getElementById('docItemsContainer').appendChild(row);
         });
         window.generateDocs();
-        window.currentDocDraft.invoiceNumber = inv.invoiceNumber;
-        window.currentDocDraft.savedId = inv.id;
-        document.getElementById('outInvNumber').innerText = `Invoice No: ${inv.invoiceNumber}`;
-        document.getElementById('outDelNumber').innerText = `Ref: ${inv.invoiceNumber}`;
-        document.getElementById('btn-save-record').innerText = "✅ Saved as " + inv.invoiceNumber;
+        window.currentDocDraft.invoiceNumber = inv.invoiceNumber; window.currentDocDraft.savedId = inv.id;
+        document.getElementById('outInvNumber').innerText = `Invoice No: ${inv.invoiceNumber}`; document.getElementById('outDelNumber').innerText = `Ref: ${inv.invoiceNumber}`;
+        document.getElementById('btn-save-record').innerText = "✅ Saved " + inv.invoiceNumber;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    /* --- PDF download of the currently visible template --- */
     window.downloadDocAsPDF = async () => {
         const isInvView = document.getElementById('preview-invoice').style.display !== 'none';
-        const target = document.getElementById(isInvView ? 'preview-invoice' : 'preview-delivery');
-        const draft = window.currentDocDraft || {};
-        const label = isInvView ? 'Invoice' : 'DeliveryForm';
-        const filename = `${label}-${draft.invoiceNumber || 'DRAFT'}-${(draft.clientName || 'client').replace(/[^a-z0-9]/gi,'_')}.pdf`;
-
-        const canvas = await html2canvas(target, { scale: 2, useCORS: true });
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = 210, pageHeight = 297;
-        const imgHeight = (canvas.height * pageWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight));
-        pdf.save(filename);
+        const target = document.getElementById(isInvView ? 'preview-invoice' : 'preview-delivery'), draft = window.currentDocDraft || {}, label = isInvView ? 'Invoice' : 'DeliveryForm', filename = `${label}-${draft.invoiceNumber || 'DRAFT'}-${(draft.clientName || 'client').replace(/[^a-z0-9]/gi,'_')}.pdf`;
+        const canvas = await html2canvas(target, { scale: 2, useCORS: true }), imgData = canvas.toDataURL('image/png'), { jsPDF } = window.jspdf, pdf = new jsPDF('p', 'mm', 'a4'), pageWidth = 210, pageHeight = 297, imgHeight = (canvas.height * pageWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight)); pdf.save(filename);
     };
 
-    /* --- Email (mailto) --- */
     window.emailInvoice = () => {
-        const draft = window.currentDocDraft;
-        if(!draft) return alert("Generate a preview first.");
+        const draft = window.currentDocDraft; if(!draft) return alert("Generate a preview first.");
         if(!draft.clientEmail) return alert("Add a client email in the form first.");
-        const subject = encodeURIComponent(`Invoice ${draft.invoiceNumber || ''} - Zab Digital Prints`);
-        const body = encodeURIComponent(
-            `Hi ${draft.clientName},\n\nPlease find your invoice details below.\n\n` +
-            `Invoice No: ${draft.invoiceNumber || 'DRAFT'}\nDate: ${draft.date}\nTotal: P${draft.total.toLocaleString(undefined,{minimumFractionDigits:2})}\n\n` +
-            `Please download and attach the PDF (use the Download PDF button) before sending, as this link cannot attach files automatically.\n\n` +
-            `Thank you for your business!\nZab Digital Prints`
-        );
+        const subject = encodeURIComponent(`Invoice ${draft.invoiceNumber || ''} - Zab Digital Prints`), body = encodeURIComponent(`Hi ${draft.clientName},\n\nPlease find your invoice details below.\n\nInvoice No: ${draft.invoiceNumber || 'DRAFT'}\nDate: ${draft.date}\nTotal: P${draft.total.toLocaleString(undefined,{minimumFractionDigits:2})}\n\nPlease download and attach the PDF (use the Download PDF button) before sending, as this link cannot attach files automatically.\n\nThank you for your business!\nZab Digital Prints`);
         window.location.href = `mailto:${draft.clientEmail}?subject=${subject}&body=${body}`;
     };
 
     function initInvoiceGen() {
         loadDocumentSettings();
-        onSnapshot(query(collection(db, "invoices"), orderBy("createdAt", "desc")), (snap) => {
-            localInvoices = []; snap.forEach(d => localInvoices.push({ id: d.id, ...d.data() }));
-            renderInvoiceHistory();
-            refreshClientSuggestions();
-        });
+        onSnapshot(query(collection(db, "invoices"), orderBy("createdAt", "desc")), (snap) => { localInvoices = []; snap.forEach(d => localInvoices.push({ id: d.id, ...d.data() })); renderInvoiceHistory(); refreshClientSuggestions(); });
     }
 
     window.toggleDocView = (type) => {
-        const btnInv = document.getElementById('btn-show-inv');
-        const btnDel = document.getElementById('btn-show-del');
-        const viewInv = document.getElementById('preview-invoice');
-        const viewDel = document.getElementById('preview-delivery');
-
+        const btnInv = document.getElementById('btn-show-inv'), btnDel = document.getElementById('btn-show-del'), viewInv = document.getElementById('preview-invoice'), viewDel = document.getElementById('preview-delivery');
         if(type === 'invoice') {
-            viewInv.style.display = 'block';
-            viewDel.style.display = 'none';
-            btnInv.style.background = 'var(--owner-gold)';
-            btnInv.style.color = 'white';
-            btnDel.style.background = '#ddd';
-            btnDel.style.color = '#333';
+            viewInv.style.display = 'block'; viewDel.style.display = 'none';
+            btnInv.className = "btn btn-primary"; btnDel.className = "btn btn-secondary";
         } else {
-            viewInv.style.display = 'none';
-            viewDel.style.display = 'block';
-            btnDel.style.background = 'var(--owner-gold)';
-            btnDel.style.color = 'white';
-            btnInv.style.background = '#ddd';
-            btnInv.style.color = '#333';
+            viewInv.style.display = 'none'; viewDel.style.display = 'block';
+            btnDel.className = "btn btn-primary"; btnInv.className = "btn btn-secondary";
         }
     };
 </script>
